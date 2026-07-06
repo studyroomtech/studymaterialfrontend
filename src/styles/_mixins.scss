@@ -1,0 +1,79 @@
+// Reusable SCSS mixins (Requirements 7.5, 1.18).
+//
+// Shared, composable styling helpers built on top of the theme tokens.
+// Consumed by module stylesheets and `globals.scss` via `@use`.
+//
+// Usage from a module stylesheet:
+//   @use "../styles/mixins" as mixins;
+//   .grid { @include mixins.respond-up("md") { grid-template-columns: 1fr 1fr; } }
+
+@use "sass:map";
+@use "theme";
+
+// Media query helper: styles applied at or above the named breakpoint.
+@mixin respond-up($name) {
+  @media (min-width: theme.breakpoint($name)) {
+    @content;
+  }
+}
+
+// Media query helper: styles applied below the named breakpoint.
+@mixin respond-down($name) {
+  @media (max-width: (theme.breakpoint($name) - 0.02px)) {
+    @content;
+  }
+}
+
+// Centered, width-constrained content container with responsive gutters.
+@mixin container {
+  width: 100%;
+  max-width: theme.$content-max-width;
+  margin-inline: auto;
+  padding-inline: theme.space("md");
+
+  @include respond-up("md") {
+    padding-inline: theme.space("lg");
+  }
+}
+
+// Flexbox shorthand.
+@mixin flex($direction: row, $justify: flex-start, $align: stretch, $gap: 0) {
+  display: flex;
+  flex-direction: $direction;
+  justify-content: $justify;
+  align-items: $align;
+  gap: $gap;
+}
+
+// Visible, accessible keyboard focus ring.
+@mixin focus-ring {
+  outline: 2px solid theme.color("focus-ring");
+  outline-offset: 2px;
+}
+
+// Apply a step from the typography scale.
+@mixin typography($size: "md", $weight: "regular", $line-height: theme.$line-height-base) {
+  font-size: theme.font-size($size);
+  font-weight: theme.font-weight($weight);
+  line-height: $line-height;
+}
+
+// Truncate a single line of text with an ellipsis.
+@mixin truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// Visually hide content while keeping it available to assistive tech.
+@mixin visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

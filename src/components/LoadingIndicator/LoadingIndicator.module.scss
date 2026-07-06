@@ -1,0 +1,59 @@
+// Styling for the LoadingIndicator component (Requirements 1.18, 1.20, 7.5).
+
+@use "../../styles/theme" as theme;
+@use "../../styles/mixins" as mixins;
+
+.root {
+  @include mixins.flex(row, center, center, theme.space("sm"));
+
+  color: theme.color("text-muted");
+}
+
+.fullPanel {
+  width: 100%;
+  min-height: theme.space("3xl");
+  padding: theme.space("xl");
+}
+
+.spinner {
+  flex: none;
+  border-radius: 50%;
+  border-style: solid;
+  border-color: theme.color("surface-alt");
+  border-top-color: theme.color("primary");
+  animation: spin 0.7s linear infinite;
+}
+
+.sm {
+  width: theme.space("md");
+  height: theme.space("md");
+  border-width: 2px;
+}
+
+.md {
+  width: theme.space("lg");
+  height: theme.space("lg");
+  border-width: 3px;
+}
+
+.lg {
+  width: theme.space("xl");
+  height: theme.space("xl");
+  border-width: 4px;
+}
+
+.label {
+  @include mixins.typography("sm", "medium");
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation-duration: 2s;
+  }
+}

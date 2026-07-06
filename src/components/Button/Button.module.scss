@@ -1,0 +1,145 @@
+// Button styling (Requirements 1.18, 1.19, 1.20, 7.5).
+//
+// All Button presentation is authored here and derives every value from the
+// shared theme so the component stays consistent with the platform's single
+// color palette, typography scale, and spacing scale.
+
+@use "../../styles/theme" as theme;
+@use "../../styles/mixins" as mixins;
+
+.button {
+  @include mixins.flex(row, center, center, theme.space("sm"));
+
+  position: relative;
+  border: 1px solid transparent;
+  border-radius: theme.$radius-md;
+  cursor: pointer;
+  user-select: none;
+  text-align: center;
+  white-space: nowrap;
+  transition:
+    background-color theme.$transition-base,
+    border-color theme.$transition-base,
+    color theme.$transition-base,
+    box-shadow theme.$transition-base;
+}
+
+.button:focus-visible {
+  @include mixins.focus-ring;
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.label {
+  @include mixins.truncate;
+}
+
+.icon {
+  @include mixins.flex(row, center, center);
+
+  flex: 0 0 auto;
+}
+
+// ---------------------------------------------------------------------------
+// Sizes — keyed to the shared spacing + typography scales
+// ---------------------------------------------------------------------------
+.sm {
+  @include mixins.typography("sm", "medium");
+
+  padding-block: theme.space("xs");
+  padding-inline: theme.space("sm");
+}
+
+.md {
+  @include mixins.typography("md", "medium");
+
+  padding-block: theme.space("sm");
+  padding-inline: theme.space("md");
+}
+
+.lg {
+  @include mixins.typography("lg", "semibold");
+
+  padding-block: theme.space("sm");
+  padding-inline: theme.space("lg");
+}
+
+// ---------------------------------------------------------------------------
+// Variants — colors sourced from the single shared palette
+// ---------------------------------------------------------------------------
+.primary {
+  color: theme.color("text-inverse");
+  background-color: theme.color("primary");
+  border-color: theme.color("primary");
+}
+
+.primary:hover:not(:disabled) {
+  background-color: theme.color("primary-hover");
+  border-color: theme.color("primary-hover");
+}
+
+.primary:active:not(:disabled) {
+  background-color: theme.color("primary-active");
+  border-color: theme.color("primary-active");
+}
+
+.secondary {
+  color: theme.color("text");
+  background-color: theme.color("surface");
+  border-color: theme.color("border");
+}
+
+.secondary:hover:not(:disabled) {
+  background-color: theme.color("surface-alt");
+}
+
+.danger {
+  color: theme.color("text-inverse");
+  background-color: theme.color("danger");
+  border-color: theme.color("danger");
+}
+
+.danger:hover:not(:disabled) {
+  background-color: theme.color("danger-hover");
+  border-color: theme.color("danger-hover");
+}
+
+.ghost {
+  color: theme.color("primary");
+  background-color: transparent;
+  border-color: transparent;
+}
+
+.ghost:hover:not(:disabled) {
+  background-color: theme.color("surface");
+}
+
+// ---------------------------------------------------------------------------
+// Modifiers / states
+// ---------------------------------------------------------------------------
+.fullWidth {
+  width: 100%;
+}
+
+.loading {
+  cursor: progress;
+}
+
+.spinner {
+  flex: 0 0 auto;
+  width: 1em;
+  height: 1em;
+  border: 2px solid currentcolor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: button-spin 600ms linear infinite;
+}
+
+@keyframes button-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

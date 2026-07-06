@@ -1,0 +1,133 @@
+// Shared visual theme (Requirements 7.5, 1.18).
+//
+// Defines the single source of truth for the platform's visual language:
+// exactly one color palette, one typography scale, and one spacing scale.
+// Consumed by module stylesheets, `_mixins.scss`, and `globals.scss` via `@use`.
+//
+// Usage from a module stylesheet:
+//   @use "../styles/theme" as theme;
+//   .card { color: theme.color("text"); padding: theme.space("md"); }
+
+@use "sass:map";
+
+// ---------------------------------------------------------------------------
+// Color palette (one palette)
+// ---------------------------------------------------------------------------
+$colors: (
+  "background": #ffffff,
+  "surface": #f5f7fa,
+  "surface-alt": #eef1f6,
+  "border": #d7dce3,
+  "text": #1a1f29,
+  "text-muted": #5a6472,
+  "text-inverse": #ffffff,
+  "primary": #2563eb,
+  "primary-hover": #1d4ed8,
+  "primary-active": #1e40af,
+  "focus-ring": #93c5fd,
+  "success": #15803d,
+  "warning": #b45309,
+  "danger": #dc2626,
+  "danger-hover": #b91c1c,
+  "overlay": rgba(15, 23, 42, 0.5),
+);
+
+@function color($name) {
+  @if not map.has-key($colors, $name) {
+    @error "Unknown color '#{$name}' in $colors palette.";
+  }
+  @return map.get($colors, $name);
+}
+
+// ---------------------------------------------------------------------------
+// Typography scale (one scale)
+// ---------------------------------------------------------------------------
+$font-family-base:
+  "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", roboto, oxygen,
+  ubuntu, cantarell, "Helvetica Neue", arial, sans-serif;
+$font-family-mono:
+  "SFMono-Regular", consolas, "Liberation Mono", menlo, monospace;
+
+$line-height-base: 1.5;
+$line-height-heading: 1.2;
+
+// Modular type scale keyed by semantic step.
+$font-sizes: (
+  "xs": 0.75rem,
+  "sm": 0.875rem,
+  "md": 1rem,
+  "lg": 1.125rem,
+  "xl": 1.375rem,
+  "2xl": 1.75rem,
+  "3xl": 2.25rem,
+);
+
+$font-weights: (
+  "regular": 400,
+  "medium": 500,
+  "semibold": 600,
+  "bold": 700,
+);
+
+@function font-size($step) {
+  @if not map.has-key($font-sizes, $step) {
+    @error "Unknown font-size step '#{$step}' in $font-sizes scale.";
+  }
+  @return map.get($font-sizes, $step);
+}
+
+@function font-weight($name) {
+  @if not map.has-key($font-weights, $name) {
+    @error "Unknown font-weight '#{$name}' in $font-weights scale.";
+  }
+  @return map.get($font-weights, $name);
+}
+
+// ---------------------------------------------------------------------------
+// Spacing scale (one scale)
+// ---------------------------------------------------------------------------
+$spacing: (
+  "none": 0,
+  "xs": 0.25rem,
+  "sm": 0.5rem,
+  "md": 1rem,
+  "lg": 1.5rem,
+  "xl": 2rem,
+  "2xl": 3rem,
+  "3xl": 4rem,
+);
+
+@function space($step) {
+  @if not map.has-key($spacing, $step) {
+    @error "Unknown spacing step '#{$step}' in $spacing scale.";
+  }
+  @return map.get($spacing, $step);
+}
+
+// ---------------------------------------------------------------------------
+// Shared design tokens derived from the scales above
+// ---------------------------------------------------------------------------
+$radius-sm: 0.25rem;
+$radius-md: 0.5rem;
+$radius-lg: 0.75rem;
+
+$shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.08);
+$shadow-md: 0 4px 12px rgba(15, 23, 42, 0.12);
+
+// Responsive breakpoints consumed by `_mixins.scss`.
+$breakpoints: (
+  "sm": 480px,
+  "md": 768px,
+  "lg": 1024px,
+  "xl": 1440px,
+);
+
+@function breakpoint($name) {
+  @if not map.has-key($breakpoints, $name) {
+    @error "Unknown breakpoint '#{$name}' in $breakpoints.";
+  }
+  @return map.get($breakpoints, $name);
+}
+
+$content-max-width: 1200px;
+$transition-base: 150ms ease-in-out;

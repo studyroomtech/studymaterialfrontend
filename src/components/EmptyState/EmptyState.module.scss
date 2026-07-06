@@ -1,0 +1,29 @@
+// Styling for the EmptyState component (Requirements 1.18, 1.20, 7.5).
+
+@use "../../styles/theme" as theme;
+@use "../../styles/mixins" as mixins;
+
+.root {
+  @include mixins.flex(column, center, center, theme.space("sm"));
+
+  width: 100%;
+  padding: theme.space("2xl") theme.space("lg");
+  border: 1px dashed theme.color("border");
+  border-radius: theme.$radius-md;
+  background-color: theme.color("surface");
+  text-align: center;
+}
+
+.title {
+  @include mixins.typography("lg", "semibold", theme.$line-height-heading);
+
+  margin: 0;
+  color: theme.color("text");
+}
+
+.message {
+  @include mixins.typography("sm", "regular");
+
+  margin: 0;
+  color: theme.color("text-muted");
+}

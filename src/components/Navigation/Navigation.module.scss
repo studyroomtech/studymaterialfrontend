@@ -1,0 +1,77 @@
+// Styling for the Navigation component (Requirements 1.18, 1.20, 7.5, 7.6).
+//
+// All presentation derives from the shared theme so the navigation matches the
+// platform's single color palette, typography scale, and spacing scale. The bar
+// stays reachable and non-overlapping across the supported viewport range
+// (Req 7.1, 7.2) by wrapping its links.
+
+@use "../../styles/theme" as theme;
+@use "../../styles/mixins" as mixins;
+
+.root {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  width: 100%;
+  background-color: theme.color("surface");
+  border-block-end: 1px solid theme.color("border");
+}
+
+.bar {
+  @include mixins.container;
+  @include mixins.flex(row, space-between, center, theme.space("md"));
+
+  flex-wrap: wrap;
+  padding-block: theme.space("sm");
+}
+
+.brand {
+  @include mixins.typography("lg", "semibold");
+
+  color: theme.color("text");
+  text-decoration: none;
+}
+
+.brand:hover {
+  color: theme.color("primary");
+  text-decoration: none;
+}
+
+.links {
+  @include mixins.flex(row, flex-start, center, theme.space("xs"));
+
+  flex-wrap: wrap;
+  padding-inline-start: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.item {
+  display: flex;
+}
+
+.link {
+  @include mixins.typography("sm", "medium");
+
+  display: inline-flex;
+  align-items: center;
+  padding-block: theme.space("xs");
+  padding-inline: theme.space("sm");
+  border-radius: theme.$radius-sm;
+  color: theme.color("text-muted");
+  text-decoration: none;
+  transition:
+    background-color theme.$transition-base,
+    color theme.$transition-base;
+}
+
+.link:hover {
+  background-color: theme.color("surface-alt");
+  color: theme.color("text");
+  text-decoration: none;
+}
+
+.active {
+  color: theme.color("primary");
+  background-color: theme.color("surface-alt");
+}

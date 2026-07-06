@@ -1,0 +1,147 @@
+// Global base styles (Requirements 7.5, 1.18, 1.19, 1.20).
+//
+// Applies the shared theme uniformly across every page. Imported once by the
+// App Router root layout so the color palette, typography scale, and spacing
+// scale are in effect everywhere. No component-specific styling lives here.
+
+@use "theme";
+@use "mixins";
+
+// ---------------------------------------------------------------------------
+// Reset / normalization
+// ---------------------------------------------------------------------------
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+// ---------------------------------------------------------------------------
+// Base document styling from the shared theme
+// ---------------------------------------------------------------------------
+body {
+  min-height: 100vh;
+  font-family: theme.$font-family-base;
+  font-size: theme.font-size("md");
+  font-weight: theme.font-weight("regular");
+  line-height: theme.$line-height-base;
+  color: theme.color("text");
+  background-color: theme.color("background");
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// ---------------------------------------------------------------------------
+// Typography defaults keyed to the shared type scale
+// ---------------------------------------------------------------------------
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: theme.font-weight("semibold");
+  line-height: theme.$line-height-heading;
+}
+
+h1 {
+  font-size: theme.font-size("3xl");
+}
+
+h2 {
+  font-size: theme.font-size("2xl");
+}
+
+h3 {
+  font-size: theme.font-size("xl");
+}
+
+h4 {
+  font-size: theme.font-size("lg");
+}
+
+h5,
+h6 {
+  font-size: theme.font-size("md");
+}
+
+p {
+  margin-block-end: theme.space("md");
+}
+
+p:last-child {
+  margin-block-end: 0;
+}
+
+code,
+kbd,
+pre,
+samp {
+  font-family: theme.$font-family-mono;
+  font-size: theme.font-size("sm");
+}
+
+// ---------------------------------------------------------------------------
+// Links
+// ---------------------------------------------------------------------------
+a {
+  color: theme.color("primary");
+  text-decoration: none;
+  transition: color theme.$transition-base;
+}
+
+a:hover {
+  color: theme.color("primary-hover");
+  text-decoration: underline;
+}
+
+// ---------------------------------------------------------------------------
+// Forms / interactive elements inherit the shared type scale
+// ---------------------------------------------------------------------------
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+img,
+picture,
+svg,
+video {
+  display: block;
+  max-width: 100%;
+}
+
+ul,
+ol {
+  padding-inline-start: theme.space("lg");
+}
+
+// ---------------------------------------------------------------------------
+// Consistent, accessible keyboard focus across the app
+// ---------------------------------------------------------------------------
+:focus-visible {
+  @include mixins.focus-ring;
+}
+
+// Respect users who prefer reduced motion.
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

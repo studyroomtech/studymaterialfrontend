@@ -1,0 +1,78 @@
+// Styling for the CategoryTree component (Requirements 1.18, 1.20, 7.5).
+//
+// All presentation derives from the shared theme so the tree matches the
+// platform's single color palette, typography scale, and spacing scale. Node
+// indentation is applied via per-depth classes (no inline CSS, Req 1.19).
+
+@use "../../styles/theme" as theme;
+@use "../../styles/mixins" as mixins;
+
+.root {
+  @include mixins.flex(column, flex-start, stretch, theme.space("none"));
+
+  width: 100%;
+}
+
+.node {
+  @include mixins.flex(row, flex-start, center, theme.space("sm"));
+  @include mixins.typography("sm", "regular");
+
+  width: 100%;
+  border: 1px solid transparent;
+  border-radius: theme.$radius-sm;
+  background-color: transparent;
+  color: theme.color("text");
+  text-align: left;
+  cursor: pointer;
+  padding-block: theme.space("xs");
+  padding-inline: theme.space("sm");
+  transition:
+    background-color theme.$transition-base,
+    color theme.$transition-base;
+}
+
+.node:hover {
+  background-color: theme.color("surface");
+}
+
+.node:focus-visible {
+  @include mixins.focus-ring;
+}
+
+.folder {
+  @include mixins.typography("sm", "medium");
+
+  color: theme.color("text");
+}
+
+.file {
+  color: theme.color("text-muted");
+}
+
+.file:hover {
+  color: theme.color("primary");
+}
+
+.indicator {
+  @include mixins.flex(row, center, center);
+
+  flex: 0 0 auto;
+  width: 1rem;
+  color: theme.color("text-muted");
+}
+
+.label {
+  @include mixins.truncate;
+
+  flex: 1 1 auto;
+}
+
+// ---------------------------------------------------------------------------
+// Indentation — one class per depth up to the clamp used by the component.
+// Each level adds one spacing step of leading inset.
+// ---------------------------------------------------------------------------
+@for $i from 0 through 8 {
+  .depth#{$i} {
+    margin-inline-start: calc(#{theme.space("lg")} * #{$i});
+  }
+}

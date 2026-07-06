@@ -1,0 +1,199 @@
+// Styling for the Search page (Requirements 4.1–4.5, 1.18, 1.20, 7.5).
+//
+// Matches the landing page's visual language: a gradient header band holding
+// the title and a white controls card, with results rendered as a card grid.
+// All presentation derives from the shared theme. No inline CSS (Req 1.19).
+
+@use "../../styles/theme" as theme;
+@use "../../styles/mixins" as mixins;
+
+.main {
+  @include mixins.container;
+  @include mixins.flex(column, flex-start, stretch, theme.space("xl"));
+
+  padding-block: theme.space("xl");
+}
+
+// ---- Gradient header band ------------------------------------------------
+.hero {
+  @include mixins.flex(column, flex-start, stretch, theme.space("lg"));
+
+  padding: theme.space("xl");
+  border-radius: theme.$radius-lg;
+  background-image: linear-gradient(
+    135deg,
+    theme.color("primary") 0%,
+    theme.color("primary-active") 55%,
+    #0f2a6b 100%
+  );
+  box-shadow: theme.$shadow-md;
+}
+
+.header {
+  @include mixins.flex(column, flex-start, stretch, theme.space("xs"));
+}
+
+.title {
+  @include mixins.typography("2xl", "bold", theme.$line-height-heading);
+
+  margin: 0;
+  color: theme.color("text-inverse");
+}
+
+.subtitle {
+  @include mixins.typography("md", "regular");
+
+  margin: 0;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+// White card holding the search input + filter so field labels stay readable.
+.controlsCard {
+  @include mixins.flex(column, flex-start, stretch, theme.space("md"));
+
+  padding: theme.space("lg");
+  border-radius: theme.$radius-md;
+  background-color: theme.color("background");
+  box-shadow: theme.$shadow-sm;
+
+  @include mixins.respond-up("md") {
+    flex-direction: row;
+    align-items: flex-end;
+  }
+}
+
+.searchInput {
+  flex: 1 1 auto;
+}
+
+.filter {
+  @include mixins.flex(column, flex-start, stretch, theme.space("xs"));
+
+  flex: 0 0 auto;
+
+  @include mixins.respond-up("md") {
+    min-width: 16rem;
+  }
+}
+
+.filterLabel {
+  @include mixins.typography("sm", "medium");
+
+  color: theme.color("text");
+}
+
+.filterSelect {
+  @include mixins.typography("md", "regular");
+
+  width: 100%;
+  padding-block: theme.space("sm");
+  padding-inline: theme.space("md");
+  border: 1px solid theme.color("border");
+  border-radius: theme.$radius-md;
+  background-color: theme.color("background");
+  color: theme.color("text");
+  cursor: pointer;
+  transition: border-color theme.$transition-base;
+}
+
+.filterSelect:hover {
+  border-color: theme.color("primary");
+}
+
+.filterSelect:focus-visible {
+  @include mixins.focus-ring;
+
+  border-color: theme.color("primary");
+}
+
+// ---- Results -------------------------------------------------------------
+.results {
+  @include mixins.flex(column, flex-start, stretch, theme.space("md"));
+}
+
+.resultGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: theme.space("md");
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  @include mixins.respond-up("sm") {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @include mixins.respond-up("lg") {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.resultItem {
+  width: 100%;
+}
+
+.resultCard {
+  @include mixins.flex(column, flex-start, flex-start, theme.space("sm"));
+
+  height: 100%;
+  padding: theme.space("md");
+  border: 1px solid theme.color("border");
+  border-radius: theme.$radius-md;
+  background-color: theme.color("background");
+  box-shadow: theme.$shadow-sm;
+  text-decoration: none;
+  color: inherit;
+  transition:
+    transform 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.resultCard:hover {
+  transform: translateY(-2px);
+  border-color: theme.color("primary");
+  box-shadow: theme.$shadow-md;
+}
+
+.resultCard:focus-visible {
+  @include mixins.focus-ring;
+}
+
+.resultThumb {
+  @include mixins.flex(row, center, center, 0);
+
+  width: 2.75rem;
+  height: 2.75rem;
+  font-size: 1.4rem;
+  border-radius: theme.$radius-md;
+  background-color: theme.color("surface-alt");
+}
+
+.resultTitle {
+  @include mixins.typography("lg", "semibold", theme.$line-height-heading);
+
+  color: theme.color("text");
+}
+
+.resultDescription {
+  @include mixins.typography("sm", "regular");
+
+  color: theme.color("text-muted");
+}
+
+.tagList {
+  @include mixins.flex(row, flex-start, center, theme.space("xs"));
+
+  flex-wrap: wrap;
+  margin-block-start: auto;
+}
+
+.tag {
+  @include mixins.typography("xs", "medium");
+
+  padding-block: theme.space("xs");
+  padding-inline: theme.space("sm");
+  border-radius: theme.$radius-sm;
+  background-color: theme.color("surface-alt");
+  color: theme.color("text-muted");
+}

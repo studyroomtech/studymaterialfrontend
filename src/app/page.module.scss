@@ -1,0 +1,293 @@
+// Styling for the home / landing page (Requirements 1.18, 1.19, 7.5).
+//
+// Derives entirely from the shared theme so the landing page matches the
+// platform's single color palette, typography scale, and spacing scale. No
+// inline CSS is used.
+
+@use "../styles/theme" as theme;
+@use "../styles/mixins" as mixins;
+
+.page {
+  @include mixins.flex(column, flex-start, stretch, theme.space("xl"));
+
+  width: 100%;
+}
+
+// ---- Hero ----------------------------------------------------------------
+.hero {
+  width: 100%;
+  border-radius: theme.$radius-lg;
+  background-image: linear-gradient(
+    135deg,
+    theme.color("primary") 0%,
+    theme.color("primary-active") 55%,
+    #0f2a6b 100%
+  );
+  box-shadow: theme.$shadow-md;
+  overflow: hidden;
+}
+
+.heroInner {
+  @include mixins.flex(row, space-between, center, theme.space("xl"));
+
+  padding: theme.space("2xl") theme.space("xl");
+  flex-wrap: wrap;
+}
+
+.heroText {
+  @include mixins.flex(column, flex-start, stretch, theme.space("md"));
+
+  flex: 1 1 20rem;
+  max-width: 40rem;
+}
+
+.heroTitle {
+  @include mixins.typography("3xl", "bold", theme.$line-height-heading);
+
+  margin: 0;
+  color: theme.color("text-inverse");
+}
+
+.heroSubtitle {
+  @include mixins.typography("lg", "regular");
+
+  margin: 0;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.heroSearch {
+  @include mixins.flex(row, flex-start, flex-start, theme.space("sm"));
+
+  margin-block-start: theme.space("sm");
+  flex-wrap: wrap;
+}
+
+.heroSearchInput {
+  flex: 1 1 18rem;
+}
+
+.heroArt {
+  @include mixins.flex(row, center, center, 0);
+
+  flex: 0 0 auto;
+  width: 9rem;
+  height: 9rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.14);
+
+  @include mixins.respond-down("md") {
+    display: none;
+  }
+}
+
+.heroArtIcon {
+  font-size: 4.5rem;
+  line-height: 1;
+}
+
+// ---- Content container ---------------------------------------------------
+.content {
+  @include mixins.flex(column, flex-start, stretch, theme.space("xl"));
+
+  width: 100%;
+}
+
+.status {
+  margin: 0;
+}
+
+// ---- Sections ------------------------------------------------------------
+.section {
+  @include mixins.flex(column, flex-start, stretch, theme.space("md"));
+
+  width: 100%;
+}
+
+.sectionHeader {
+  @include mixins.flex(row, space-between, center, theme.space("sm"));
+}
+
+.sectionTitle {
+  @include mixins.typography("xl", "semibold", theme.$line-height-heading);
+
+  margin: 0;
+  color: theme.color("text");
+}
+
+.viewAll {
+  @include mixins.typography("sm", "semibold");
+
+  color: theme.color("primary");
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  &:focus-visible {
+    @include mixins.focus-ring;
+  }
+}
+
+// ---- Material cards ------------------------------------------------------
+.materialGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: theme.space("md");
+
+  @include mixins.respond-up("sm") {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @include mixins.respond-up("lg") {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.materialCard {
+  @include mixins.flex(row, flex-start, center, theme.space("md"));
+
+  padding: theme.space("md");
+  background: theme.color("background");
+  border: 1px solid theme.color("border");
+  border-radius: theme.$radius-md;
+  box-shadow: theme.$shadow-sm;
+  text-decoration: none;
+  transition:
+    transform 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    border-color: theme.color("primary");
+    box-shadow: theme.$shadow-md;
+  }
+
+  &:focus-visible {
+    @include mixins.focus-ring;
+  }
+}
+
+.materialThumb {
+  @include mixins.flex(row, center, center, 0);
+
+  flex: 0 0 auto;
+  width: 3rem;
+  height: 3rem;
+  font-size: 1.5rem;
+  border-radius: theme.$radius-md;
+  background: theme.color("surface-alt");
+}
+
+.materialCardBody {
+  @include mixins.flex(column, center, flex-start, theme.space("xs"));
+
+  min-width: 0;
+}
+
+.materialCardTitle {
+  @include mixins.typography("md", "semibold");
+
+  color: theme.color("text");
+}
+
+.materialCardAction {
+  @include mixins.typography("sm", "medium");
+
+  color: theme.color("primary");
+}
+
+.recentCardWrap {
+  @include mixins.flex(column, flex-start, stretch, theme.space("xs"));
+}
+
+.recentCaption {
+  @include mixins.typography("xs", "medium");
+
+  color: theme.color("text-muted");
+  padding-inline: theme.space("xs");
+}
+
+// ---- Subject tiles -------------------------------------------------------
+.subjectGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: theme.space("md");
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  @include mixins.respond-up("sm") {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @include mixins.respond-up("md") {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.subjectItem {
+  width: 100%;
+}
+
+.subjectTile {
+  @include mixins.flex(column, center, center, theme.space("sm"));
+
+  width: 100%;
+  min-height: 7rem;
+  padding: theme.space("lg") theme.space("md");
+  border-radius: theme.$radius-lg;
+  text-decoration: none;
+  color: theme.color("text-inverse");
+  box-shadow: theme.$shadow-sm;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: theme.$shadow-md;
+  }
+
+  &:focus-visible {
+    @include mixins.focus-ring;
+  }
+}
+
+// Cycle a small palette across the subject tiles for a colorful grid.
+.subjectItem:nth-child(8n + 1) .subjectTile {
+  background-image: linear-gradient(135deg, #2563eb, #1d4ed8);
+}
+.subjectItem:nth-child(8n + 2) .subjectTile {
+  background-image: linear-gradient(135deg, #15803d, #0f6a30);
+}
+.subjectItem:nth-child(8n + 3) .subjectTile {
+  background-image: linear-gradient(135deg, #b45309, #92400e);
+}
+.subjectItem:nth-child(8n + 4) .subjectTile {
+  background-image: linear-gradient(135deg, #7c3aed, #5b21b6);
+}
+.subjectItem:nth-child(8n + 5) .subjectTile {
+  background-image: linear-gradient(135deg, #dc2626, #b91c1c);
+}
+.subjectItem:nth-child(8n + 6) .subjectTile {
+  background-image: linear-gradient(135deg, #0891b2, #0e7490);
+}
+.subjectItem:nth-child(8n + 7) .subjectTile {
+  background-image: linear-gradient(135deg, #db2777, #9d174d);
+}
+.subjectItem:nth-child(8n + 8) .subjectTile {
+  background-image: linear-gradient(135deg, #4f46e5, #3730a3);
+}
+
+.subjectIcon {
+  font-size: 2.25rem;
+  line-height: 1;
+}
+
+.subjectName {
+  @include mixins.typography("md", "semibold");
+
+  text-align: center;
+}

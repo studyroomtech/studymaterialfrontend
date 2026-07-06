@@ -1,0 +1,64 @@
+// PaymentModal styling (Requirements 1.18, 1.19, 1.20, 7.5).
+//
+// The component renders a lightweight overlay that shows a "preparing checkout"
+// state (while the Razorpay script loads and the gateway opens) or an error
+// state when the gateway cannot be launched. The Razorpay Checkout overlay
+// renders above this on success. Every value derives from the shared theme and
+// no inline CSS is used.
+
+@use "../../styles/theme" as theme;
+@use "../../styles/mixins" as mixins;
+
+.overlay {
+  @include mixins.flex(row, center, center);
+
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  padding: theme.space("md");
+  background-color: theme.color("overlay");
+  overflow-y: auto;
+}
+
+.dialog {
+  @include mixins.flex(column, flex-start, stretch, theme.space("lg"));
+
+  width: 100%;
+  max-width: 26rem;
+  padding: theme.space("xl");
+  background-color: theme.color("background");
+  border: 1px solid theme.color("border");
+  border-radius: theme.$radius-lg;
+  box-shadow: theme.$shadow-md;
+  text-align: center;
+}
+
+.header {
+  @include mixins.flex(column, flex-start, stretch, theme.space("xs"));
+}
+
+.title {
+  @include mixins.typography("xl", "semibold", theme.$line-height-heading);
+
+  margin: 0;
+  color: theme.color("text");
+}
+
+.description {
+  @include mixins.typography("sm", "regular");
+
+  margin: 0;
+  color: theme.color("text-muted");
+}
+
+.body {
+  @include mixins.flex(column, center, center, theme.space("md"));
+
+  padding-block: theme.space("md");
+}
+
+.actions {
+  @include mixins.flex(row, center, center, theme.space("sm"));
+
+  margin-block-start: theme.space("xs");
+}

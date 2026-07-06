@@ -1,0 +1,68 @@
+// PaidMaterialCard styling (Requirements 1.18, 1.19, 1.20, 7.5, 12.1).
+//
+// All PaidMaterialCard presentation is authored here and derives every value
+// from the shared theme so the card matches the platform's single color
+// palette, typography scale, and spacing scale (no inline CSS).
+
+@use "../../styles/theme" as theme;
+@use "../../styles/mixins" as mixins;
+
+.card {
+  @include mixins.flex(column, space-between, stretch, theme.space("md"));
+
+  height: 100%;
+  padding: theme.space("lg");
+  background-color: theme.color("surface");
+  border: 1px solid theme.color("border");
+  border-radius: theme.$radius-lg;
+  box-shadow: theme.$shadow-sm;
+  transition: box-shadow theme.$transition-base;
+}
+
+.card:hover {
+  box-shadow: theme.$shadow-md;
+}
+
+.content {
+  @include mixins.flex(column, flex-start, stretch, theme.space("xs"));
+}
+
+.title {
+  @include mixins.typography("lg", "semibold", theme.$line-height-heading);
+
+  margin: 0;
+  color: theme.color("text");
+}
+
+.description {
+  @include mixins.typography("sm", "regular");
+
+  margin: 0;
+  color: theme.color("text-muted");
+}
+
+.footer {
+  @include mixins.flex(row, space-between, center, theme.space("md"));
+
+  flex-wrap: wrap;
+}
+
+.price {
+  @include mixins.flex(column, center, flex-start, theme.space("none"));
+
+  margin: 0;
+}
+
+.priceLabel {
+  @include mixins.typography("xs", "medium");
+
+  color: theme.color("text-muted");
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.priceValue {
+  @include mixins.typography("xl", "bold", theme.$line-height-heading);
+
+  color: theme.color("text");
+}

@@ -1,0 +1,52 @@
+// Styling for the ErrorMessage component (Requirements 1.18, 1.20, 7.5).
+
+@use "../../styles/theme" as theme;
+@use "../../styles/mixins" as mixins;
+
+.root {
+  @include mixins.flex(column, flex-start, flex-start, theme.space("sm"));
+
+  width: 100%;
+  padding: theme.space("md") theme.space("lg");
+  border: 1px solid theme.color("danger");
+  border-radius: theme.$radius-md;
+  background-color: theme.color("surface");
+  color: theme.color("text");
+}
+
+.title {
+  @include mixins.typography("md", "semibold", theme.$line-height-heading);
+
+  margin: 0;
+  color: theme.color("danger");
+}
+
+.message {
+  @include mixins.typography("sm", "regular");
+
+  margin: 0;
+  color: theme.color("text-muted");
+}
+
+.retry {
+  @include mixins.typography("sm", "semibold");
+
+  margin-top: theme.space("xs");
+  padding: theme.space("xs") theme.space("md");
+  border: 1px solid theme.color("danger");
+  border-radius: theme.$radius-sm;
+  background-color: transparent;
+  color: theme.color("danger");
+  cursor: pointer;
+  transition: background-color theme.$transition-base,
+    color theme.$transition-base;
+
+  &:hover {
+    background-color: theme.color("danger");
+    color: theme.color("text-inverse");
+  }
+
+  &:focus-visible {
+    @include mixins.focus-ring;
+  }
+}

@@ -1,0 +1,302 @@
+// Admin dashboard page styling (Requirements 1.18, 1.19, 1.20, 7.5).
+//
+// All presentation is authored here and derives every value from the shared
+// theme so the content-management UI matches the platform's single color
+// palette, typography scale, and spacing scale. No inline CSS is used.
+
+@use "../../../styles/theme" as theme;
+@use "../../../styles/mixins" as mixins;
+
+.page {
+  min-height: 100vh;
+  padding-block: theme.space("xl");
+  background-color: theme.color("surface");
+}
+
+.container {
+  @include mixins.container;
+  @include mixins.flex(column, flex-start, stretch, theme.space("xl"));
+}
+
+.header {
+  @include mixins.flex(row, space-between, flex-start, theme.space("md"));
+
+  flex-wrap: wrap;
+}
+
+.headerText {
+  @include mixins.flex(column, flex-start, flex-start, theme.space("xs"));
+}
+
+.title {
+  @include mixins.typography("3xl", "semibold", theme.$line-height-heading);
+
+  margin: 0;
+  color: theme.color("text");
+}
+
+.subtitle {
+  @include mixins.typography("sm", "regular");
+
+  margin: 0;
+  color: theme.color("text-muted");
+}
+
+.feedback {
+  @include mixins.typography("sm", "medium");
+
+  margin: 0;
+  padding: theme.space("sm") theme.space("md");
+  border-radius: theme.$radius-md;
+  border: 1px solid transparent;
+}
+
+.feedbackSuccess {
+  color: theme.color("success");
+  background-color: theme.color("surface-alt");
+  border-color: theme.color("success");
+}
+
+.feedbackError {
+  color: theme.color("danger");
+  background-color: theme.color("surface-alt");
+  border-color: theme.color("danger");
+}
+
+.section {
+  @include mixins.flex(column, flex-start, stretch, theme.space("lg"));
+
+  padding: theme.space("lg");
+  background-color: theme.color("background");
+  border: 1px solid theme.color("border");
+  border-radius: theme.$radius-lg;
+  box-shadow: theme.$shadow-sm;
+}
+
+.sectionTitle {
+  @include mixins.typography("xl", "semibold", theme.$line-height-heading);
+
+  margin: 0;
+  color: theme.color("text");
+}
+
+.form {
+  @include mixins.flex(column, flex-start, stretch, theme.space("md"));
+}
+
+.inlineForm {
+  @include mixins.flex(row, flex-start, flex-end, theme.space("sm"));
+
+  flex-wrap: wrap;
+}
+
+.grow {
+  flex: 1 1 16rem;
+}
+
+.fileField {
+  @include mixins.flex(column, flex-start, stretch, theme.space("xs"));
+}
+
+.fileLabel {
+  @include mixins.typography("sm", "medium");
+
+  color: theme.color("text");
+}
+
+.fileInput {
+  @include mixins.typography("sm", "regular");
+
+  padding: theme.space("sm");
+  color: theme.color("text");
+  background-color: theme.color("surface");
+  border: 1px solid theme.color("border");
+  border-radius: theme.$radius-md;
+}
+
+.fieldError {
+  @include mixins.typography("sm", "medium");
+
+  margin: 0;
+  color: theme.color("danger");
+}
+
+.actions {
+  @include mixins.flex(row, flex-start, center, theme.space("sm"));
+
+  flex-wrap: wrap;
+}
+
+.categoryTypeList,
+.materialList {
+  @include mixins.flex(column, flex-start, stretch, theme.space("md"));
+
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.categoryTypeItem,
+.materialItem {
+  @include mixins.flex(column, flex-start, stretch, theme.space("md"));
+
+  padding: theme.space("md");
+  background-color: theme.color("surface");
+  border: 1px solid theme.color("border");
+  border-radius: theme.$radius-md;
+}
+
+.itemHeader {
+  @include mixins.flex(row, space-between, center, theme.space("sm"));
+
+  flex-wrap: wrap;
+}
+
+.itemName {
+  @include mixins.typography("lg", "semibold");
+
+  margin: 0;
+  color: theme.color("text");
+}
+
+.itemDescription {
+  @include mixins.typography("sm", "regular");
+
+  margin: 0;
+  color: theme.color("text-muted");
+}
+
+.categoryList {
+  @include mixins.flex(column, flex-start, stretch, theme.space("sm"));
+
+  margin: 0;
+  padding-block-start: theme.space("sm");
+  padding-inline: 0;
+  list-style: none;
+  border-block-start: 1px solid theme.color("border");
+}
+
+.categoryRow {
+  @include mixins.flex(row, space-between, center, theme.space("sm"));
+
+  flex-wrap: wrap;
+}
+
+.categoryName {
+  @include mixins.typography("md", "regular");
+
+  color: theme.color("text");
+}
+
+.emptyText {
+  @include mixins.typography("sm", "regular");
+
+  margin: 0;
+  color: theme.color("text-muted");
+}
+
+.tagList {
+  @include mixins.flex(row, flex-start, center, theme.space("sm"));
+
+  flex-wrap: wrap;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tag {
+  @include mixins.flex(row, flex-start, center, theme.space("xs"));
+
+  padding: theme.space("xs") theme.space("sm");
+  color: theme.color("text");
+  background-color: theme.color("surface-alt");
+  border: 1px solid theme.color("border");
+  border-radius: theme.$radius-sm;
+}
+
+.tagName {
+  @include mixins.typography("sm", "medium");
+}
+
+.tagRemove {
+  @include mixins.typography("xs", "medium");
+
+  padding: 0 theme.space("xs");
+  color: theme.color("danger");
+  background: none;
+  border: none;
+  cursor: pointer;
+
+  &:focus-visible {
+    @include mixins.focus-ring;
+  }
+}
+
+.fieldGroupLabel {
+  @include mixins.typography("sm", "semibold");
+
+  margin: 0;
+  color: theme.color("text");
+}
+
+.categoryPicker {
+  @include mixins.flex(column, flex-start, stretch, theme.space("sm"));
+}
+
+.categoryHint {
+  @include mixins.typography("sm", "regular");
+
+  margin: 0;
+  color: theme.color("text-muted");
+}
+
+.categoryChoices {
+  @include mixins.flex(row, flex-start, center, theme.space("sm"));
+
+  flex-wrap: wrap;
+}
+
+.categoryChoice {
+  @include mixins.typography("sm", "medium");
+
+  padding: theme.space("xs") theme.space("sm");
+  color: theme.color("text");
+  background-color: theme.color("surface");
+  border: 1px solid theme.color("border");
+  border-radius: theme.$radius-sm;
+  cursor: pointer;
+
+  &:hover {
+    border-color: theme.color("primary");
+  }
+
+  &:focus-visible {
+    @include mixins.focus-ring;
+  }
+}
+
+.categoryChoiceSelected {
+  color: theme.color("text-inverse");
+  background-color: theme.color("primary");
+  border-color: theme.color("primary");
+}
+
+.select {
+  @include mixins.typography("sm", "regular");
+
+  padding: theme.space("sm");
+  color: theme.color("text");
+  background-color: theme.color("background");
+  border: 1px solid theme.color("border");
+  border-radius: theme.$radius-md;
+
+  &:focus-visible {
+    @include mixins.focus-ring;
+  }
+}
+
+.divider {
+  margin: 0;
+  border: none;
+  border-block-start: 1px solid theme.color("border");
+}

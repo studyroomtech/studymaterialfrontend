@@ -1,0 +1,92 @@
+// Styling for the NotesPreview component (Req 1.18, 1.19, 7.5).
+//
+// Derives entirely from the shared theme. No inline CSS.
+
+@use "../../styles/theme" as theme;
+@use "../../styles/mixins" as mixins;
+
+.preview {
+  @include mixins.flex(column, flex-start, stretch, theme.space("md"));
+
+  width: 100%;
+  padding: theme.space("lg");
+  border: 1px solid theme.color("border");
+  border-radius: theme.$radius-lg;
+  background-color: theme.color("surface");
+  box-shadow: theme.$shadow-sm;
+}
+
+.header {
+  @include mixins.flex(row, space-between, center, theme.space("sm"));
+
+  flex-wrap: wrap;
+}
+
+.heading {
+  @include mixins.typography("lg", "semibold", theme.$line-height-heading);
+
+  margin: 0;
+  color: theme.color("text");
+}
+
+.placeholder {
+  @include mixins.flex(column, flex-start, flex-start, theme.space("sm"));
+}
+
+.hint {
+  @include mixins.typography("sm", "regular");
+
+  margin: 0;
+  color: theme.color("text-muted");
+}
+
+.loading {
+  padding-block: theme.space("xl");
+}
+
+.viewer {
+  width: 100%;
+}
+
+.frame {
+  width: 100%;
+  height: 70vh;
+  min-height: 24rem;
+  border: 1px solid theme.color("border");
+  border-radius: theme.$radius-md;
+  background-color: theme.color("background");
+}
+
+.image {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 70vh;
+  object-fit: contain;
+  border: 1px solid theme.color("border");
+  border-radius: theme.$radius-md;
+  background-color: theme.color("background");
+}
+
+.unsupported {
+  @include mixins.flex(column, flex-start, flex-start, theme.space("sm"));
+
+  padding: theme.space("lg");
+  border: 1px dashed theme.color("border");
+  border-radius: theme.$radius-md;
+}
+
+.newTabLink {
+  @include mixins.typography("sm", "semibold");
+
+  color: theme.color("primary");
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  &:focus-visible {
+    @include mixins.focus-ring;
+  }
+}
