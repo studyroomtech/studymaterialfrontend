@@ -1,31 +1,24 @@
 'use client';
 
-// `usePayment` — orchestrate a Paid Material Payment (Req 12.4–12.7, 6.10).
+// `usePayment` — orchestrate a Paid Material Payment / cart checkout
+// (Req 12.4–12.7, 6.10).
 //
-// The hook coordinates the full payment flow described in the design's "Paid
-// Material Payment Flow (Razorpay)":
-//   1. Ensure a valid learner Access Token via `useAccessToken`. When none is
-//      present (or it is expired/invalid) the Download Gate is surfaced so the
-//      Learner identifies themselves before a Payment can be initiated
-//      (Req 6.1, 6.10).
-//   2. On gate submission, POST name + email to `/api/downloads/gate`, persist
-//      the issued Access Token, and resume the deferred initiation (Req 6.2, 6.5).
-//   3. POST to `/api/materials/:id/payment` with the Bearer token; the backend
-//      resolves the learner, creates a Razorpay order, persists a Payment
-//      Record, and returns the order details (Req 12.4).
-//   4. Drive the PaymentModal, which opens Razorpay Checkout with the returned
-//      order details (Req 12.5).
-//   5. On checkout completion, POST the returned order/payment/signature to
-//      `/api/payments/verify`; entitlement is granted only if server-side
-//      Payment Signature Verification succeeds — the client "success" claim is
-//      never trusted on its own (Req 12.6, 12.7, 12.15).
-//   6. Surface the entitled/failed outcome to the caller.
+// Coordinates the full payment flow:
+//   1. Ensure a valid learner Access Token via `useAccessToken`; otherwise the
+//      Download Gate collects name + email first (Req 6.1, 6.10).
+//   2. On gate submission, POST to `/api/downloads/gate`, persist the token,
+//      and resume the deferred initiation (Req 6.2, 6.5).
+//   3. POST the list of material ids to `/api/payments/initiate`; the backend
+//      resolves the learner, drops Free/already-entitled items, sums the
+//      chargeable prices, creates ONE Razorpay order + Payment Record, and
+//      returns the order details (Req 12.4).
+//   4. Drive the PaymentModal → Razorpay Checkout (Req 12.5).
+//   5. POST the checkout result to `/api/payments/verify`; entitlement is
+//      granted only on server-side signature verification (Req 12.6, 12.7).
 //
-// A `401` from the initiate endpoint means no User Record could be resolved
-// (missing/expired/invalid token): the stored token is cleared and the Download
-// Gate is re-opened so the Learner re-identifies before retrying (Req 6.10).
-// Loading and error states are exposed so callers can drive indicators and
-// messages without clearing user-entered data (Req 7.3, 8.1).
+// A single-material "Pay to unlock" is just a one-item checkout. A `401` on
+// initiate means no User Record could be resolved: the token is cleared and the
+// Download Gate re-opens (Req 6.10).
 
 import { useCallback, useMemo, useRef, useState } from 'react';
 
@@ -39,10 +32,7 @@ import { httpRequest } from '@/utils/http';
 import type { HttpError } from '@/utils/http.types';
 
 import { buildApiUrl } from './apiClient';
-import {
-  API_ROUTES,
-  MATERIAL_PAYMENT_ACTION,
-} from './apiClient.constant';
+import { API_ROUTES } from './apiClient.constant';
 import {
   PAYMENT_AUTH_REQUIRED_STATUS,
   PAYMENT_DISMISSED_MESSAGE,
@@ -69,7 +59,7 @@ export const usePayment = (): UsePaymentResult => {
 
   const [phase, setPhase] = useState<PaymentPhase>(PAYMENT_PHASE.idle);
   const [order, setOrder] = useState<PaymentOrderDetails | null>(null);
-  const [activeMaterialId, setActiveMaterialId] = useState<string | null>(null);
+  const [activeMaterialIds, setActiveMaterialIds] = useState<string[]>([]);
   const [error, setError] = useState<HttpError | null>(null);
   const [failureMessage, setFailureMessage] = useState<string | undefined>(
     undefined,
@@ -77,33 +67,33 @@ export const usePayment = (): UsePaymentResult => {
   const [gateError, setGateError] = useState<string | undefined>(undefined);
   const [isSubmittingGate, setIsSubmittingGate] = useState<boolean>(false);
 
-  // The material awaiting Payment while the Download Gate collects the
+  // The materials awaiting checkout while the Download Gate collects the
   // learner's details; resumed once a valid token is obtained (Req 6.10).
-  const pendingMaterialIdRef = useRef<string | null>(null);
+  const pendingMaterialIdsRef = useRef<string[] | null>(null);
 
-  // POST `/api/materials/:id/payment` to create a Razorpay order + Payment
-  // Record, then open the PaymentModal with the returned order (Req 12.4, 12.5).
+  // POST `/api/payments/initiate` to create a Razorpay order + Payment Record
+  // for the whole cart, then open the PaymentModal (Req 12.4, 12.5).
   const initiatePayment = useCallback(
-    async (materialId: string, accessToken: string): Promise<void> => {
+    async (materialIds: string[], accessToken: string): Promise<void> => {
       setPhase(PAYMENT_PHASE.initiating);
       setError(null);
       setFailureMessage(undefined);
       setOrder(null);
 
-      const url = buildApiUrl(
-        `${API_ROUTES.material}/${encodeURIComponent(materialId)}/${MATERIAL_PAYMENT_ACTION}`,
+      const result = await httpRequest<PaymentInitiateResponse>(
+        buildApiUrl(API_ROUTES.paymentsInitiate),
+        {
+          method: 'POST',
+          headers: {
+            ...JSON_HEADERS,
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: JSON.stringify({ studyMaterialIds: materialIds }),
+        },
       );
 
-      const result = await httpRequest<PaymentInitiateResponse>(url, {
-        method: 'POST',
-        headers: {
-          ...JSON_HEADERS,
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
-
       if (result.ok) {
-        pendingMaterialIdRef.current = null;
+        pendingMaterialIdsRef.current = null;
         setOrder({
           razorpayOrderId: result.data.razorpayOrderId,
           amount: result.data.amount,
@@ -118,13 +108,13 @@ export const usePayment = (): UsePaymentResult => {
       // re-open the Download Gate so the Learner re-identifies (Req 6.10).
       if (result.error.status === PAYMENT_AUTH_REQUIRED_STATUS) {
         clearToken();
-        pendingMaterialIdRef.current = materialId;
+        pendingMaterialIdsRef.current = materialIds;
         setPhase(PAYMENT_PHASE.gate);
         return;
       }
 
-      // Other initiation failures (e.g. 422 free material, 409 already
-      // entitled) are surfaced so the caller can render a message (Req 8.1).
+      // Other initiation failures (e.g. 422 free, 409 already entitled) are
+      // surfaced so the caller can render a message (Req 8.1).
       setError(result.error);
       setPhase(PAYMENT_PHASE.failed);
       setFailureMessage(result.error.message);
@@ -132,26 +122,37 @@ export const usePayment = (): UsePaymentResult => {
     [clearToken],
   );
 
-  const startPayment = useCallback(
-    (materialId: string): void => {
-      setActiveMaterialId(materialId);
+  const startCheckout = useCallback(
+    (materialIds: string[]): void => {
+      setActiveMaterialIds(materialIds);
       setError(null);
       setFailureMessage(undefined);
       setGateError(undefined);
 
+      if (materialIds.length === 0) {
+        return;
+      }
+
       // A valid Access Token lets initiation proceed without the gate (Req 12.4).
       if (hasValidToken && token !== null) {
-        pendingMaterialIdRef.current = materialId;
-        void initiatePayment(materialId, token);
+        pendingMaterialIdsRef.current = materialIds;
+        void initiatePayment(materialIds, token);
         return;
       }
 
       // No valid token: surface the Download Gate and defer initiation so a
       // User Record (email) exists before a Payment is created (Req 6.1, 6.10).
-      pendingMaterialIdRef.current = materialId;
+      pendingMaterialIdsRef.current = materialIds;
       setPhase(PAYMENT_PHASE.gate);
     },
     [hasValidToken, token, initiatePayment],
+  );
+
+  const startPayment = useCallback(
+    (materialId: string): void => {
+      startCheckout([materialId]);
+    },
+    [startCheckout],
   );
 
   const submitGate = useCallback(
@@ -176,13 +177,12 @@ export const usePayment = (): UsePaymentResult => {
         return;
       }
 
-      // Persist the issued token and resume the deferred initiation with the
-      // fresh token (Req 6.2, 6.5).
+      // Persist the issued token and resume the deferred initiation (Req 6.2, 6.5).
       setToken(result.data.accessToken);
 
-      const materialId = pendingMaterialIdRef.current;
-      if (materialId !== null) {
-        void initiatePayment(materialId, result.data.accessToken);
+      const materialIds = pendingMaterialIdsRef.current;
+      if (materialIds !== null && materialIds.length > 0) {
+        void initiatePayment(materialIds, result.data.accessToken);
       } else {
         setPhase(PAYMENT_PHASE.idle);
       }
@@ -191,7 +191,7 @@ export const usePayment = (): UsePaymentResult => {
   );
 
   const cancelGate = useCallback((): void => {
-    pendingMaterialIdRef.current = null;
+    pendingMaterialIdsRef.current = null;
     setGateError(undefined);
     setPhase(PAYMENT_PHASE.idle);
   }, []);
@@ -250,10 +250,10 @@ export const usePayment = (): UsePaymentResult => {
   }, []);
 
   const reset = useCallback((): void => {
-    pendingMaterialIdRef.current = null;
+    pendingMaterialIdsRef.current = null;
     setPhase(PAYMENT_PHASE.idle);
     setOrder(null);
-    setActiveMaterialId(null);
+    setActiveMaterialIds([]);
     setError(null);
     setFailureMessage(undefined);
     setGateError(undefined);
@@ -262,11 +262,14 @@ export const usePayment = (): UsePaymentResult => {
   const isGateOpen = phase === PAYMENT_PHASE.gate;
   const isModalOpen =
     phase === PAYMENT_PHASE.checkout || phase === PAYMENT_PHASE.verifying;
+  const activeMaterialId = activeMaterialIds[0] ?? null;
 
   return useMemo<UsePaymentResult>(
     () => ({
       startPayment,
+      startCheckout,
       activeMaterialId,
+      activeMaterialIds,
       phase,
       isGateOpen,
       isSubmittingGate,
@@ -287,7 +290,9 @@ export const usePayment = (): UsePaymentResult => {
     }),
     [
       startPayment,
+      startCheckout,
       activeMaterialId,
+      activeMaterialIds,
       phase,
       isGateOpen,
       isSubmittingGate,

@@ -23,3 +23,7 @@ export const NAV_LINKS = [
 // holds `role_admin`. Points at the content-management dashboard where an
 // admin adds/edits study materials and manages categories (Req 10.4, 11).
 export const ADMIN_NAV_LINK = { label: "Manage", href: "/admin/dashboard" } as const;
+
+// Cart navigation destination, rendered with a live item-count badge. Points at
+// the cart page where the Learner reviews items and checks out.
+export const CART_NAV_LINK = { label: "Cart", href: "/cart" } as const;

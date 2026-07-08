@@ -13,9 +13,11 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { useAccessToken } from "../../hooks/useAccessToken";
+import { useCart } from "../../hooks/useCart";
 import styles from "./Navigation.module.scss";
 import {
   ADMIN_NAV_LINK,
+  CART_NAV_LINK,
   NAV_BRAND_LABEL,
   NAV_LINKS,
 } from "./Navigation.constant";
@@ -38,6 +40,7 @@ function Navigation({ className }: NavigationProps) {
   const rootClassName = [styles.root, className].filter(Boolean).join(" ");
 
   const { isAdmin } = useAccessToken();
+  const { count: cartCount } = useCart();
   // Only reflect admin state after mount so the server-rendered markup (which
   // has no access to the stored token) matches the initial client render,
   // avoiding a hydration mismatch; the Manage link then appears for admins.
@@ -70,6 +73,26 @@ function Navigation({ className }: NavigationProps) {
               </li>
             );
           })}
+          <li className={styles.item}>
+            <Link
+              href={CART_NAV_LINK.href}
+              className={
+                isActivePath(pathname, CART_NAV_LINK.href)
+                  ? `${styles.link} ${styles.active}`
+                  : styles.link
+              }
+              aria-current={
+                isActivePath(pathname, CART_NAV_LINK.href) ? "page" : undefined
+              }
+            >
+              {CART_NAV_LINK.label}
+              {hasMounted && cartCount > 0 ? (
+                <span className={styles.badge} aria-label={`${cartCount} items in cart`}>
+                  {cartCount}
+                </span>
+              ) : null}
+            </Link>
+          </li>
         </ul>
       </nav>
     </header>

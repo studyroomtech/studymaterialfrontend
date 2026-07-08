@@ -1,0 +1,119 @@
+// Styling for the Footer component (Requirements 1.18, 1.19).
+//
+// A dark navy band matching the platform's primary palette. Layout and spacing
+// derive from the shared theme scales; the dark surface and hairline rules use
+// literal navy/white tints local to this presentational band.
+
+@use "../../styles/theme" as theme;
+@use "../../styles/mixins" as mixins;
+
+// Local tints for the dark band (kept alongside the hero's dark navy accent).
+$footer-bg: #16273d;
+$hairline: rgba(255, 255, 255, 0.22);
+$muted-text: rgba(255, 255, 255, 0.72);
+
+.root {
+  width: 100%;
+  background-color: $footer-bg;
+  color: theme.color("text-inverse");
+}
+
+.inner {
+  @include mixins.container;
+  @include mixins.flex(column, flex-start, stretch, theme.space("md"));
+
+  padding-block: theme.space("xl");
+}
+
+// ---- Top contact row -----------------------------------------------------
+.contact {
+  @include mixins.flex(row, center, center, theme.space("xl"));
+
+  flex-wrap: wrap;
+  text-align: center;
+}
+
+.contactItem {
+  @include mixins.typography("sm", "regular");
+
+  color: $muted-text;
+}
+
+.contactPrefix {
+  color: theme.color("text-inverse");
+}
+
+.contactLink {
+  color: $muted-text;
+  text-decoration: none;
+  word-break: break-word;
+
+  &:hover {
+    color: theme.color("text-inverse");
+    text-decoration: underline;
+  }
+
+  &:focus-visible {
+    @include mixins.focus-ring;
+
+    border-radius: theme.$radius-sm;
+  }
+}
+
+// ---- Divider -------------------------------------------------------------
+.rule {
+  width: 100%;
+  height: 0;
+  margin: 0;
+  border: 0;
+  border-block-start: 1px solid $hairline;
+}
+
+// ---- Quote ---------------------------------------------------------------
+.quote {
+  margin: 0;
+  padding-block: theme.space("sm");
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: theme.font-size("2xl");
+  font-style: italic;
+  font-weight: theme.font-weight("regular");
+  line-height: theme.$line-height-heading;
+  text-align: center;
+  color: theme.color("text-inverse");
+
+  @include mixins.respond-down("md") {
+    font-size: theme.font-size("xl");
+  }
+}
+
+// ---- Brand row -----------------------------------------------------------
+.brand {
+  @include mixins.flex(row, center, center, theme.space("md"));
+
+  width: 100%;
+}
+
+.brandRule {
+  flex: 1 1 auto;
+  height: 1px;
+  background-color: $hairline;
+}
+
+.brandMark {
+  @include mixins.flex(row, center, center, theme.space("sm"));
+
+  flex: 0 0 auto;
+  color: $muted-text;
+}
+
+.logo {
+  width: 2.25rem;
+  height: 1.875rem;
+}
+
+.brandName {
+  @include mixins.typography("sm", "semibold");
+
+  letter-spacing: 0.15em;
+  color: $muted-text;
+}

@@ -14,9 +14,14 @@ import { API_ROUTES } from './apiClient.constant';
 import type { AsyncState } from './apiHooks.types';
 import type { PaidMaterialsResult } from './usePaidMaterials.types';
 import { useApiResource } from './useApiResource';
+import { useAccessToken } from '../useAccessToken';
 
 export const usePaidMaterials = (): AsyncState<PaidMaterialsResult> => {
+  // Send the learner Access Token so the Backend can flag already-purchased
+  // materials (`isEntitled`) for the current Learner.
+  const { token } = useAccessToken();
   return useApiResource<PaidMaterialsResult>(
     buildApiUrl(API_ROUTES.materialsPaid),
+    { authToken: token },
   );
 };

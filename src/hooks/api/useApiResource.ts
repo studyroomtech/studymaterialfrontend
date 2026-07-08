@@ -25,7 +25,7 @@ export const useApiResource = <TData>(
   url: string | null,
   options: UseApiResourceOptions = {},
 ): AsyncState<TData> => {
-  const { timeoutMs } = options;
+  const { timeoutMs, authToken } = options;
 
   const [data, setData] = useState<TData | null>(null);
   // Begin in the loading state whenever there is a URL to fetch so a loading
@@ -47,9 +47,14 @@ export const useApiResource = <TData>(
     // visible until this request succeeds (Req 3.9, 8.1).
     setError(null);
 
+    const headers: Record<string, string> = { Accept: 'application/json' };
+    if (authToken !== null && authToken !== undefined && authToken.length > 0) {
+      headers.Authorization = `Bearer ${authToken}`;
+    }
+
     httpRequest<TData>(url, {
       signal: controller.signal,
-      headers: { Accept: 'application/json' },
+      headers,
       timeoutMs,
     }).then((result) => {
       if (!active) {
@@ -70,7 +75,7 @@ export const useApiResource = <TData>(
       active = false;
       controller.abort();
     };
-  }, [url, timeoutMs]);
+  }, [url, timeoutMs, authToken]);
 
   return { data, isLoading, error };
 };

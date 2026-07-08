@@ -51,6 +51,7 @@ import {
 } from "./page.constant";
 import Button from "../components/Button/Button";
 import EmptyState from "../components/EmptyState/EmptyState";
+import Footer from "../components/Footer/Footer";
 import ErrorMessage from "../components/ErrorMessage/ErrorMessage";
 import Input from "../components/Input/Input";
 import LoadingIndicator from "../components/LoadingIndicator/LoadingIndicator";
@@ -253,6 +254,8 @@ function HomePage() {
           </section>
         ) : null}
       </div>
+
+      <Footer />
     </div>
   );
 }

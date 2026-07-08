@@ -18,7 +18,9 @@ import Button from "../Button/Button";
 import { formatPrice } from "../../utils/price";
 import styles from "./PaidMaterialCard.module.scss";
 import {
+  ADD_TO_CART_LABEL,
   BUY_ACTION_LABEL,
+  IN_CART_LABEL,
   PRICE_LABEL_PREFIX,
   VIEW_ACTION_LABEL,
 } from "./PaidMaterialCard.constant";
@@ -43,6 +45,8 @@ function PaidMaterialCard({
   onBuy,
   onView,
   isBusy = false,
+  onAddToCart,
+  isInCart = false,
   className,
 }: PaidMaterialCardProps) {
   // Format the Price against its Currency; a paid amount always renders as a
@@ -74,13 +78,24 @@ function PaidMaterialCard({
           <span className={styles.priceLabel}>{PRICE_LABEL_PREFIX}</span>
           <span className={styles.priceValue}>{formattedPrice}</span>
         </p>
-        <Button
-          variant={isEntitled ? "secondary" : "primary"}
-          onClick={handleAction}
-          isLoading={isBusy}
-        >
-          {actionLabel}
-        </Button>
+        <div className={styles.actions}>
+          {!isEntitled && onAddToCart ? (
+            <Button
+              variant="secondary"
+              onClick={() => onAddToCart(materialId)}
+              disabled={isInCart || isBusy}
+            >
+              {isInCart ? IN_CART_LABEL : ADD_TO_CART_LABEL}
+            </Button>
+          ) : null}
+          <Button
+            variant={isEntitled ? "secondary" : "primary"}
+            onClick={handleAction}
+            isLoading={isBusy}
+          >
+            {actionLabel}
+          </Button>
+        </div>
       </div>
     </article>
   );

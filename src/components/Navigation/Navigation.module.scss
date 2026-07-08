@@ -75,3 +75,19 @@
   color: theme.color("primary");
   background-color: theme.color("surface-alt");
 }
+
+.badge {
+  @include mixins.typography("xs", "bold");
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  margin-inline-start: theme.space("xs");
+  padding-inline: theme.space("xs");
+  border-radius: 999px;
+  background-color: theme.color("primary");
+  color: theme.color("text-inverse");
+  line-height: 1;
+}

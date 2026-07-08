@@ -20,6 +20,8 @@ export const API_ROUTES = {
   materialsPaid: '/api/materials/paid',
   // `paymentsVerify` -> POST /api/payments/verify        (Req 12.6, 12.7)
   paymentsVerify: '/api/payments/verify',
+  // `paymentsInitiate` -> POST /api/payments/initiate    (cart checkout)
+  paymentsInitiate: '/api/payments/initiate',
   // `accountLogin` -> POST /api/account/login            (email-only sign-in)
   accountLogin: '/api/account/login',
 } as const;

@@ -33,6 +33,8 @@ import { useDownload } from "@/hooks/api/useDownload";
 import { usePaidMaterials } from "@/hooks/api/usePaidMaterials";
 import { usePayment } from "@/hooks/api/usePayment";
 import { PAYMENT_PHASE } from "@/hooks/api/usePayment.constant";
+import { useCart } from "@/hooks/useCart";
+import { DEFAULT_CURRENCY } from "@/utils/price.constant";
 
 import styles from "./page.module.scss";
 import {
@@ -52,6 +54,7 @@ function PaidMaterialsPage() {
   const { data, isLoading, error } = usePaidMaterials();
   const payment = usePayment();
   const download = useDownload();
+  const cart = useCart();
 
   // Payment Entitlements granted during this session. The listing endpoint does
   // not report entitlement, so a card starts as "Buy" and flips to
@@ -163,7 +166,8 @@ function PaidMaterialsPage() {
         {showResults ? (
           <ul className={styles.cardList}>
             {materials.map((material) => {
-              const entitled = entitledIds.has(material.id);
+              const entitled =
+                material.isEntitled === true || entitledIds.has(material.id);
               const isActive = payment.activeMaterialId === material.id;
               const isBusy =
                 (isActive && (payment.isInitiating || payment.isVerifying)) ||
@@ -181,6 +185,15 @@ function PaidMaterialsPage() {
                     onBuy={handleBuy}
                     onView={handleView}
                     isBusy={isBusy}
+                    isInCart={cart.has(material.id)}
+                    onAddToCart={() =>
+                      cart.addItem({
+                        id: material.id,
+                        title: material.title,
+                        priceAmount: material.priceAmount ?? 0,
+                        currency: material.currency ?? DEFAULT_CURRENCY,
+                      })
+                    }
                   />
                 </li>
               );

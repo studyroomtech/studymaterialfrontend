@@ -14,10 +14,7 @@ next-env.d.ts
 # testing
 /coverage
 
-# env files (keep the example)
-.env
-.env.*
-!.env.example
+
 
 # logs
 *.log

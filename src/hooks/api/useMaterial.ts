@@ -14,10 +14,16 @@ import { buildApiUrl } from './apiClient';
 import { API_ROUTES, MATERIAL_REQUEST_TIMEOUT_MS } from './apiClient.constant';
 import type { AsyncState, MaterialDetail } from './apiHooks.types';
 import { useApiResource } from './useApiResource';
+import { useAccessToken } from '../useAccessToken';
 
 export const useMaterial = (
   materialId: string | null,
 ): AsyncState<MaterialDetail> => {
+  // Send the learner Access Token so the Backend can resolve the caller and
+  // evaluate the Paid-Material entitlement gate — an entitled learner then
+  // receives the content (200) instead of a 403 PAYMENT_REQUIRED.
+  const { token } = useAccessToken();
+
   const url =
     materialId !== null && materialId.length > 0
       ? buildApiUrl(`${API_ROUTES.material}/${encodeURIComponent(materialId)}`)
@@ -25,5 +31,6 @@ export const useMaterial = (
 
   return useApiResource<MaterialDetail>(url, {
     timeoutMs: MATERIAL_REQUEST_TIMEOUT_MS,
+    authToken: token,
   });
 };

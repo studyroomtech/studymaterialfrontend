@@ -30,6 +30,12 @@ export interface PaidMaterial {
   /** Always `true` for entries in the Paid Materials listing (Req 12.1). */
   isPaid: boolean;
   /**
+   * Whether the current Learner already holds a Payment Entitlement for this
+   * material (resolved server-side from the Access Token). `true` shows
+   * View/Download instead of Buy (Req 12.3).
+   */
+  isEntitled?: boolean;
+  /**
    * Optional Tags grouped by Category Type, when the Backend API includes them
    * for filtering/display within the Paid Materials Tab.
    */

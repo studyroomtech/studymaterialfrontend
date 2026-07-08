@@ -55,6 +55,14 @@ export interface PaidMaterialCardProps {
    * Payment is being initiated or content is being fetched).
    */
   isBusy?: boolean;
+  /**
+   * Called with the material id to add it to the cart. When provided (and the
+   * Learner is not yet entitled) the card renders an "Add to cart" action
+   * alongside Buy.
+   */
+  onAddToCart?: (materialId: string) => void;
+  /** Whether this material is already in the cart (drives the add-to-cart label). */
+  isInCart?: boolean;
   /** Optional additional class name applied to the card root element. */
   className?: string;
 }

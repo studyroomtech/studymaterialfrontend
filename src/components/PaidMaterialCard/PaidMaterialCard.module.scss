@@ -66,3 +66,9 @@
 
   color: theme.color("text");
 }
+
+.actions {
+  @include mixins.flex(row, flex-start, center, theme.space("sm"));
+
+  flex-wrap: wrap;
+}

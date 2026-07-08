@@ -38,7 +38,9 @@ import { usePayment } from "@/hooks/api/usePayment";
 import { PAYMENT_PHASE } from "@/hooks/api/usePayment.constant";
 import { useDownload } from "@/hooks/api/useDownload";
 import { useMaterial } from "@/hooks/api/useMaterial";
+import { useCart } from "@/hooks/useCart";
 import { formatPrice } from "@/utils/price";
+import { DEFAULT_CURRENCY } from "@/utils/price.constant";
 import type { HttpError } from "@/utils/http.types";
 
 import styles from "./page.module.scss";
@@ -57,6 +59,8 @@ import {
   NO_DESCRIPTION_TEXT,
   NOT_FOUND_ERROR_MESSAGE,
   NOT_FOUND_STATUS,
+  ADD_TO_CART_LABEL,
+  IN_CART_LABEL,
   PAY_ACTION_LABEL,
   PAYMENT_FAILED_MESSAGE,
   PAYMENT_FAILED_TITLE,
@@ -306,6 +310,7 @@ function MaterialContent({
 function PaymentRequiredGate({ materialId, onEntitled }: PaymentRequiredGateProps) {
   const { data: paidData, isLoading: isPriceLoading } = usePaidMaterials();
   const payment = usePayment();
+  const cart = useCart();
 
   const { isEntitled, reset } = payment;
 
@@ -371,6 +376,20 @@ function PaymentRequiredGate({ materialId, onEntitled }: PaymentRequiredGateProp
           isLoading={isPayBusy}
         >
           {PAY_ACTION_LABEL}
+        </Button>
+        <Button
+          variant="secondary"
+          disabled={cart.has(materialId) || paidMaterial === null}
+          onClick={() =>
+            cart.addItem({
+              id: materialId,
+              title: paidMaterial?.title ?? heading,
+              priceAmount: paidMaterial?.priceAmount ?? 0,
+              currency: paidMaterial?.currency ?? DEFAULT_CURRENCY,
+            })
+          }
+        >
+          {cart.has(materialId) ? IN_CART_LABEL : ADD_TO_CART_LABEL}
         </Button>
       </div>
 

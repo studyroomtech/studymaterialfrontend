@@ -81,8 +81,16 @@ export interface UsePaymentResult {
    * opened and initiation is deferred until it is submitted (Req 6.1, 6.10).
    */
   startPayment: (materialId: string) => void;
+  /**
+   * Begin a Payment for a cart of Paid Materials at once. Same flow as
+   * {@link startPayment} but the whole list is checked out in a single Razorpay
+   * order (Free / already-entitled items are dropped server-side).
+   */
+  startCheckout: (materialIds: string[]) => void;
   /** The Paid Material a Payment is currently in progress for, or `null`. */
   activeMaterialId: string | null;
+  /** All Paid Materials the in-progress Payment covers (the cart). */
+  activeMaterialIds: string[];
   /** The current phase of the Payment orchestration. */
   phase: PaymentPhase;
 

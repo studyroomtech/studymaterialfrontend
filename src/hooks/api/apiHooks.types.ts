@@ -30,6 +30,13 @@ export interface AsyncState<TData> {
 export interface UseApiResourceOptions {
   /** Overrides the shared 30s request timeout enforced by `utils/http.ts`. */
   timeoutMs?: number;
+  /**
+   * When provided, sent as an `Authorization: Bearer <token>` header so the
+   * Backend API can resolve the learner (e.g. to evaluate the Paid-Material
+   * entitlement gate on `GET /api/materials/:id`). A change in the token
+   * re-fetches the resource.
+   */
+  authToken?: string | null;
 }
 
 /** The Material Catalog structure returned by `GET /api/catalog` (Req 3.1, 2.5). */

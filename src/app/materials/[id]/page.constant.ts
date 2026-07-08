@@ -78,6 +78,12 @@ export const PRICE_LABEL = "Price";
 /** Label for the pay call-to-action that starts the Razorpay payment (Req 12.3, 12.5). */
 export const PAY_ACTION_LABEL = "Pay to unlock";
 
+/** Label for adding the locked Paid Material to the cart. */
+export const ADD_TO_CART_LABEL = "Add to cart";
+
+/** Label shown when the Paid Material is already in the cart. */
+export const IN_CART_LABEL = "In cart";
+
 /** Accessible label announced while the Paid Material's Price is being resolved. */
 export const PRICE_LOADING_LABEL = "Loading price…";
 
