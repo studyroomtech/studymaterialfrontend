@@ -26,6 +26,8 @@ export const API_ROUTES = {
   accountLogin: '/api/account/login',
   // `accountPassword` -> /api/account/password           (optional account password)
   accountPassword: '/api/account/password',
+  // `accountMe` -> GET /api/account/me                   (authoritative profile + protection status)
+  accountMe: '/api/account/me',
 } as const;
 
 // Sub-path appended to a material route to reach its download endpoint, e.g.

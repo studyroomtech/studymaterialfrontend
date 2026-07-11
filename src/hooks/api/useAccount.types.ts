@@ -21,6 +21,18 @@ export interface AccountLoginResponse {
 }
 
 /**
+ * Response body of `GET /api/account/me`: the signed-in Learner's profile and
+ * the authoritative `passwordProtected` status derived from the DB, used to
+ * reconcile the client's cached protection state with the source of truth.
+ */
+export interface AccountMeResponse {
+  name: string;
+  email: string;
+  roles: string[];
+  passwordProtected: boolean;
+}
+
+/**
  * Value returned by {@link useAccount}. Exposes the current sign-in state and
  * the email-only `login`/`logout` operations. `login` persists the issued
  * learner Access Token (shared with the Download Gate identity); `logout`

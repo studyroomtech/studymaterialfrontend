@@ -24,7 +24,7 @@
 // A shared `{ isLoading, error }` state drives the sign-in loading indicator
 // and error message while preserving any entered email on failure (Req 7.3, 8.1).
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { httpRequest } from '@/utils/http';
 import type { HttpError } from '@/utils/http.types';
@@ -37,6 +37,7 @@ import {
 } from './useAccount.constant';
 import type {
   AccountLoginResponse,
+  AccountMeResponse,
   UseAccountResult,
 } from './useAccount.types';
 import { useAccessToken } from '../useAccessToken';
@@ -104,13 +105,56 @@ const clearProtectionStatus = (): void => {
 };
 
 export const useAccount = (): UseAccountResult => {
-  const { name, email, hasValidToken, setToken, clearToken } = useAccessToken();
+  const { token, name, email, hasValidToken, setToken, clearToken } =
+    useAccessToken();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<HttpError | null>(null);
   const [passwordProtected, setPasswordProtected] = useState<boolean | null>(
     () => readProtectionStatus(),
   );
+
+  // Reconcile the protection status with the source of truth. The persisted
+  // tri-state can drift from the DB (e.g. a password was set on another device,
+  // or a token predates the password), which would wrongly show/hide the
+  // "secure your account" prompt. Whenever a valid token is present, fetch the
+  // authoritative profile from `/api/account/me` and adopt its
+  // `passwordProtected` value; a 401 means the token is stale, so clear it.
+  useEffect(() => {
+    if (!hasValidToken || token === null) {
+      return;
+    }
+    let cancelled = false;
+    void (async () => {
+      const result = await httpRequest<AccountMeResponse>(
+        buildApiUrl(API_ROUTES.accountMe),
+        {
+          method: 'GET',
+          headers: { ...JSON_HEADERS, Authorization: `Bearer ${token}` },
+          // Reconciliation is a background check; surface no toast on failure.
+          suppressErrorToast: true,
+        },
+      );
+      if (cancelled) {
+        return;
+      }
+      if (result.ok) {
+        writeProtectionStatus(result.data.passwordProtected);
+        setPasswordProtected(result.data.passwordProtected);
+        return;
+      }
+      // A stale/invalid token: clear it so the signed-in view drops back to the
+      // sign-in form (which will require the password for a protected account).
+      if (result.error.status === 401) {
+        clearToken();
+        clearProtectionStatus();
+        setPasswordProtected(null);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [hasValidToken, token, clearToken]);
 
   const login = useCallback(
     async (
