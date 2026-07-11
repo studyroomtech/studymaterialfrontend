@@ -166,6 +166,7 @@ function CartPage() {
         onSubmit={payment.submitGate}
         onCancel={payment.cancelGate}
         isSubmitting={payment.isSubmittingGate}
+        requirePassword={payment.requirePassword}
         submitError={payment.gateError}
       />
 

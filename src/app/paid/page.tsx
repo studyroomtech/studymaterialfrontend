@@ -209,6 +209,7 @@ function PaidMaterialsPage() {
         onSubmit={payment.submitGate}
         onCancel={payment.cancelGate}
         isSubmitting={payment.isSubmittingGate}
+        requirePassword={payment.requirePassword}
         submitError={payment.gateError}
       />
 
@@ -219,6 +220,7 @@ function PaidMaterialsPage() {
         onSubmit={download.submitGate}
         onCancel={download.cancelGate}
         isSubmitting={download.isSubmittingGate}
+        requirePassword={download.requirePassword}
         submitError={download.gateError}
       />
 

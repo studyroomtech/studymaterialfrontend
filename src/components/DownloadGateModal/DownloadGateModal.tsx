@@ -32,6 +32,10 @@ import {
   NAME_FIELD_ID,
   NAME_LABEL,
   NAME_PLACEHOLDER,
+  PASSWORD_FIELD_ID,
+  PASSWORD_LABEL,
+  PASSWORD_PLACEHOLDER,
+  PASSWORD_REQUIRED_DESCRIPTION,
   SUBMIT_LABEL,
 } from "./DownloadGateModal.constant";
 import type {
@@ -53,22 +57,36 @@ function DownloadGateModal({
   onSubmit,
   onCancel,
   isSubmitting = false,
+  requirePassword = false,
   submitError,
   className,
 }: DownloadGateModalProps) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [errors, setErrors] = useState<DownloadGateFieldErrors>({});
 
   // Reset the form each time the gate opens so a fresh prompt starts clean and
-  // stale validation messages do not linger between downloads.
+  // stale validation messages do not linger between downloads. The password is
+  // also cleared; when `requirePassword` flips true within the same open
+  // session (an existing modal), the name/email stay because `isOpen` did not
+  // change — only the password field is newly revealed.
   useEffect(() => {
     if (isOpen) {
       setName("");
       setEmail("");
+      setPassword("");
       setErrors({});
     }
   }, [isOpen]);
+
+  // Move focus to the password field the moment it is revealed so the Learner
+  // can type their password without an extra click.
+  useEffect(() => {
+    if (isOpen && requirePassword && typeof document !== "undefined") {
+      document.getElementById(PASSWORD_FIELD_ID)?.focus();
+    }
+  }, [isOpen, requirePassword]);
 
   // Move focus to the first field when the gate opens (accessibility). The
   // field is located by id so the shared Input component needs no ref support.
@@ -93,10 +111,13 @@ function DownloadGateModal({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, onCancel]);
 
-  const isValid = useMemo(
-    () => validateName(name).valid && validateEmail(email).valid,
-    [name, email],
-  );
+  const isValid = useMemo(() => {
+    const baseValid = validateName(name).valid && validateEmail(email).valid;
+    // When the gate is prompting for a password, it must be non-empty too. No
+    // length bound is enforced client-side so a wrong-length password is
+    // reported by the Backend as a failed password rather than blocked here.
+    return requirePassword ? baseValid && password.length > 0 : baseValid;
+  }, [name, email, password, requirePassword]);
 
   if (!isOpen) {
     return null;
@@ -109,17 +130,24 @@ function DownloadGateModal({
     const emailResult = validateEmail(email);
 
     // Block the download until both fields are valid (Req 6.1): surface the
-    // per-field reasons and do not emit the submission.
-    if (!nameResult.valid || !emailResult.valid) {
+    // per-field reasons and do not emit the submission. When a password is
+    // required it must be non-empty.
+    const passwordMissing = requirePassword && password.length === 0;
+    if (!nameResult.valid || !emailResult.valid || passwordMissing) {
       setErrors({
         name: nameResult.valid ? undefined : nameResult.reason,
         email: emailResult.valid ? undefined : emailResult.reason,
+        password: passwordMissing ? "Enter your password." : undefined,
       });
       return;
     }
 
     setErrors({});
-    onSubmit({ name: name.trim(), email: email.trim() });
+    onSubmit({
+      name: name.trim(),
+      email: email.trim(),
+      ...(requirePassword ? { password } : {}),
+    });
   };
 
   const handleOverlayClick = (): void => {
@@ -144,7 +172,7 @@ function DownloadGateModal({
             {DIALOG_TITLE}
           </h2>
           <p id={DIALOG_DESCRIPTION_ID} className={styles.description}>
-            {DIALOG_DESCRIPTION}
+            {requirePassword ? PASSWORD_REQUIRED_DESCRIPTION : DIALOG_DESCRIPTION}
           </p>
         </header>
 
@@ -185,6 +213,26 @@ function DownloadGateModal({
               }
             }}
           />
+
+          {requirePassword && (
+            <Input
+              id={PASSWORD_FIELD_ID}
+              label={PASSWORD_LABEL}
+              name="password"
+              type="password"
+              autoComplete="current-password"
+              placeholder={PASSWORD_PLACEHOLDER}
+              value={password}
+              error={errors.password}
+              disabled={isSubmitting}
+              onChange={(event) => {
+                setPassword(event.target.value);
+                if (errors.password) {
+                  setErrors((prev) => ({ ...prev, password: undefined }));
+                }
+              }}
+            />
+          )}
 
           {submitError && (
             <p className={styles.submitError} role="alert">

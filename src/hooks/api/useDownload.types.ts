@@ -81,6 +81,12 @@ export interface UseDownloadResult {
   error: HttpError | null;
   /** A user-facing gate submission error message for the modal (Req 8.1). */
   gateError?: string;
+  /**
+   * When true, the submitted email resolved to a Password-Protected Account:
+   * the Download Gate should reveal a password field and require it before the
+   * submission can succeed.
+   */
+  requirePassword: boolean;
 
   /**
    * Request an inline preview URL for the given Study Material. Reuses the same

@@ -10,6 +10,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import {
+  ACCESS_TOKEN_CHANGED_EVENT,
   ACCESS_TOKEN_COOKIE_MAX_AGE_SECONDS,
   ACCESS_TOKEN_COOKIE_NAME,
   ACCESS_TOKEN_STORAGE_KEY,
@@ -22,6 +23,19 @@ import type {
 
 /** Whether a browser environment (with `window`) is available. */
 const isBrowser = (): boolean => typeof window !== 'undefined';
+
+/**
+ * Notify every `useAccessToken` instance in the current tab that the token
+ * changed. The `storage` event does not fire in the tab that made the change,
+ * so this custom event keeps in-tab consumers (account page, navigation, etc.)
+ * in sync immediately after sign-in/sign-out without a refresh.
+ */
+const broadcastTokenChange = (): void => {
+  if (!isBrowser()) {
+    return;
+  }
+  window.dispatchEvent(new Event(ACCESS_TOKEN_CHANGED_EVENT));
+};
 
 /** Mirror the Access Token to a cookie so it is also available as a cookie. */
 const writeTokenCookie = (token: string): void => {
@@ -155,19 +169,28 @@ export const useAccessToken = (): UseAccessTokenResult => {
     setCheckedAt(Date.now());
   }, []);
 
-  // Keep the hook in sync when the token changes in another browser tab.
+  // Keep the hook in sync when the token changes in another browser tab
+  // (`storage`) or elsewhere in the current tab (custom event), so all
+  // consumers reflect a sign-in/sign-out without a page refresh.
   useEffect(() => {
     if (!isBrowser()) {
       return undefined;
     }
+    const resync = (): void => {
+      setTokenState(readStoredToken());
+      setCheckedAt(Date.now());
+    };
     const handleStorage = (event: StorageEvent): void => {
       if (event.key === ACCESS_TOKEN_STORAGE_KEY) {
-        setTokenState(readStoredToken());
-        setCheckedAt(Date.now());
+        resync();
       }
     };
     window.addEventListener('storage', handleStorage);
-    return () => window.removeEventListener('storage', handleStorage);
+    window.addEventListener(ACCESS_TOKEN_CHANGED_EVENT, resync);
+    return () => {
+      window.removeEventListener('storage', handleStorage);
+      window.removeEventListener(ACCESS_TOKEN_CHANGED_EVENT, resync);
+    };
   }, []);
 
   // Schedule a re-check exactly when the current token expires so the Download
@@ -201,6 +224,8 @@ export const useAccessToken = (): UseAccessTokenResult => {
     writeTokenCookie(next);
     setTokenState(next);
     setCheckedAt(Date.now());
+    // Notify other in-tab consumers (e.g. the navigation) so they re-sync.
+    broadcastTokenChange();
   }, []);
 
   const clearToken = useCallback((): void => {
@@ -214,6 +239,8 @@ export const useAccessToken = (): UseAccessTokenResult => {
     clearTokenCookie();
     setTokenState(null);
     setCheckedAt(Date.now());
+    // Notify other in-tab consumers (e.g. the navigation) so they re-sync.
+    broadcastTokenChange();
   }, []);
 
   const isExpired = useMemo(

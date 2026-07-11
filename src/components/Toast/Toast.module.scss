@@ -1,0 +1,59 @@
+// Toast system styling.
+//
+// A fixed, bottom-right viewport stacks transient notifications. Every value
+// derives from the shared theme so toasts match the platform's palette,
+// typography, and spacing scales. No inline CSS is used.
+
+@use "../../styles/theme" as theme;
+@use "../../styles/mixins" as mixins;
+
+.viewport {
+  @include mixins.flex(column, flex-start, stretch, theme.space("sm"));
+
+  position: fixed;
+  inset-block-end: theme.space("lg");
+  inset-inline-end: theme.space("lg");
+  z-index: 2000;
+  width: min(22rem, calc(100vw - #{theme.space("lg")} * 2));
+  pointer-events: none;
+}
+
+.toast {
+  @include mixins.flex(row, space-between, center, theme.space("sm"));
+
+  padding: theme.space("md");
+  border-radius: theme.$radius-md;
+  border-inline-start: 4px solid transparent;
+  background-color: theme.color("text");
+  color: theme.color("text-inverse");
+  box-shadow: theme.$shadow-md;
+  pointer-events: auto;
+}
+
+.message {
+  @include mixins.typography("sm", "medium");
+}
+
+.dismiss {
+  @include mixins.typography("md", "semibold");
+
+  flex-shrink: 0;
+  padding: 0 theme.space("xs");
+  border: none;
+  background: transparent;
+  color: inherit;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.error {
+  border-inline-start-color: theme.color("danger");
+}
+
+.success {
+  border-inline-start-color: theme.color("success");
+}
+
+.info {
+  border-inline-start-color: theme.color("primary");
+}

@@ -87,3 +87,11 @@
 .actions {
   margin-block-start: theme.space("xs");
 }
+
+.passwordField {
+  @include mixins.flex(column, flex-start, stretch, theme.space("xs"));
+}
+
+.prompt {
+  margin-block-start: theme.space("sm");
+}

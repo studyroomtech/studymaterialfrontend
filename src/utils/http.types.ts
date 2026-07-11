@@ -44,6 +44,10 @@ export interface HttpError {
 export interface HttpRequestOptions extends RequestInit {
   // Overrides the default 30-second timeout (in milliseconds).
   timeoutMs?: number;
+  // When true, a failed request does NOT emit a global error toast. Set this on
+  // calls that surface their own inline error (e.g. the Download Gate, sign-in,
+  // and set-password flows) to avoid a duplicate toast.
+  suppressErrorToast?: boolean;
 }
 
 // The result of an HTTP request: either success with parsed data, or a typed

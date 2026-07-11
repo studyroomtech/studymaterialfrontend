@@ -16,6 +16,8 @@ export interface AccountLoginResponse {
   expiresInSeconds: number;
   name: string;
   email: string;
+  /** Whether the account is password protected; present only on a successful sign-in (Req 5.1, 5.2). */
+  passwordProtected: boolean;
 }
 
 /**
@@ -35,12 +37,17 @@ export interface UseAccountResult {
   isLoading: boolean;
   /** The most recent sign-in failure, or `null` when none (Req 8.1). */
   error: HttpError | null;
+  /** Tri-state protection status from the last sign-in: false=unprotected, true=protected, null=unknown (Req 5.1, 5.2). */
+  passwordProtected: boolean | null;
   /**
-   * Sign in with a name + email: persists a User Record (or reuses an existing
-   * one, refreshing its name) and stores the issued Access Token. Resolves
-   * `true` on success so the caller can react (Req 6.2–6.5).
+   * Sign in with a name + email and an optional password: persists a User
+   * Record (or reuses an existing one, refreshing its name) and stores the
+   * issued Access Token. Resolves `true` on success so the caller can react
+   * (Req 6.2–6.5).
    */
-  login: (name: string, email: string) => Promise<boolean>;
+  login: (name: string, email: string, password?: string) => Promise<boolean>;
   /** Sign out by discarding the stored Access Token (Req 6.7). */
   logout: () => void;
+  /** Mark the current account as password protected in the read-back state (Req 5.4). */
+  markPasswordProtected: () => void;
 }

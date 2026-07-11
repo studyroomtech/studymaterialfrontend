@@ -16,6 +16,12 @@ export const NAME_MAX_LENGTH = 100;
 export const EMAIL_MIN_LENGTH = 1;
 export const EMAIL_MAX_LENGTH = 254;
 
+// --- Account password ---
+// Password length bounds enforced client-side when a Learner sets a password,
+// mirroring the Backend Project's bounds (see backend `limits.constant.ts`).
+export const PASSWORD_MIN_LENGTH = 8;
+export const PASSWORD_MAX_LENGTH = 128;
+
 // --- Search ---
 export const SEARCH_QUERY_MIN_LENGTH = 1;
 export const SEARCH_QUERY_MAX_LENGTH = 100;

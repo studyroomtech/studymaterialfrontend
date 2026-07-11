@@ -26,3 +26,12 @@ export const ACCESS_TOKEN_COOKIE_NAME = ACCESS_TOKEN_STORAGE_KEY;
  * 30-day lifetime (Req 6.5).
  */
 export const ACCESS_TOKEN_COOKIE_MAX_AGE_SECONDS = 2592000;
+
+/**
+ * Name of the custom DOM event dispatched whenever the Access Token changes
+ * within the current tab. The browser `storage` event only fires in *other*
+ * tabs, so this same-tab event lets every `useAccessToken` instance (e.g. the
+ * account page and the navigation) re-sync immediately after a sign-in or
+ * sign-out without a page refresh.
+ */
+export const ACCESS_TOKEN_CHANGED_EVENT = 'access-token-changed';

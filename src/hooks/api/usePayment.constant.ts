@@ -28,6 +28,12 @@ export const PAYMENT_PHASE = {
 // re-opens the Download Gate before retrying the initiation (Req 6.10).
 export const PAYMENT_AUTH_REQUIRED_STATUS = 401;
 
+// Backend error `code` returned by `POST /api/downloads/gate` when the submitted
+// email resolves to a Password-Protected Account and a correct password was not
+// supplied. It causes the gate to reveal a password field and prompt the
+// Learner to enter their password before the checkout resumes.
+export const GATE_PASSWORD_REQUIRED_CODE = 'PASSWORD_REQUIRED';
+
 // User-facing message shown when a Payment could not be verified server-side
 // and no Payment Entitlement was granted (Req 12.7).
 export const PAYMENT_VERIFICATION_FAILED_MESSAGE =

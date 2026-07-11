@@ -10,6 +10,12 @@ export interface DownloadGateValues {
   name: string;
   /** Learner email, trimmed, 1–254 characters in a valid format (Req 6.2). */
   email: string;
+  /**
+   * The account Password, supplied only when the gate is prompting for it
+   * because the email resolves to a Password-Protected Account. Omitted for an
+   * ordinary email-only submission.
+   */
+  password?: string;
 }
 
 /**
@@ -21,6 +27,8 @@ export interface DownloadGateFieldErrors {
   name?: string;
   /** Validation message for the email field, when invalid. */
   email?: string;
+  /** Validation message for the password field, when required and invalid. */
+  password?: string;
 }
 
 /**
@@ -50,6 +58,12 @@ export interface DownloadGateModalProps {
    * disabled while the submission is in flight.
    */
   isSubmitting?: boolean;
+  /**
+   * When true, the email resolved to a Password-Protected Account: a password
+   * field is revealed and required before the submission can proceed. The
+   * name/email the Learner already entered are preserved.
+   */
+  requirePassword?: boolean;
   /**
    * An error message from a failed submission (e.g. a Backend API error). It is
    * shown without clearing the entered values so the current view is preserved

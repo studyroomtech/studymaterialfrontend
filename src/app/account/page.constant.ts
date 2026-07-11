@@ -27,6 +27,17 @@ export const NAME_PLACEHOLDER = 'Ada Lovelace';
 export const EMAIL_FIELD_ID = 'account-email';
 export const EMAIL_LABEL = 'Email';
 export const EMAIL_PLACEHOLDER = 'ada@example.com';
+
+/**
+ * Optional password field on the sign-in form (Req 5, Req 4 support).
+ * The field is not required client-side: an empty value posts as email-only.
+ * The rendered Input uses `type="password"` and `autoComplete="current-password"`.
+ */
+export const PASSWORD_FIELD_ID = 'account-password';
+export const PASSWORD_LABEL = 'Password';
+export const PASSWORD_PLACEHOLDER = 'Optional';
+export const PASSWORD_AUTOCOMPLETE = 'current-password';
+
 export const SIGN_IN_SUBMIT_LABEL = 'Sign in';
 
 /** Client-side validation copy mirroring the Backend name/email bounds (Req 6.2, 6.3). */

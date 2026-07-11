@@ -34,6 +34,7 @@ import type { HttpError } from '@/utils/http.types';
 import { buildApiUrl } from './apiClient';
 import { API_ROUTES } from './apiClient.constant';
 import {
+  GATE_PASSWORD_REQUIRED_CODE,
   PAYMENT_AUTH_REQUIRED_STATUS,
   PAYMENT_DISMISSED_MESSAGE,
   PAYMENT_PHASE,
@@ -65,6 +66,7 @@ export const usePayment = (): UsePaymentResult => {
     undefined,
   );
   const [gateError, setGateError] = useState<string | undefined>(undefined);
+  const [requirePassword, setRequirePassword] = useState<boolean>(false);
   const [isSubmittingGate, setIsSubmittingGate] = useState<boolean>(false);
 
   // The materials awaiting checkout while the Download Gate collects the
@@ -128,6 +130,7 @@ export const usePayment = (): UsePaymentResult => {
       setError(null);
       setFailureMessage(undefined);
       setGateError(undefined);
+      setRequirePassword(false);
 
       if (materialIds.length === 0) {
         return;
@@ -166,18 +169,30 @@ export const usePayment = (): UsePaymentResult => {
           method: 'POST',
           headers: JSON_HEADERS,
           body: JSON.stringify(values),
+          // The gate surfaces failures inline in the modal, so suppress the
+          // global error toast to avoid a duplicate message.
+          suppressErrorToast: true,
         },
       );
 
       setIsSubmittingGate(false);
 
       if (!result.ok) {
+        // A protected account: reveal the password field and prompt for it
+        // rather than treating this as a generic failure.
+        if (
+          result.error.status === PAYMENT_AUTH_REQUIRED_STATUS &&
+          result.error.code === GATE_PASSWORD_REQUIRED_CODE
+        ) {
+          setRequirePassword(true);
+        }
         // Keep the gate open with the entered values preserved (Req 8.1).
         setGateError(result.error.message);
         return;
       }
 
       // Persist the issued token and resume the deferred initiation (Req 6.2, 6.5).
+      setRequirePassword(false);
       setToken(result.data.accessToken);
 
       const materialIds = pendingMaterialIdsRef.current;
@@ -193,6 +208,7 @@ export const usePayment = (): UsePaymentResult => {
   const cancelGate = useCallback((): void => {
     pendingMaterialIdsRef.current = null;
     setGateError(undefined);
+    setRequirePassword(false);
     setPhase(PAYMENT_PHASE.idle);
   }, []);
 
@@ -257,6 +273,7 @@ export const usePayment = (): UsePaymentResult => {
     setError(null);
     setFailureMessage(undefined);
     setGateError(undefined);
+    setRequirePassword(false);
   }, []);
 
   const isGateOpen = phase === PAYMENT_PHASE.gate;
@@ -274,6 +291,7 @@ export const usePayment = (): UsePaymentResult => {
       isGateOpen,
       isSubmittingGate,
       gateError,
+      requirePassword,
       submitGate,
       cancelGate,
       isModalOpen,
@@ -297,6 +315,7 @@ export const usePayment = (): UsePaymentResult => {
       isGateOpen,
       isSubmittingGate,
       gateError,
+      requirePassword,
       submitGate,
       cancelGate,
       isModalOpen,

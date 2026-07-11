@@ -1,16 +1,26 @@
 'use client';
 
-// Account settings page (Req 6.3–6.7).
+// Account settings page (Req 5, 6.3–6.7).
 //
-// A lightweight account area where a Learner signs in with just an email and
-// signs out, driven by the `useAccount` hook (which reuses the learner Access
-// Token identity shared with the Download Gate):
-//   - When signed in, the page shows the current email and a Sign out action
-//     that discards the stored token (Req 6.7).
-//   - When signed out, it shows an email field and a Sign in action that posts
-//     the email to the Backend, persists the issued Access Token, and reflects
-//     the signed-in state (Req 6.3–6.5). A Backend rejection is surfaced inline
-//     without clearing the entered email (Req 8.1).
+// A lightweight account area where a Learner signs in with an email (and an
+// optional password) and signs out, driven by the `useAccount` hook (which
+// reuses the learner Access Token identity shared with the Download Gate):
+//   - When signed in, the page shows the current identity and a Sign out action
+//     that discards the stored token (Req 6.7). When the last successful
+//     sign-in reported an Unprotected Account (`passwordProtected === false`),
+//     it also renders the "Secure your account with a password" prompt and a
+//     set-password action (Req 5.1, 5.3); activating it opens `SetPasswordModal`
+//     in first-time-set mode. A successful set flips the account to protected
+//     via `markPasswordProtected`, unmounting the prompt (Req 5.4). When the
+//     protection status is unknown (`null`) or protected (`true`), neither the
+//     prompt nor the action is shown (Req 5.2, 5.4).
+//   - When signed out, it shows name, email, and an optional password field plus
+//     a Sign in action that posts them to the Backend, persists the issued
+//     Access Token, and reflects the signed-in state (Req 6.3–6.5). A Backend
+//     rejection is surfaced inline via the uniform error message without
+//     clearing the entered values (Req 8.1). After an Unprotected sign-in the
+//     learner stays on this page so the prompt is visible (Req 5.1); a Protected
+//     sign-in redirects to the base URL.
 //
 // Rendering is gated until after mount so the token re-synced from storage is
 // reflected before deciding which view to show. All styling lives in
@@ -25,7 +35,14 @@ import Button from '@/components/Button/Button';
 import Input from '@/components/Input/Input';
 import ErrorMessage from '@/components/ErrorMessage/ErrorMessage';
 import LoadingIndicator from '@/components/LoadingIndicator/LoadingIndicator';
+import SecureAccountPrompt from '@/components/SecureAccountPrompt/SecureAccountPrompt';
+import SetPasswordModal from '@/components/SetPasswordModal/SetPasswordModal';
 import { useAccount } from '@/hooks/api/useAccount';
+import { useSetPassword } from '@/hooks/api/useSetPassword';
+import type {
+  SetPasswordFieldErrors,
+  SetPasswordValues,
+} from '@/hooks/api/useSetPassword.types';
 import { isValidEmail, validateName } from '@/utils/validation';
 
 import styles from './page.module.scss';
@@ -44,6 +61,10 @@ import {
   NAME_LABEL,
   NAME_PLACEHOLDER,
   NAME_REQUIRED_ERROR,
+  PASSWORD_AUTOCOMPLETE,
+  PASSWORD_FIELD_ID,
+  PASSWORD_LABEL,
+  PASSWORD_PLACEHOLDER,
   SIGN_IN_ERROR_TITLE,
   SIGN_IN_FALLBACK_ERROR,
   SIGN_IN_HEADING,
@@ -53,16 +74,41 @@ import {
 
 function AccountPage() {
   const router = useRouter();
-  const { name, email, isLoggedIn, isLoading, error, login, logout } =
-    useAccount();
+  const {
+    name,
+    email,
+    isLoggedIn,
+    isLoading,
+    error,
+    passwordProtected,
+    login,
+    logout,
+    markPasswordProtected,
+  } = useAccount();
+  const { isSubmitting, setPassword } = useSetPassword();
 
   const [nameInput, setNameInput] = useState('');
   const [emailInput, setEmailInput] = useState('');
+  const [passwordInput, setPasswordInput] = useState('');
   const [fieldErrors, setFieldErrors] = useState<{
     name?: string;
     email?: string;
   }>({});
   const [hasAttempted, setHasAttempted] = useState(false);
+
+  // A successful sign-in defers the redirect decision to an effect that reads
+  // the (asynchronously updated) `passwordProtected` tri-state (Req 5.1).
+  const [justSignedIn, setJustSignedIn] = useState(false);
+
+  // Set-password modal state (first-time-set flow) and the outcome mapping the
+  // hook surfaces for the modal (Req 5.3, 5.4).
+  const [isSetPasswordModalOpen, setIsSetPasswordModalOpen] = useState(false);
+  const [setPasswordFieldErrors, setSetPasswordFieldErrors] = useState<
+    SetPasswordFieldErrors | undefined
+  >(undefined);
+  const [setPasswordSubmitError, setSetPasswordSubmitError] = useState<
+    string | undefined
+  >(undefined);
 
   // Gate rendering until mounted so the identity re-synced from storage is
   // reflected before choosing the signed-in vs signed-out view.
@@ -70,6 +116,25 @@ function AccountPage() {
   useEffect(() => {
     setHasMounted(true);
   }, []);
+
+  // After a successful sign-in, decide where to go based on the protection
+  // status: an Unprotected Account (`false`) stays here so the "secure your
+  // account" prompt is visible (Req 5.1); a Protected Account (`true`) is sent
+  // to the base URL, preserving the prior redirect behavior.
+  useEffect(() => {
+    if (!justSignedIn) {
+      return;
+    }
+    if (passwordProtected === false) {
+      setNameInput('');
+      setEmailInput('');
+      setPasswordInput('');
+      setJustSignedIn(false);
+    } else if (passwordProtected === true) {
+      setJustSignedIn(false);
+      router.replace(HOME_PATH);
+    }
+  }, [justSignedIn, passwordProtected, router]);
 
   const handleSubmit = async (
     event: FormEvent<HTMLFormElement>,
@@ -92,22 +157,55 @@ function AccountPage() {
 
     setFieldErrors({});
     setHasAttempted(true);
-    const succeeded = await login(trimmedName, trimmedEmail);
+    // The optional password is passed through; `login` only sends it when
+    // non-empty, so an empty value is an email-only sign-in (Req 3, 4).
+    const succeeded = await login(trimmedName, trimmedEmail, passwordInput);
     if (succeeded) {
-      setNameInput('');
-      setEmailInput('');
       setHasAttempted(false);
-      // On success, send the learner to the base URL instead of staying here.
-      router.replace(HOME_PATH);
+      // Defer the redirect/stay decision to the effect once `passwordProtected`
+      // reflects the sign-in response (Req 5.1). Entered values are preserved
+      // until then (and cleared only when we remain on an Unprotected sign-in).
+      setJustSignedIn(true);
     }
   };
 
   const handleLogout = (): void => {
     setNameInput('');
     setEmailInput('');
+    setPasswordInput('');
     setFieldErrors({});
     setHasAttempted(false);
     logout();
+  };
+
+  const handleOpenSetPassword = (): void => {
+    setSetPasswordFieldErrors(undefined);
+    setSetPasswordSubmitError(undefined);
+    setIsSetPasswordModalOpen(true);
+  };
+
+  const handleCancelSetPassword = (): void => {
+    setIsSetPasswordModalOpen(false);
+    setSetPasswordFieldErrors(undefined);
+    setSetPasswordSubmitError(undefined);
+  };
+
+  const handleSubmitSetPassword = async (
+    values: SetPasswordValues,
+  ): Promise<void> => {
+    const outcome = await setPassword(values);
+    if (outcome.ok) {
+      // The account is now Password-Protected: flip the persisted status so the
+      // prompt/action unmount, and close the modal (Req 5.4).
+      markPasswordProtected();
+      setIsSetPasswordModalOpen(false);
+      setSetPasswordFieldErrors(undefined);
+      setSetPasswordSubmitError(undefined);
+      return;
+    }
+    // Surface the failure in the modal without closing it (Req 5.4).
+    setSetPasswordFieldErrors(outcome.fieldErrors);
+    setSetPasswordSubmitError(outcome.submitError);
   };
 
   if (!hasMounted) {
@@ -121,8 +219,14 @@ function AccountPage() {
   }
 
   // Surface a Backend rejection only after an attempt so the banner does not
-  // appear on first render (Req 8.1).
+  // appear on first render (Req 8.1). Protected-account rejections arrive as the
+  // uniform error message with no field-level hint.
   const showError = hasAttempted && error !== null;
+
+  // Render the prompt and set-password action only for an Unprotected Account
+  // (Req 5.1, 5.3); the unknown (`null`) and protected (`true`) states show
+  // nothing (Req 5.2, 5.4).
+  const showSecurePrompt = passwordProtected === false;
 
   return (
     <main className={styles.main}>
@@ -151,11 +255,33 @@ function AccountPage() {
                 {email}
               </p>
             </div>
+
+            {showSecurePrompt && (
+              <SecureAccountPrompt
+                className={styles.prompt}
+                onSetPassword={handleOpenSetPassword}
+              />
+            )}
+
             <div className={styles.actions}>
               <Button variant="secondary" fullWidth onClick={handleLogout}>
                 {LOGOUT_LABEL}
               </Button>
             </div>
+
+            {showSecurePrompt && (
+              <SetPasswordModal
+                isOpen={isSetPasswordModalOpen}
+                requireCurrentPassword={false}
+                isSubmitting={isSubmitting}
+                fieldErrors={setPasswordFieldErrors}
+                submitError={setPasswordSubmitError}
+                onSubmit={(values) => {
+                  void handleSubmitSetPassword(values);
+                }}
+                onCancel={handleCancelSetPassword}
+              />
+            )}
           </>
         ) : (
           <form className={styles.form} onSubmit={handleSubmit} noValidate>
@@ -195,6 +321,21 @@ function AccountPage() {
                 }
               }}
             />
+            <div className={styles.passwordField}>
+              <Input
+                id={PASSWORD_FIELD_ID}
+                label={PASSWORD_LABEL}
+                name="password"
+                type="password"
+                autoComplete={PASSWORD_AUTOCOMPLETE}
+                placeholder={PASSWORD_PLACEHOLDER}
+                value={passwordInput}
+                disabled={isLoading}
+                onChange={(event) => {
+                  setPasswordInput(event.target.value);
+                }}
+              />
+            </div>
 
             {showError && (
               <ErrorMessage

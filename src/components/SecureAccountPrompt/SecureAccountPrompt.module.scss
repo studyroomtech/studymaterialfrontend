@@ -1,0 +1,25 @@
+// Styling for the SecureAccountPrompt component (Requirements 5.1, 5.3).
+//
+// All presentation is authored here (no inline CSS) and derives every value
+// from the shared theme so the prompt stays consistent with the platform's
+// single color palette, typography scale, and spacing scale.
+
+@use "../../styles/theme" as theme;
+@use "../../styles/mixins" as mixins;
+
+.root {
+  @include mixins.flex(column, flex-start, flex-start, theme.space("sm"));
+
+  width: 100%;
+  padding: theme.space("md") theme.space("lg");
+  border: 1px solid theme.color("border");
+  border-radius: theme.$radius-md;
+  background-color: theme.color("surface");
+}
+
+.message {
+  @include mixins.typography("md", "medium");
+
+  margin: 0;
+  color: theme.color("text");
+}

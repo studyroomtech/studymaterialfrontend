@@ -32,7 +32,10 @@ import {
   MATERIAL_DOWNLOAD_ACTION,
   MATERIAL_PREVIEW_ACTION,
 } from './apiClient.constant';
-import { DOWNLOAD_UNAUTHORIZED_STATUS } from './useDownload.constant';
+import {
+  DOWNLOAD_UNAUTHORIZED_STATUS,
+  GATE_PASSWORD_REQUIRED_CODE,
+} from './useDownload.constant';
 import type {
   DownloadGateResponse,
   DownloadPresignResponse,
@@ -75,6 +78,7 @@ export const useDownload = (): UseDownloadResult => {
   const [isSubmittingGate, setIsSubmittingGate] = useState<boolean>(false);
   const [error, setError] = useState<HttpError | null>(null);
   const [gateError, setGateError] = useState<string | undefined>(undefined);
+  const [requirePassword, setRequirePassword] = useState<boolean>(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewContentType, setPreviewContentType] = useState<string>('');
 
@@ -153,6 +157,7 @@ export const useDownload = (): UseDownloadResult => {
     (materialId: string, mode: MaterialAccessMode): void => {
       setError(null);
       setGateError(undefined);
+      setRequirePassword(false);
 
       // A valid Access Token lets the action proceed without the gate (Req 6.6).
       if (hasValidToken && token !== null) {
@@ -200,12 +205,23 @@ export const useDownload = (): UseDownloadResult => {
           method: 'POST',
           headers: JSON_HEADERS,
           body: JSON.stringify(values),
+          // The gate surfaces failures inline in the modal, so suppress the
+          // global error toast to avoid a duplicate message.
+          suppressErrorToast: true,
         },
       );
 
       setIsSubmittingGate(false);
 
       if (!result.ok) {
+        // A protected account: reveal the password field and prompt for it
+        // rather than treating this as a generic failure.
+        if (
+          result.error.status === DOWNLOAD_UNAUTHORIZED_STATUS &&
+          result.error.code === GATE_PASSWORD_REQUIRED_CODE
+        ) {
+          setRequirePassword(true);
+        }
         // Keep the gate open with the entered values preserved (Req 8.1).
         setGateError(result.error.message);
         return;
@@ -213,6 +229,7 @@ export const useDownload = (): UseDownloadResult => {
 
       // Persist the issued token, close the gate, and resume the deferred
       // download using the fresh token (Req 6.2, 6.5, 6.8).
+      setRequirePassword(false);
       setToken(result.data.accessToken);
       setIsGateOpen(false);
 
@@ -227,6 +244,7 @@ export const useDownload = (): UseDownloadResult => {
   const cancelGate = useCallback((): void => {
     setIsGateOpen(false);
     setGateError(undefined);
+    setRequirePassword(false);
     pendingMaterialIdRef.current = null;
   }, []);
 
@@ -239,6 +257,7 @@ export const useDownload = (): UseDownloadResult => {
     isSubmittingGate,
     error,
     gateError,
+    requirePassword,
     requestPreview,
     previewUrl,
     previewContentType,

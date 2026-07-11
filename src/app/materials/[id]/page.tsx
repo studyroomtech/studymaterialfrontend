@@ -143,6 +143,7 @@ function MaterialViewPage() {
     isSubmittingGate,
     error: downloadError,
     gateError,
+    requirePassword,
     requestPreview,
     previewUrl,
     previewContentType,
@@ -234,6 +235,7 @@ function MaterialViewPage() {
         onSubmit={submitGate}
         onCancel={cancelGate}
         isSubmitting={isSubmittingGate}
+        requirePassword={requirePassword}
         submitError={gateError}
       />
     </main>
@@ -400,6 +402,7 @@ function PaymentRequiredGate({ materialId, onEntitled }: PaymentRequiredGateProp
         onSubmit={payment.submitGate}
         onCancel={payment.cancelGate}
         isSubmitting={payment.isSubmittingGate}
+        requirePassword={payment.requirePassword}
         submitError={payment.gateError}
       />
 

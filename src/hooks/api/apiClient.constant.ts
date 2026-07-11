@@ -24,6 +24,8 @@ export const API_ROUTES = {
   paymentsInitiate: '/api/payments/initiate',
   // `accountLogin` -> POST /api/account/login            (email-only sign-in)
   accountLogin: '/api/account/login',
+  // `accountPassword` -> /api/account/password           (optional account password)
+  accountPassword: '/api/account/password',
 } as const;
 
 // Sub-path appended to a material route to reach its download endpoint, e.g.

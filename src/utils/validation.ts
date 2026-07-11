@@ -11,6 +11,8 @@ import {
   EMAIL_PATTERN,
   NAME_MAX_LENGTH,
   NAME_MIN_LENGTH,
+  PASSWORD_MAX_LENGTH,
+  PASSWORD_MIN_LENGTH,
   SEARCH_QUERY_MAX_LENGTH,
 } from './validation.constant';
 import type { FieldValidationResult } from './validation.types';
@@ -56,6 +58,22 @@ export function validateEmail(email: string): FieldValidationResult {
   }
   if (!EMAIL_PATTERN.test(trimmed)) {
     return { valid: false, reason: 'Email must be a valid email address.' };
+  }
+  return { valid: true };
+}
+
+/**
+ * Validate an account password's length: 8–128 characters (Req 5.3). The value
+ * is checked as-is (not trimmed) because surrounding whitespace is significant
+ * in a password. Mirrors the Backend Project's bounds; the Backend API remains
+ * the authority and re-validates every submission.
+ */
+export function validatePassword(value: string): FieldValidationResult {
+  if (!isLengthWithin(value, PASSWORD_MIN_LENGTH, PASSWORD_MAX_LENGTH)) {
+    return {
+      valid: false,
+      reason: `Password must be between ${PASSWORD_MIN_LENGTH} and ${PASSWORD_MAX_LENGTH} characters.`,
+    };
   }
   return { valid: true };
 }

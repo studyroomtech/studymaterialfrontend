@@ -14,6 +14,7 @@ import {
   HTTP_ERROR_KIND,
   REQUEST_TIMEOUT_MS,
 } from './http.constant';
+import { emitToast } from './toastBus';
 import type {
   ApiErrorEnvelope,
   FieldError,
@@ -33,7 +34,12 @@ export async function httpRequest<T>(
   input: string,
   options: HttpRequestOptions = {},
 ): Promise<HttpResult<T>> {
-  const { timeoutMs = REQUEST_TIMEOUT_MS, signal: externalSignal, ...init } = options;
+  const {
+    timeoutMs = REQUEST_TIMEOUT_MS,
+    signal: externalSignal,
+    suppressErrorToast = false,
+    ...init
+  } = options;
 
   const controller = new AbortController();
   let timedOut = false;
@@ -55,23 +61,31 @@ export async function httpRequest<T>(
     controller.abort();
   }, timeoutMs);
 
+  let result: HttpResult<T>;
   try {
     const response = await fetch(input, { ...init, signal: controller.signal });
-    return await buildResult<T>(response);
+    result = await buildResult<T>(response);
   } catch {
     // A timeout aborts the internal controller and flips `timedOut`; any other
     // rejection (DNS failure, connection reset, offline, external abort) is a
     // network-level failure.
-    if (timedOut) {
-      return failure(HTTP_ERROR_KIND.timeout, DEFAULT_ERROR_MESSAGES.timeout);
-    }
-    return failure(HTTP_ERROR_KIND.network, DEFAULT_ERROR_MESSAGES.network);
+    result = timedOut
+      ? failure(HTTP_ERROR_KIND.timeout, DEFAULT_ERROR_MESSAGES.timeout)
+      : failure(HTTP_ERROR_KIND.network, DEFAULT_ERROR_MESSAGES.network);
   } finally {
     clearTimeout(timeoutId);
     if (externalSignal) {
       externalSignal.removeEventListener('abort', onExternalAbort);
     }
   }
+
+  // Surface any failure as a global error toast unless the caller opts out
+  // because it renders its own inline error (Req 8.1 — "whenever an API fails").
+  if (!result.ok && !suppressErrorToast) {
+    emitToast({ message: result.error.message, variant: 'error' });
+  }
+
+  return result;
 }
 
 /**

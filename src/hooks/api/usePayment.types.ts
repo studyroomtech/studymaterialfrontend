@@ -101,6 +101,12 @@ export interface UsePaymentResult {
   /** A user-facing gate submission error message for the modal (Req 8.1). */
   gateError?: string;
   /**
+   * When true, the submitted email resolved to a Password-Protected Account:
+   * the Download Gate should reveal a password field and require it before the
+   * checkout can resume.
+   */
+  requirePassword: boolean;
+  /**
    * Submit the Download Gate name + email: persists a User Record, issues an
    * Access Token, and then resumes the deferred Payment initiation (Req 6.2,
    * 6.5, 6.10). Intended as the `onSubmit` handler for {@link DownloadGateModal}.
