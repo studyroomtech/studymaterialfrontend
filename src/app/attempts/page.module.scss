@@ -1,0 +1,109 @@
+// Styling for the attempt history page (Req 14.1, 14.5).
+//
+// All presentation derives from the shared theme so the page matches the
+// platform's single color palette, typography scale, and spacing scale. No
+// inline CSS is used.
+
+@use "../../styles/theme" as theme;
+@use "../../styles/mixins" as mixins;
+
+.main {
+  @include mixins.flex(column, flex-start, stretch, theme.space("lg"));
+
+  padding-block: theme.space("xl");
+}
+
+.header {
+  @include mixins.flex(column, flex-start, stretch, theme.space("xs"));
+}
+
+.title {
+  @include mixins.typography("2xl", "semibold", theme.$line-height-heading);
+
+  margin: 0;
+  color: theme.color("text");
+}
+
+.subtitle {
+  @include mixins.typography("md", "regular");
+
+  margin: 0;
+  color: theme.color("text-muted");
+}
+
+.results {
+  @include mixins.flex(column, flex-start, stretch, theme.space("md"));
+}
+
+.list {
+  @include mixins.flex(column, flex-start, stretch, theme.space("md"));
+
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  display: flex;
+}
+
+.card {
+  @include mixins.flex(column, flex-start, stretch, theme.space("sm"));
+
+  width: 100%;
+  padding: theme.space("lg");
+  border: 1px solid theme.color("border");
+  border-radius: theme.$radius-md;
+  background-color: theme.color("background");
+  color: inherit;
+  text-decoration: none;
+  box-shadow: theme.$shadow-sm;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+  &:hover {
+    border-color: theme.color("primary");
+    box-shadow: theme.$shadow-md;
+  }
+
+  &:focus-visible {
+    @include mixins.focus-ring;
+  }
+}
+
+.cardTitle {
+  @include mixins.typography("lg", "semibold", theme.$line-height-heading);
+
+  margin: 0;
+  color: theme.color("text");
+}
+
+.meta {
+  @include mixins.flex(row, flex-start, center, theme.space("lg"));
+
+  flex-wrap: wrap;
+}
+
+.metaItem {
+  @include mixins.flex(column, flex-start, flex-start, theme.space("xs"));
+}
+
+.metaLabel {
+  @include mixins.typography("xs", "medium");
+
+  color: theme.color("text-muted");
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.metaValue {
+  @include mixins.typography("md", "semibold");
+
+  color: theme.color("text");
+}
+
+.reviewAction {
+  @include mixins.typography("sm", "semibold");
+
+  align-self: flex-start;
+  color: theme.color("primary");
+}

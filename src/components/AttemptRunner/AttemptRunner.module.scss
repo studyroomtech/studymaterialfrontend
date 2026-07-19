@@ -1,0 +1,14 @@
+// Styling for the {@link AttemptRunner} component (task 18.4).
+//
+// The runner wraps the shared TestPlayer (or the loading/failure affordances)
+// in a page-level container that matches the platform's spacing scale. All
+// presentation derives from the shared theme; no inline CSS is used.
+
+@use "../../styles/theme" as theme;
+@use "../../styles/mixins" as mixins;
+
+.main {
+  @include mixins.flex(column, flex-start, stretch, theme.space("lg"));
+
+  padding-block: theme.space("xl");
+}

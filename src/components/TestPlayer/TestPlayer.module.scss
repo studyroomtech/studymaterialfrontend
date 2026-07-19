@@ -1,0 +1,281 @@
+// TestPlayer styling (Req 9.3, 10.1, 10.3, 12.5).
+//
+// All TestPlayer presentation is authored here and derives every value from the
+// shared theme so the player matches the platform's single color palette,
+// typography scale, and spacing scale (no inline CSS).
+
+@use "../../styles/theme" as theme;
+@use "../../styles/mixins" as mixins;
+
+.player {
+  @include mixins.flex(column, flex-start, stretch, theme.space("lg"));
+
+  padding: theme.space("lg");
+  background-color: theme.color("surface");
+  border: 1px solid theme.color("border");
+  border-radius: theme.$radius-lg;
+  box-shadow: theme.$shadow-sm;
+}
+
+.header {
+  @include mixins.flex(row, space-between, center, theme.space("md"));
+
+  flex-wrap: wrap;
+  padding-bottom: theme.space("md");
+  border-bottom: 1px solid theme.color("border");
+}
+
+.status,
+.timer {
+  @include mixins.flex(column, center, flex-start, theme.space("none"));
+}
+
+.statusLabel,
+.timerLabel {
+  @include mixins.typography("xs", "medium");
+
+  color: theme.color("text-muted");
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.statusBadge {
+  @include mixins.typography("sm", "semibold");
+
+  align-self: flex-start;
+  padding: theme.space("xs") theme.space("sm");
+  border-radius: theme.$radius-sm;
+  background-color: theme.color("surface-alt");
+  color: theme.color("text");
+}
+
+.timerValue {
+  @include mixins.typography("2xl", "bold", theme.$line-height-heading);
+
+  color: theme.color("text");
+  font-variant-numeric: tabular-nums;
+}
+
+.controls {
+  @include mixins.flex(row, flex-end, center, theme.space("sm"));
+
+  flex-wrap: wrap;
+}
+
+// Attempt / Section status accents (class names mirror the server status enum).
+.in_progress {
+  background-color: theme.color("surface-alt");
+  color: theme.color("primary-active");
+}
+
+.paused {
+  background-color: theme.color("surface-alt");
+  color: theme.color("warning");
+}
+
+.completed {
+  background-color: theme.color("surface-alt");
+  color: theme.color("success");
+}
+
+.banner {
+  @include mixins.typography("sm", "medium");
+
+  margin: 0;
+  padding: theme.space("sm") theme.space("md");
+  border-radius: theme.$radius-md;
+}
+
+.bannerCompleted {
+  background-color: theme.color("surface-alt");
+  color: theme.color("success");
+}
+
+.bannerPaused {
+  background-color: theme.color("surface-alt");
+  color: theme.color("warning");
+}
+
+.feedback {
+  margin: 0;
+}
+
+.sections {
+  @include mixins.flex(column, flex-start, stretch, theme.space("xs"));
+}
+
+.sectionsLabel {
+  @include mixins.typography("xs", "medium");
+
+  color: theme.color("text-muted");
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.sectionList {
+  @include mixins.flex(row, flex-start, stretch, theme.space("sm"));
+
+  flex-wrap: wrap;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sectionItem {
+  @include mixins.flex(row, flex-start, center, theme.space("xs"));
+
+  padding: theme.space("xs") theme.space("sm");
+  border: 1px solid theme.color("border");
+  border-radius: theme.$radius-sm;
+}
+
+.sectionStatus {
+  @include mixins.typography("xs", "semibold");
+
+  padding: 0 theme.space("xs");
+  border-radius: theme.$radius-sm;
+}
+
+.sectionTime {
+  @include mixins.typography("sm", "medium");
+
+  color: theme.color("text");
+  font-variant-numeric: tabular-nums;
+}
+
+.empty {
+  @include mixins.typography("md", "regular");
+
+  margin: 0;
+  padding: theme.space("xl");
+  color: theme.color("text-muted");
+  text-align: center;
+}
+
+.body {
+  @include mixins.flex(column, flex-start, stretch, theme.space("lg"));
+}
+
+.nav {
+  @include mixins.flex(column, flex-start, stretch, theme.space("none"));
+}
+
+.navList {
+  @include mixins.flex(row, flex-start, center, theme.space("xs"));
+
+  flex-wrap: wrap;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.navItem {
+  @include mixins.typography("sm", "medium");
+
+  min-width: 2.25rem;
+  padding: theme.space("xs") theme.space("sm");
+  background-color: theme.color("background");
+  border: 1px solid theme.color("border");
+  border-radius: theme.$radius-sm;
+  color: theme.color("text");
+  cursor: pointer;
+  transition: background-color theme.$transition-base;
+}
+
+.navItem:hover {
+  background-color: theme.color("surface-alt");
+}
+
+.navItem:focus-visible {
+  @include mixins.focus-ring;
+}
+
+.navItemActive {
+  background-color: theme.color("primary");
+  border-color: theme.color("primary");
+  color: theme.color("text-inverse");
+}
+
+.navItemAnswered:not(.navItemActive) {
+  border-color: theme.color("primary");
+  color: theme.color("primary-active");
+}
+
+.question {
+  @include mixins.flex(column, flex-start, stretch, theme.space("md"));
+}
+
+.questionProgress {
+  @include mixins.typography("xs", "medium");
+
+  margin: 0;
+  color: theme.color("text-muted");
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.questionText {
+  @include mixins.typography("lg", "semibold", theme.$line-height-heading);
+
+  margin: 0;
+  color: theme.color("text");
+}
+
+.sectionClosed {
+  @include mixins.typography("sm", "medium");
+
+  margin: 0;
+  color: theme.color("warning");
+}
+
+.options {
+  @include mixins.flex(column, flex-start, stretch, theme.space("sm"));
+
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.option {
+  @include mixins.flex(row, flex-start, stretch, theme.space("none"));
+}
+
+.optionLabel {
+  @include mixins.flex(row, flex-start, center, theme.space("sm"));
+
+  width: 100%;
+  padding: theme.space("sm") theme.space("md");
+  background-color: theme.color("background");
+  border: 1px solid theme.color("border");
+  border-radius: theme.$radius-md;
+  cursor: pointer;
+  transition: border-color theme.$transition-base;
+}
+
+.optionLabel:hover {
+  border-color: theme.color("primary");
+}
+
+.optionInput {
+  flex: 0 0 auto;
+  margin: 0;
+  cursor: pointer;
+}
+
+.optionInput:disabled {
+  cursor: not-allowed;
+}
+
+.optionText {
+  @include mixins.typography("md", "regular");
+
+  color: theme.color("text");
+}
+
+.questionActions {
+  @include mixins.flex(row, space-between, center, theme.space("sm"));
+
+  flex-wrap: wrap;
+  padding-top: theme.space("sm");
+  border-top: 1px solid theme.color("border");
+}

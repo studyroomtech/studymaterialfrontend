@@ -1,7 +1,7 @@
 // Constant values for the Toast system.
 
 /** How long (ms) a toast stays visible before it auto-dismisses. */
-export const TOAST_AUTO_DISMISS_MS = 5000;
+export const TOAST_AUTO_DISMISS_MS = 3000;
 
 /** The visual categories a toast can take. */
 export const TOAST_VARIANT = {

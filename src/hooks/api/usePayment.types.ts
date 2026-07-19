@@ -8,6 +8,7 @@ import type {
   PaymentOrderDetails,
   PaymentSuccessResult,
 } from '@/components/PaymentModal/PaymentModal.types';
+import type { ProductRef } from '@/types/testSeries.types';
 import type { HttpError } from '@/utils/http.types';
 
 import type { PAYMENT_PHASE } from './usePayment.constant';
@@ -30,6 +31,31 @@ export interface PaymentInitiateResponse {
   currency: string;
   /** The public Razorpay Key Identifier used to present checkout (Req 12.5). */
   keyId?: string;
+}
+
+/**
+ * Response body of `POST /api/payments/initiate-products`: the Razorpay order
+ * details for a product-cart Payment covering Tests / Sectional Tests (Req 7.1).
+ * Mirrors the backend `ProductOrderResult` — it carries the covered
+ * `testIds`/`sectionIds` (instead of `studyMaterialIds`) and exposes the public
+ * Razorpay key as `razorpayKeyId`; the secret key never reaches the client
+ * (Req 12.17).
+ */
+export interface ProductInitiateResponse {
+  /** The persisted Payment Record id. */
+  paymentId: string;
+  /** The Razorpay Order Identifier created server-side (Req 7.1). */
+  razorpayOrderId: string;
+  /** The Test ids covered by the order (Req 7.1, 7.2). */
+  testIds: string[];
+  /** The Section (Sectional Test) ids covered by the order (Req 7.1, 7.2). */
+  sectionIds: string[];
+  /** The order amount in the smallest currency subunit (paise). */
+  amount: number;
+  /** The shared Currency of the order (defaults to INR). */
+  currency: string;
+  /** The public Razorpay Key Identifier used to present checkout (Req 12.17). */
+  razorpayKeyId?: string;
 }
 
 /**
@@ -87,6 +113,17 @@ export interface UsePaymentResult {
    * order (Free / already-entitled items are dropped server-side).
    */
   startCheckout: (materialIds: string[]) => void;
+  /**
+   * Begin a Payment for a cart of Test Series products (Tests and/or Sectional
+   * Tests) at once, pointed at `POST /api/payments/initiate-products` with a
+   * `ProductRef[]` (Req 7.1). Reuses the exact same Download Gate / Razorpay
+   * Checkout / server-side verification machinery as {@link startCheckout}; the
+   * study-material path is untouched. The backend enforces every precondition
+   * and surfaces `ALREADY_ENTITLED` / `PAYMENT_NOT_REQUIRED` / `VALIDATION_ERROR`
+   * envelopes, which reach the UI via `error`/`failureMessage` and the global
+   * Toast (Req 7.4, 7.5, 7.6).
+   */
+  startProductCheckout: (products: ProductRef[]) => void;
   /** The Paid Material a Payment is currently in progress for, or `null`. */
   activeMaterialId: string | null;
   /** All Paid Materials the in-progress Payment covers (the cart). */

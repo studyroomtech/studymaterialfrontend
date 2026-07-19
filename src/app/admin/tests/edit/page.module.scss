@@ -1,0 +1,16 @@
+// Edit Page shell styling (`/admin/tests/edit`) (Req 1.1, 2.2, 2.3, 3.5).
+//
+// Lays out the page container that wraps the loading indicator, the relocated
+// `TestEditView` editor, and the inline error surface. Every value derives from
+// the shared theme so the page matches the platform's palette, typography, and
+// spacing scale. All styling lives here — the page component uses no inline CSS.
+
+@use "../../../../styles/theme" as theme;
+@use "../../../../styles/mixins" as mixins;
+
+.page {
+  @include mixins.container;
+  @include mixins.flex(column, flex-start, stretch, theme.space("lg"));
+
+  padding-block: theme.space("xl");
+}

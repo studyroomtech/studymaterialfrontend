@@ -1,20 +1,21 @@
 // Toast system styling.
 //
-// A fixed, bottom-right viewport stacks transient notifications. Every value
-// derives from the shared theme so toasts match the platform's palette,
-// typography, and spacing scales. No inline CSS is used.
+// A fixed, bottom-center viewport stacks transient notifications in front of
+// the screen. Every value derives from the shared theme so toasts match the
+// platform's palette, typography, and spacing scales. No inline CSS is used.
 
 @use "../../styles/theme" as theme;
 @use "../../styles/mixins" as mixins;
 
 .viewport {
-  @include mixins.flex(column, flex-start, stretch, theme.space("sm"));
+  @include mixins.flex(column, flex-start, center, theme.space("sm"));
 
   position: fixed;
   inset-block-end: theme.space("lg");
-  inset-inline-end: theme.space("lg");
+  inset-inline-start: 50%;
+  transform: translateX(-50%);
   z-index: 2000;
-  width: min(22rem, calc(100vw - #{theme.space("lg")} * 2));
+  width: min(28rem, calc(100vw - #{theme.space("lg")} * 2));
   pointer-events: none;
 }
 

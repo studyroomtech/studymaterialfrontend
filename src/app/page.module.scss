@@ -209,6 +209,67 @@
   padding-inline: theme.space("xs");
 }
 
+// ---- Test listing cards --------------------------------------------------
+.testGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: theme.space("md");
+
+  @include mixins.respond-up("sm") {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @include mixins.respond-up("lg") {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.testCard {
+  @include mixins.flex(row, flex-start, center, theme.space("md"));
+
+  padding: theme.space("md");
+  background: theme.color("background");
+  border: 1px solid theme.color("border");
+  border-radius: theme.$radius-md;
+  box-shadow: theme.$shadow-sm;
+}
+
+.testThumb {
+  @include mixins.flex(row, center, center, 0);
+
+  flex: 0 0 auto;
+  width: 3rem;
+  height: 3rem;
+  font-size: 1.5rem;
+  border-radius: theme.$radius-md;
+  background: theme.color("surface-alt");
+}
+
+.testCardBody {
+  @include mixins.flex(column, center, flex-start, theme.space("xs"));
+
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.testCardTitle {
+  @include mixins.typography("md", "semibold");
+
+  color: theme.color("text");
+}
+
+.testCardPrice {
+  @include mixins.typography("sm", "medium");
+
+  color: theme.color("text");
+}
+
+.testCardFree {
+  @include mixins.typography("sm", "semibold");
+
+  color: theme.color("primary");
+}
+
 // ---- Subject tiles -------------------------------------------------------
 .subjectGrid {
   display: grid;

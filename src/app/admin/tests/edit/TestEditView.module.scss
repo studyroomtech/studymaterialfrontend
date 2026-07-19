@@ -1,0 +1,49 @@
+// TestEditView styling for the Edit Page (Req 2.3, 5.1).
+//
+// Mirrors the panel/header/metadata presentation the editor previously used on
+// the dashboard, deriving every value from the shared theme so the authoring
+// editor matches the platform's palette, typography, and spacing scale. No
+// inline CSS is used.
+
+@use "../../../../styles/theme" as theme;
+@use "../../../../styles/mixins" as mixins;
+
+.panel {
+  @include mixins.flex(column, flex-start, stretch, theme.space("lg"));
+
+  padding: theme.space("lg");
+  background-color: theme.color("background");
+  border: 1px solid theme.color("border");
+  border-radius: theme.$radius-lg;
+  box-shadow: theme.$shadow-sm;
+}
+
+.panelTitle {
+  @include mixins.typography("xl", "semibold", theme.$line-height-heading);
+
+  margin: 0;
+  color: theme.color("text");
+}
+
+.editHeader {
+  @include mixins.flex(row, space-between, flex-start, theme.space("md"));
+
+  flex-wrap: wrap;
+}
+
+.testMeta {
+  @include mixins.flex(column, flex-start, flex-start, theme.space("xs"));
+}
+
+.testPrice {
+  @include mixins.typography("sm", "medium");
+
+  color: theme.color("text-muted");
+}
+
+.sections {
+  @include mixins.flex(column, flex-start, stretch, theme.space("sm"));
+
+  padding-block-start: theme.space("md");
+  border-block-start: 1px solid theme.color("border");
+}

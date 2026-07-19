@@ -1,0 +1,201 @@
+// TestManager authoring surface styling (Requirements 2.1, 2.5, 5.3).
+//
+// All presentation is authored here and derives every value from the shared
+// theme so the Test authoring UI matches the platform's single color palette,
+// typography scale, and spacing scale. No inline CSS is used.
+
+@use "../../styles/theme" as theme;
+@use "../../styles/mixins" as mixins;
+
+.manager {
+  @include mixins.flex(column, flex-start, stretch, theme.space("xl"));
+}
+
+.header {
+  @include mixins.flex(column, flex-start, flex-start, theme.space("xs"));
+}
+
+.title {
+  @include mixins.typography("2xl", "semibold", theme.$line-height-heading);
+
+  margin: 0;
+  color: theme.color("text");
+}
+
+.subtitle {
+  @include mixins.typography("sm", "regular");
+
+  margin: 0;
+  color: theme.color("text-muted");
+}
+
+.feedback {
+  @include mixins.typography("sm", "medium");
+
+  margin: 0;
+  padding: theme.space("sm") theme.space("md");
+  border-radius: theme.$radius-md;
+  border: 1px solid transparent;
+}
+
+.feedbackSuccess {
+  color: theme.color("success");
+  background-color: theme.color("surface-alt");
+  border-color: theme.color("success");
+}
+
+.feedbackError {
+  color: theme.color("danger");
+  background-color: theme.color("surface-alt");
+  border-color: theme.color("danger");
+}
+
+.panel {
+  @include mixins.flex(column, flex-start, stretch, theme.space("lg"));
+
+  padding: theme.space("lg");
+  background-color: theme.color("background");
+  border: 1px solid theme.color("border");
+  border-radius: theme.$radius-lg;
+  box-shadow: theme.$shadow-sm;
+}
+
+.panelTitle {
+  @include mixins.typography("xl", "semibold", theme.$line-height-heading);
+
+  margin: 0;
+  color: theme.color("text");
+}
+
+.form {
+  @include mixins.flex(column, flex-start, stretch, theme.space("md"));
+}
+
+.fieldGroup {
+  @include mixins.flex(column, flex-start, stretch, theme.space("xs"));
+}
+
+.selectLabel {
+  @include mixins.typography("sm", "medium");
+
+  color: theme.color("text");
+}
+
+.select {
+  @include mixins.typography("sm", "regular");
+
+  padding: theme.space("sm");
+  color: theme.color("text");
+  background-color: theme.color("background");
+  border: 1px solid theme.color("border");
+  border-radius: theme.$radius-md;
+
+  &:focus-visible {
+    @include mixins.focus-ring;
+  }
+}
+
+.fieldError {
+  @include mixins.typography("sm", "medium");
+
+  margin: 0;
+  color: theme.color("danger");
+}
+
+.actions {
+  @include mixins.flex(row, flex-start, center, theme.space("sm"));
+
+  flex-wrap: wrap;
+}
+
+.testList {
+  @include mixins.flex(column, flex-start, stretch, theme.space("md"));
+
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.testItem {
+  @include mixins.flex(row, space-between, center, theme.space("md"));
+
+  flex-wrap: wrap;
+  padding: theme.space("md");
+  background-color: theme.color("surface");
+  border: 1px solid theme.color("border");
+  border-radius: theme.$radius-md;
+}
+
+.testMeta {
+  @include mixins.flex(column, flex-start, flex-start, theme.space("xs"));
+}
+
+.testName {
+  @include mixins.typography("lg", "semibold");
+
+  margin: 0;
+  color: theme.color("text");
+}
+
+.testPrice {
+  @include mixins.typography("sm", "medium");
+
+  color: theme.color("text-muted");
+}
+
+.editHeader {
+  @include mixins.flex(row, space-between, flex-start, theme.space("md"));
+
+  flex-wrap: wrap;
+}
+
+.sections {
+  @include mixins.flex(column, flex-start, stretch, theme.space("sm"));
+
+  padding-block-start: theme.space("md");
+  border-block-start: 1px solid theme.color("border");
+}
+
+.sectionsHeading {
+  @include mixins.typography("lg", "semibold");
+
+  margin: 0;
+  color: theme.color("text");
+}
+
+.sectionList {
+  @include mixins.flex(column, flex-start, stretch, theme.space("sm"));
+
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sectionItem {
+  @include mixins.flex(row, space-between, center, theme.space("sm"));
+
+  flex-wrap: wrap;
+  padding: theme.space("sm") theme.space("md");
+  background-color: theme.color("surface");
+  border: 1px solid theme.color("border");
+  border-radius: theme.$radius-sm;
+}
+
+.sectionName {
+  @include mixins.typography("md", "medium");
+
+  color: theme.color("text");
+}
+
+.sectionMeta {
+  @include mixins.typography("sm", "regular");
+
+  color: theme.color("text-muted");
+}
+
+.emptyText {
+  @include mixins.typography("sm", "regular");
+
+  margin: 0;
+  color: theme.color("text-muted");
+}

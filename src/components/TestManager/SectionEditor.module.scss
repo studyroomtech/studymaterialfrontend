@@ -1,0 +1,207 @@
+// Incremental Section + Questions editor styling (Requirements 3.1, 4.1, 5.1,
+// 5.2, 5.3).
+//
+// All presentation is authored here and derives every value from the shared
+// theme so the Section editor matches the platform's single color palette,
+// typography scale, and spacing scale. No inline CSS is used.
+
+@use "../../styles/theme" as theme;
+@use "../../styles/mixins" as mixins;
+
+.editor {
+  @include mixins.flex(column, flex-start, stretch, theme.space("lg"));
+}
+
+.heading {
+  @include mixins.typography("lg", "semibold");
+
+  margin: 0;
+  color: theme.color("text");
+}
+
+.subHeading {
+  @include mixins.typography("md", "semibold");
+
+  margin: 0;
+  color: theme.color("text");
+}
+
+.feedback {
+  @include mixins.typography("sm", "medium");
+
+  margin: 0;
+  padding: theme.space("sm") theme.space("md");
+  border-radius: theme.$radius-md;
+  border: 1px solid transparent;
+}
+
+.feedbackSuccess {
+  color: theme.color("success");
+  background-color: theme.color("surface-alt");
+  border-color: theme.color("success");
+}
+
+.feedbackError {
+  color: theme.color("danger");
+  background-color: theme.color("surface-alt");
+  border-color: theme.color("danger");
+}
+
+.emptyText {
+  @include mixins.typography("sm", "regular");
+
+  margin: 0;
+  color: theme.color("text-muted");
+}
+
+// ---- Saved sections list --------------------------------------------------
+
+.sectionList {
+  @include mixins.flex(column, flex-start, stretch, theme.space("md"));
+
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sectionCard {
+  @include mixins.flex(column, flex-start, stretch, theme.space("md"));
+
+  padding: theme.space("md");
+  background-color: theme.color("surface");
+  border: 1px solid theme.color("border");
+  border-radius: theme.$radius-md;
+}
+
+.sectionHeader {
+  @include mixins.flex(row, space-between, flex-start, theme.space("md"));
+
+  flex-wrap: wrap;
+}
+
+.sectionMeta {
+  @include mixins.flex(column, flex-start, flex-start, theme.space("xs"));
+}
+
+.sectionName {
+  @include mixins.typography("md", "semibold");
+
+  margin: 0;
+  color: theme.color("text");
+}
+
+.sectionDetail {
+  @include mixins.typography("sm", "regular");
+
+  color: theme.color("text-muted");
+}
+
+// ---- Questions within a saved section ------------------------------------
+
+.questionList {
+  @include mixins.flex(column, flex-start, stretch, theme.space("sm"));
+
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.questionItem {
+  @include mixins.flex(row, space-between, flex-start, theme.space("md"));
+
+  flex-wrap: wrap;
+  padding: theme.space("sm") theme.space("md");
+  background-color: theme.color("background");
+  border: 1px solid theme.color("border");
+  border-radius: theme.$radius-sm;
+}
+
+.questionText {
+  @include mixins.typography("sm", "medium");
+
+  margin: 0;
+  color: theme.color("text");
+}
+
+.questionMeta {
+  @include mixins.typography("xs", "regular");
+
+  color: theme.color("text-muted");
+}
+
+// ---- Forms ----------------------------------------------------------------
+
+.panel {
+  @include mixins.flex(column, flex-start, stretch, theme.space("md"));
+
+  padding: theme.space("md");
+  background-color: theme.color("surface-alt");
+  border: 1px dashed theme.color("border");
+  border-radius: theme.$radius-md;
+}
+
+.form {
+  @include mixins.flex(column, flex-start, stretch, theme.space("md"));
+}
+
+.fieldRow {
+  @include mixins.flex(row, flex-start, flex-start, theme.space("md"));
+
+  flex-wrap: wrap;
+
+  > * {
+    flex: 1 1 12rem;
+  }
+}
+
+.fieldError {
+  @include mixins.typography("sm", "medium");
+
+  margin: 0;
+  color: theme.color("danger");
+}
+
+.actions {
+  @include mixins.flex(row, flex-start, center, theme.space("sm"));
+
+  flex-wrap: wrap;
+}
+
+// ---- Inline question editor ----------------------------------------------
+
+.questionEditor {
+  @include mixins.flex(column, flex-start, stretch, theme.space("md"));
+
+  padding: theme.space("md");
+  background-color: theme.color("background");
+  border: 1px solid theme.color("border");
+  border-radius: theme.$radius-sm;
+}
+
+.optionRow {
+  @include mixins.flex(row, flex-start, center, theme.space("sm"));
+
+  flex-wrap: wrap;
+
+  > :first-child {
+    flex: 1 1 16rem;
+  }
+}
+
+.optionCorrect {
+  @include mixins.flex(row, flex-start, center, theme.space("xs"));
+
+  @include mixins.typography("sm", "medium");
+
+  color: theme.color("text");
+  white-space: nowrap;
+}
+
+.checkbox {
+  inline-size: 1rem;
+  block-size: 1rem;
+
+  &:focus-visible {
+    @include mixins.focus-ring;
+  }
+}
