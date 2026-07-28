@@ -696,3 +696,53 @@
 .testCardFree {
   color: theme.color("success");
 }
+
+// ---- Mobile: notes-first, hide marketing / secondary content -------------
+// Desktop (md and up) is unchanged — these rules only apply below 768px.
+@include mixins.respond-down("md") {
+  .mobileHide {
+    display: none !important;
+  }
+
+  .heroText {
+    display: none;
+  }
+
+  .heroInner {
+    gap: 0;
+    padding: 1.25rem theme.space("md") 1.5rem;
+  }
+
+  .admitCard {
+    transform: none;
+  }
+
+  .perforation {
+    display: none;
+  }
+
+  .admitSerial {
+    display: none;
+  }
+
+  .admitCardBody {
+    padding: 1.15rem 1rem 1.1rem;
+  }
+
+  .section {
+    padding: 1.5rem 0 1.75rem;
+  }
+
+  .sectionHead {
+    margin-bottom: 1.15rem;
+  }
+
+  .content {
+    padding-inline: theme.space("md");
+  }
+
+  .rankCover {
+    aspect-ratio: 2 / 1;
+  }
+}
+
