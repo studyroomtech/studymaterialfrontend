@@ -2,7 +2,8 @@
 // ~36 visually distinct note/PDF covers; variant is picked with a seeded
 // pseudo-random from the material id (stable across renders, no hydration flicker).
 
-export const COVER_VARIANT_COUNT = 36;
+import { COVER_VARIANT_COUNT, LABELS } from "./MaterialCoverArt.constant";
+import type { CoverProps } from "./MaterialCoverArt.types";
 
 /**
  * Stable pseudo-random cover index in `[0, COVER_VARIANT_COUNT)`.
@@ -24,21 +25,6 @@ export function resolveCoverVariant(materialId: string): number {
 export function coverVariantLabel(_variant: number): string {
   return "Study notes";
 }
-
-type CoverProps = {
-  variant: number;
-  className?: string;
-  uid?: string;
-};
-
-const LABELS = [
-  "NOTES · PDF",
-  "STUDY NOTES",
-  "STUDY MATERIAL",
-  "EXAM NOTES",
-  "PDF NOTES",
-  "REVISION",
-] as const;
 
 /** Decorative SVG cover art (aria-hidden; parent card carries the label). */
 export function MaterialCoverArt({
