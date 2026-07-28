@@ -31,20 +31,30 @@ import type { HttpError } from '@/utils/http.types';
  * `in_progress`/`paused` attempt already exists it is returned as-is rather than
  * a new one being created (Req 9.5).
  */
-export type StartTestAttemptResponse = AttemptStateDto;
+/**
+ * The shared response envelope the Backend uses for every attempt-state
+ * endpoint: the server-authoritative `AttemptStateDto` wrapped under an
+ * `attempt` key (mirroring the `{ material }` / `{ test }` envelopes elsewhere).
+ * The hook unwraps `.attempt` before storing it as the single source of truth.
+ */
+export interface AttemptStateResponse {
+  attempt: AttemptStateDto;
+}
+
+export type StartTestAttemptResponse = AttemptStateResponse;
 
 /**
  * Response body of `POST /api/sections/:id/attempts`: the server-authoritative
  * attempt state for a started or resumed Section-scoped Test Attempt (Req 9.1).
  */
-export type StartSectionAttemptResponse = AttemptStateDto;
+export type StartSectionAttemptResponse = AttemptStateResponse;
 
 /**
  * Response body of `POST /api/attempts/:id/pause`: the updated attempt state
  * with the Attempt Status set to `paused` and the server-computed remaining
  * time (Req 10.1).
  */
-export type PauseAttemptResponse = AttemptStateDto;
+export type PauseAttemptResponse = AttemptStateResponse;
 
 /**
  * Response body of `POST /api/attempts/:id/resume`: the updated attempt state
@@ -52,7 +62,7 @@ export type PauseAttemptResponse = AttemptStateDto;
  * remaining time; scopes already at their Time Limit are closed server-side
  * (Req 10.3, 10.5).
  */
-export type ResumeAttemptResponse = AttemptStateDto;
+export type ResumeAttemptResponse = AttemptStateResponse;
 
 /**
  * Request body of `POST /api/attempts/:id/responses`: the Learner's selected
@@ -65,21 +75,23 @@ export type SubmitResponseRequest = SubmitResponseInput;
  * Response body of `POST /api/attempts/:id/responses`: the refreshed
  * server-authoritative attempt state after the Response is recorded (Req 9.4).
  */
-export type SubmitResponseResponse = AttemptStateDto;
+export type SubmitResponseResponse = AttemptStateResponse;
 
 /**
  * Response body of `POST /api/attempts/:id/submit`: the finalized, `completed`
- * attempt result carrying the server-computed Score and completion time
- * (Req 11.4, 12.7).
+ * attempt result carrying the server-computed Score and completion time,
+ * wrapped under a `result` key (Req 11.4, 12.7).
  */
-export type SubmitAttemptResponse = AttemptResultDto;
+export interface SubmitAttemptResponse {
+  result: AttemptResultDto;
+}
 
 /**
  * Response body of `POST /api/tests/:id/retake`: the state of a fresh Test
  * Attempt created for a retake, independent of the prior completed attempt
  * (Req 15.1, 15.5).
  */
-export type RetakeTestResponse = AttemptStateDto;
+export type RetakeTestResponse = AttemptStateResponse;
 
 // --- UI-consumable outcome -----------------------------------------------
 

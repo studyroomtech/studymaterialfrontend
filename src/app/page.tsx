@@ -83,10 +83,15 @@ import type {
   CatalogCategory,
   CatalogMaterial,
 } from "../utils/catalogTree.types";
+import { useGlobalContext } from "@/context/global-context/provider";
+import { classNames } from "@/utils/classnames";
+import { isMobile } from "@/utils/browser";
 
 /** Resolve the decorative emoji for a subject tile from its name. */
 function subjectIcon(name: string): string {
-  return SUBJECT_ICON_BY_NAME[name.trim().toLowerCase()] ?? DEFAULT_SUBJECT_ICON;
+  return (
+    SUBJECT_ICON_BY_NAME[name.trim().toLowerCase()] ?? DEFAULT_SUBJECT_ICON
+  );
 }
 
 /** A single Study Material card linking to the material's view page. */
@@ -100,7 +105,9 @@ function MaterialCard({ material }: { material: CatalogMaterial }) {
       </span>
       <span className={styles.materialCardBody}>
         <span className={styles.materialCardTitle}>{title}</span>
-        <span className={styles.materialCardAction}>{OPEN_MATERIAL_LABEL} →</span>
+        <span className={styles.materialCardAction}>
+          {OPEN_MATERIAL_LABEL} →
+        </span>
       </span>
     </Link>
   );
@@ -183,6 +190,7 @@ function ListingCard({
 
 function HomePage() {
   const router = useRouter();
+  const globalState = useGlobalContext();
   const { data, isLoading, error } = useCatalog();
   const {
     testSeries,
@@ -257,9 +265,7 @@ function HomePage() {
   const hasMaterials = data !== null && data.materials.length > 0;
   const isEmptyCatalog = data !== null && data.materials.length === 0;
 
-  const trending = hasMaterials
-    ? data.materials.slice(0, TRENDING_LIMIT)
-    : [];
+  const trending = hasMaterials ? data.materials.slice(0, TRENDING_LIMIT) : [];
   // The catalog is ordered oldest→newest, so the newest materials are at the
   // end; reverse a copy to surface the most recent first.
   const recentlyAdded = hasMaterials
@@ -277,14 +283,25 @@ function HomePage() {
   const hasTestSeries = showTestsContent && testSeries.length > 0;
   const hasSectionalTests = showTestsContent && sectionalTests.length > 0;
 
+  const isMobile = globalState.screen.isMobile ?? false;
+
   return (
     <div className={styles.page}>
       {/* Hero banner (Req 7.5). */}
       <section className={styles.hero}>
         <div className={styles.heroInner}>
           <div className={styles.heroText}>
-            <h1 className={styles.heroTitle}>{HERO_TITLE}</h1>
-            <p className={styles.heroSubtitle}>{HERO_SUBTITLE}</p>
+            <h1
+              className={classNames(
+                styles.heroTitle,
+                isMobile && styles.smHeading,
+              )}
+            >
+              {HERO_TITLE}
+            </h1>
+            {!globalState.screen.isMobile && (
+              <p className={styles.heroSubtitle}>{HERO_SUBTITLE}</p>
+            )}
             <form className={styles.heroSearch} onSubmit={handleHeroSearch}>
               <Input
                 id={HERO_SEARCH_INPUT_ID}

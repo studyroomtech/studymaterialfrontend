@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 // TestPlayer component (Req 9.3, 9.4, 10.1, 10.3, 11.1, 12.5).
 //
@@ -16,15 +16,15 @@
 // the shared theme via the sibling `Button`, `ErrorMessage`, and `EmptyState`
 // components where useful.
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import Button from '../Button/Button';
-import ErrorMessage from '../ErrorMessage/ErrorMessage';
+import Button from "../Button/Button";
+import ErrorMessage from "../ErrorMessage/ErrorMessage";
 import type {
   AttemptStatus,
   SectionStateDto,
-} from '../../types/testSeries.types';
-import styles from './TestPlayer.module.scss';
+} from "../../types/testSeries.types";
+import styles from "./TestPlayer.module.scss";
 import {
   ATTEMPT_STATUS_LABELS,
   COMPLETED_MESSAGE,
@@ -45,12 +45,12 @@ import {
   SECTIONS_OVERVIEW_LABEL,
   STATUS_LABEL_PREFIX,
   SUBMIT_ACTION_LABEL,
-} from './TestPlayer.constant';
-import type { TestPlayerProps } from './TestPlayer.types';
+} from "./TestPlayer.constant";
+import type { TestPlayerProps } from "./TestPlayer.types";
 
 /** Join a set of class names, dropping any falsy entries. */
 function classNames(...names: Array<string | false | undefined>): string {
-  return names.filter(Boolean).join(' ');
+  return names.filter(Boolean).join(" ");
 }
 
 /**
@@ -69,7 +69,7 @@ function formatRemaining(remainingSeconds: number): string {
   const minutes = totalMinutes % MINUTES_PER_HOUR;
   const hours = Math.floor(totalMinutes / MINUTES_PER_HOUR);
 
-  const pad = (value: number): string => value.toString().padStart(2, '0');
+  const pad = (value: number): string => value.toString().padStart(2, "0");
 
   if (hours > 0) {
     return `${hours}:${pad(minutes)}:${pad(seconds)}`;
@@ -97,16 +97,16 @@ function TestPlayer({
     () => ({ ...(initialSelections ?? {}) }),
   );
 
-  const isSectional = state.timingMode === 'sectional';
-  const isCompleted = state.status === 'completed';
-  const isPaused = state.status === 'paused';
-  const isInProgress = state.status === 'in_progress';
+  const isSectional = state.timingMode === "sectional";
+  const isCompleted = state.status === "completed";
+  const isPaused = state.status === "paused";
+  const isInProgress = state.status === "in_progress";
 
   // Index the per-Section state so the current Question's scope status and
   // remaining time can be resolved under Sectional Timing (Req 12.5).
   const sectionStateById = useMemo<Record<string, SectionStateDto>>(() => {
     const map: Record<string, SectionStateDto> = {};
-    for (const section of state.sections) {
+    for (const section of state.sections ?? []) {
       map[section.sectionId] = section;
     }
     return map;
@@ -127,15 +127,77 @@ function TestPlayer({
     isSectional && currentSectionState
       ? currentSectionState.status
       : state.status;
-  const remainingSeconds =
+  // The server-authoritative remaining time for the governing scope. This is
+  // the value the client countdown seeds from on every fresh API response.
+  const serverRemainingSeconds =
     isSectional && currentSectionState
       ? currentSectionState.remainingSeconds
       : state.remainingSeconds;
 
+  // Identifies the scope whose timer is displayed, so the countdown re-seeds
+  // when the governing scope changes (e.g. navigating to a Question in another
+  // Section under Sectional Timing).
+  const scopeKey =
+    isSectional && currentSectionState
+      ? currentSectionState.sectionId
+      : state.attemptId;
+
+  // The timer only ticks while the governing scope is actively `in_progress`
+  // (i.e. not paused/completed) — pausing the attempt stops the countdown.
+  const isTimerRunning = isInProgress && scopeStatus === "in_progress";
+
+  // Client-side display countdown. The server stays authoritative: every time
+  // the parent hands down a fresh `AttemptStateDto` (start/resume/respond/
+  // section-change) the displayed seconds are re-seeded to the server value,
+  // then tick down locally once per second while the scope is running.
+  const [displaySeconds, setDisplaySeconds] = useState<number>(
+    serverRemainingSeconds,
+  );
+
+  // Re-seed from the server whenever its value or the governing scope changes.
+  useEffect(() => {
+    setDisplaySeconds(serverRemainingSeconds);
+  }, [serverRemainingSeconds, scopeKey]);
+
+  // Tick down every second while running; frozen (interval cleared) when the
+  // attempt is paused, completed, or the scope is otherwise not in progress.
+  useEffect(() => {
+    if (!isTimerRunning) {
+      return undefined;
+    }
+    const interval = setInterval(() => {
+      setDisplaySeconds((previous) => (previous <= 0 ? 0 : previous - 1));
+    }, 1000);
+    return () => {
+      clearInterval(interval);
+    };
+  }, [isTimerRunning, serverRemainingSeconds, scopeKey]);
+
+  // Guard so the timeout auto-submit fires exactly once per run. Reset whenever
+  // the server hands down a fresh positive remaining time (start/resume), so a
+  // later expiry can trigger the submit again.
+  const autoSubmittedRef = useRef<boolean>(false);
+  useEffect(() => {
+    if (serverRemainingSeconds > 0) {
+      autoSubmittedRef.current = false;
+    }
+  }, [serverRemainingSeconds, scopeKey]);
+
+  // When the countdown reaches zero while the attempt is still in progress,
+  // auto-submit the attempt once. The server stays authoritative and finalizes
+  // + scores it; the parent navigates to the review on success.
+  useEffect(() => {
+    if (displaySeconds > 0 || !isInProgress || autoSubmittedRef.current) {
+      return;
+    }
+    autoSubmittedRef.current = true;
+    onSubmit();
+  }, [displaySeconds, isInProgress, onSubmit]);
+
   // Responses are accepted only while the governing scope is `in_progress`
   // (Req 9.4, 10.4, 11.3, 12.4); the server remains authoritative and will
   // reject anything else with a 422 surfaced via `failureMessage`.
-  const canAnswer = isInProgress && scopeStatus === 'in_progress';
+  const canAnswer = isInProgress && scopeStatus === "in_progress";
 
   const currentSelection = currentQuestion
     ? (selections[currentQuestion.id] ?? [])
@@ -176,7 +238,7 @@ function TestPlayer({
     setCurrentIndex((index) => Math.min(questions.length - 1, index + 1));
   }, [questions.length]);
 
-  const remainingDisplay = formatRemaining(remainingSeconds);
+  const remainingDisplay = formatRemaining(displaySeconds);
 
   return (
     <section className={classNames(styles.player, className)}>
@@ -239,9 +301,11 @@ function TestPlayer({
         <ErrorMessage message={failureMessage} className={styles.feedback} />
       ) : null}
 
-      {isSectional && state.sections.length > 0 ? (
+      {state.sections?.length > 0 ? (
         <div className={styles.sections}>
-          <span className={styles.sectionsLabel}>{SECTIONS_OVERVIEW_LABEL}</span>
+          <span className={styles.sectionsLabel}>
+            {SECTIONS_OVERVIEW_LABEL}
+          </span>
           <ul className={styles.sectionList}>
             {state.sections.map((section) => (
               <li key={section.sectionId} className={styles.sectionItem}>
@@ -253,9 +317,15 @@ function TestPlayer({
                 >
                   {ATTEMPT_STATUS_LABELS[section.status]}
                 </span>
-                <span className={styles.sectionTime}>
-                  {formatRemaining(section.remainingSeconds)}
-                </span>
+                {/* Under Sectional Timing each Section runs its own timer;
+                    under Overall Timing the Sections share the single attempt
+                    timer shown in the header, so the per-Section time is
+                    omitted to avoid implying independent countdowns. */}
+                {isSectional ? (
+                  <span className={styles.sectionTime}>
+                    {formatRemaining(section.remainingSeconds)}
+                  </span>
+                ) : null}
               </li>
             ))}
           </ul>
@@ -269,8 +339,7 @@ function TestPlayer({
           <nav className={styles.nav} aria-label={QUESTION_LABEL_PREFIX}>
             <ul className={styles.navList}>
               {questions.map((question, index) => {
-                const answered =
-                  (selections[question.id] ?? []).length > 0;
+                const answered = (selections[question.id] ?? []).length > 0;
                 return (
                   <li key={question.id}>
                     <button
@@ -297,7 +366,7 @@ function TestPlayer({
             </p>
             <p className={styles.questionText}>{currentQuestion.text}</p>
 
-            {isSectional && scopeStatus === 'completed' ? (
+            {isSectional && scopeStatus === "completed" ? (
               <p className={styles.sectionClosed}>{SECTION_CLOSED_MESSAGE}</p>
             ) : null}
 
@@ -310,7 +379,7 @@ function TestPlayer({
                     <label className={styles.optionLabel}>
                       <input
                         className={styles.optionInput}
-                        type={allowMultiple ? 'checkbox' : 'radio'}
+                        type={allowMultiple ? "checkbox" : "radio"}
                         name={currentQuestion.id}
                         value={option.id}
                         checked={checked}

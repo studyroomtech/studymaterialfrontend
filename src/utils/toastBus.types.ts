@@ -6,8 +6,8 @@
 // lifetime of the app — renders it as a toast. Keeping the contract here (not
 // in the module) follows the type-declaration file-split convention.
 
-/** The visual category of a toast. */
-export type ToastVariant = 'error' | 'success' | 'info';
+/** The visual category of a toast: neutral info (grey), error (red), warning (yellow). */
+export type ToastVariant = 'info' | 'error' | 'warning';
 
 /** A toast to display, emitted onto the bus by any producer. */
 export interface ToastPayload {

@@ -30,6 +30,7 @@ import {
   TOAST_DEFAULT_VARIANT,
   TOAST_DISMISS_LABEL,
   TOAST_REGION_LABEL,
+  TOAST_VARIANT_LABELS,
 } from './Toast.constant';
 import type {
   ToastContextValue,
@@ -40,9 +41,9 @@ import type {
 
 /** Map each variant to its style-module class for the toast card. */
 const VARIANT_CLASS: Record<ToastVariant, string> = {
-  error: styles.error,
-  success: styles.success,
   info: styles.info,
+  error: styles.error,
+  warning: styles.warning,
 };
 
 const ToastContext = createContext<ToastContextValue | null>(null);
@@ -130,6 +131,10 @@ function ToastProvider({ children }: ToastProviderProps) {
             className={`${styles.toast} ${VARIANT_CLASS[toast.variant]}`}
             role="alert"
           >
+            <span className={styles.badge}>
+              <span className={styles.dot} aria-hidden="true" />
+              {TOAST_VARIANT_LABELS[toast.variant]}
+            </span>
             <span className={styles.message}>{toast.message}</span>
             <button
               type="button"

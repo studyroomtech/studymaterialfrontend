@@ -187,8 +187,8 @@ export const useAttempt = (): UseAttemptResult => {
       );
       if (requestResult?.ok) {
         setResult(null);
-        setState(requestResult.data);
-        return requestResult.data;
+        setState(requestResult.data.attempt);
+        return requestResult.data.attempt;
       }
       return null;
     },
@@ -209,8 +209,8 @@ export const useAttempt = (): UseAttemptResult => {
       );
       if (requestResult?.ok) {
         setResult(null);
-        setState(requestResult.data);
-        return requestResult.data;
+        setState(requestResult.data.attempt);
+        return requestResult.data.attempt;
       }
       return null;
     },
@@ -233,8 +233,8 @@ export const useAttempt = (): UseAttemptResult => {
         ),
     );
     if (requestResult?.ok) {
-      setState(requestResult.data);
-      return requestResult.data;
+      setState(requestResult.data.attempt);
+      return requestResult.data.attempt;
     }
     return null;
   }, [execute, requireAttemptId]);
@@ -255,8 +255,8 @@ export const useAttempt = (): UseAttemptResult => {
         ),
     );
     if (requestResult?.ok) {
-      setState(requestResult.data);
-      return requestResult.data;
+      setState(requestResult.data.attempt);
+      return requestResult.data.attempt;
     }
     return null;
   }, [execute, requireAttemptId]);
@@ -282,8 +282,8 @@ export const useAttempt = (): UseAttemptResult => {
           ),
       );
       if (requestResult?.ok) {
-        setState(requestResult.data);
-        return requestResult.data;
+        setState(requestResult.data.attempt);
+        return requestResult.data.attempt;
       }
       return null;
     },
@@ -306,8 +306,8 @@ export const useAttempt = (): UseAttemptResult => {
         ),
     );
     if (requestResult?.ok) {
-      setResult(requestResult.data);
-      return requestResult.data;
+      setResult(requestResult.data.result);
+      return requestResult.data.result;
     }
     return null;
   }, [execute, requireAttemptId]);
@@ -326,8 +326,8 @@ export const useAttempt = (): UseAttemptResult => {
       );
       if (requestResult?.ok) {
         setResult(null);
-        setState(requestResult.data);
-        return requestResult.data;
+        setState(requestResult.data.attempt);
+        return requestResult.data.attempt;
       }
       return null;
     },
