@@ -1,0 +1,94 @@
+// StarRating styling — StudyForGovt.
+
+@use "../../styles/theme" as theme;
+@use "../../styles/mixins" as mixins;
+
+.root {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.1em;
+  line-height: 1;
+  color: theme.color("gold");
+}
+
+.sm {
+  font-size: theme.font-size("sm");
+}
+
+.md {
+  font-size: theme.font-size("lg");
+}
+
+.lg {
+  font-size: theme.font-size("2xl");
+}
+
+.star {
+  position: relative;
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+}
+
+.starEmpty {
+  color: theme.color("border");
+}
+
+.starFill {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  color: theme.color("gold");
+  white-space: nowrap;
+  width: 0;
+}
+
+// Quantized fill widths (nearest half star), driven by a class rather than an
+// inline style so the component stays lint-clean.
+.fill0 {
+  width: 0;
+}
+
+.fill50 {
+  width: 50%;
+}
+
+.fill100 {
+  width: 100%;
+}
+
+.starEmpty,
+.starFill {
+  display: inline-block;
+  line-height: 1;
+}
+
+// --- Interactive (radiogroup of star buttons) -----------------------------
+.interactive {
+  gap: 0.15em;
+}
+
+.starButton {
+  padding: 0;
+  margin: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  line-height: 1;
+  color: inherit;
+  transition: transform theme.$transition-base;
+}
+
+.starButton:hover:not(:disabled) {
+  transform: scale(1.12);
+}
+
+.starButton:focus-visible {
+  @include mixins.focus-ring;
+
+  border-radius: theme.$radius-sm;
+}
+
+.starButton:disabled {
+  cursor: default;
+}
