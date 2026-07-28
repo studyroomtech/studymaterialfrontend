@@ -1,8 +1,4 @@
-// DownloadGateModal styling (Requirements 1.18, 1.19, 1.20, 7.5).
-//
-// All modal presentation is authored here and derives every value from the
-// shared theme so the Download Gate matches the platform's single color
-// palette, typography scale, and spacing scale. No inline CSS is used.
+// DownloadGateModal styling — StudyForGovt admit-card modal.
 
 @use "../../styles/theme" as theme;
 @use "../../styles/mixins" as mixins;
@@ -15,41 +11,48 @@
   z-index: 1000;
   padding: theme.space("md");
   background-color: theme.color("overlay");
+  backdrop-filter: blur(3px);
   overflow-y: auto;
 }
 
 .dialog {
-  @include mixins.flex(column, flex-start, stretch, theme.space("lg"));
+  @include mixins.flex(column, flex-start, stretch, 0);
 
   width: 100%;
-  max-width: 28rem;
-  padding: theme.space("xl");
-  background-color: theme.color("background");
-  border: 1px solid theme.color("border");
+  max-width: 25rem;
+  background-color: theme.color("paper");
   border-radius: theme.$radius-lg;
-  box-shadow: theme.$shadow-md;
+  box-shadow: theme.$shadow-lg;
+  overflow: hidden;
 }
 
 .header {
   @include mixins.flex(column, flex-start, stretch, theme.space("xs"));
+
+  padding: 1.625rem 1.75rem 1.375rem;
+  background: theme.color("ink");
+  color: theme.color("text-inverse");
 }
 
 .title {
-  @include mixins.typography("xl", "semibold", theme.$line-height-heading);
-
+  font-family: theme.$font-family-display;
+  font-size: 1.5rem;
+  font-weight: theme.font-weight("semibold");
   margin: 0;
-  color: theme.color("text");
+  color: theme.color("text-inverse");
 }
 
 .description {
   @include mixins.typography("sm", "regular");
 
   margin: 0;
-  color: theme.color("text-muted");
+  color: #b9c4dc;
 }
 
 .form {
   @include mixins.flex(column, flex-start, stretch, theme.space("md"));
+
+  padding: 1.625rem 1.75rem 1.875rem;
 }
 
 .submitError {

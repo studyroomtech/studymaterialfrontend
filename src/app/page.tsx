@@ -1,14 +1,4 @@
-// Home / landing page (Requirements 3.1, 3.7, 3.8, 3.9, 7.5, 7.6).
-//
-// A visual landing page for the Platform. It loads the Material Catalog with
-// `useCatalog` and presents:
-//   - a hero banner with a search box that deep-links into the search page;
-//   - a "Trending Study Materials" strip of cards;
-//   - a "Subjects" grid of colorful tiles that filter the search page;
-//   - a "Recently Added" strip of the newest materials.
-// Loading, error, and empty states reuse the shared components and preserve the
-// current view on failure (Req 3.8, 3.9, 7.3). All styling lives in
-// `page.module.scss` (no inline CSS, Req 1.18, 1.19).
+// Home / landing page — StudyForGovt.
 
 "use client";
 
@@ -19,22 +9,38 @@ import { useRouter } from "next/navigation";
 
 import styles from "./page.module.scss";
 import {
+  ADMIT_CARD_SERIAL,
+  ADMIT_CARD_TAG,
   BUY_LABEL,
   CATALOG_EMPTY_MESSAGE,
   CATALOG_EMPTY_TITLE,
   CATALOG_ERROR_MESSAGE,
   CATALOG_ERROR_TITLE,
   CATALOG_LOADING_LABEL,
-  DEFAULT_SUBJECT_ICON,
-  HERO_ART_ICON,
+  CTA_BODY,
+  CTA_PRIMARY_HREF,
+  CTA_PRIMARY_LABEL,
+  CTA_SECONDARY_HREF,
+  CTA_SECONDARY_LABEL,
+  CTA_TITLE,
+  DEFAULT_EXAM_TAG,
+  FREE_STAMP_LABEL,
+  HERO_CATEGORY_ALL,
+  HERO_CATEGORY_LABEL,
+  HERO_CATEGORY_SELECT_ID,
+  HERO_EYEBROW,
   HERO_SEARCH_INPUT_ID,
   HERO_SEARCH_LABEL,
   HERO_SEARCH_PLACEHOLDER,
   HERO_SEARCH_SUBMIT_LABEL,
   HERO_SUBTITLE,
-  HERO_TITLE,
-  MATERIAL_ICON,
+  HERO_TITLE_BEFORE,
+  HERO_TITLE_EMPHASIS,
+  HOW_IT_WORKS_EYEBROW,
+  HOW_IT_WORKS_STEPS,
+  HOW_IT_WORKS_TITLE,
   OPEN_MATERIAL_LABEL,
+  PAID_STAMP_LABEL,
   PURCHASE_FAILED_FALLBACK,
   PURCHASE_FAILED_TITLE,
   PURCHASE_SUCCESS_MESSAGE,
@@ -48,17 +54,21 @@ import {
   SECTIONAL_TESTS_EMPTY_TITLE,
   SECTIONAL_TESTS_SECTION_TITLE,
   START_TEST_LABEL,
+  STAT_CATEGORIES_LABEL,
+  STAT_MATERIALS_LABEL,
+  STAT_TESTS_LABEL,
   SUBJECT_CATEGORY_TYPE_NAME,
-  SUBJECT_ICON_BY_NAME,
+  SUBJECTS_EYEBROW,
   SUBJECTS_LIMIT,
   SUBJECTS_SECTION_TITLE,
-  TEST_ICON,
   TEST_LISTINGS_ERROR_MESSAGE,
   TEST_LISTINGS_ERROR_TITLE,
   TEST_LISTINGS_LOADING_LABEL,
   TEST_SERIES_EMPTY_MESSAGE,
   TEST_SERIES_EMPTY_TITLE,
   TEST_SERIES_SECTION_TITLE,
+  TRENDING_DESC,
+  TRENDING_EYEBROW,
   TRENDING_LIMIT,
   TRENDING_SECTION_TITLE,
   UNTITLED_MATERIAL_LABEL,
@@ -69,7 +79,6 @@ import DownloadGateModal from "../components/DownloadGateModal/DownloadGateModal
 import EmptyState from "../components/EmptyState/EmptyState";
 import Footer from "../components/Footer/Footer";
 import ErrorMessage from "../components/ErrorMessage/ErrorMessage";
-import Input from "../components/Input/Input";
 import LoadingIndicator from "../components/LoadingIndicator/LoadingIndicator";
 import PaymentModal from "../components/PaymentModal/PaymentModal";
 import { usePayment } from "../hooks/api/usePayment";
@@ -83,42 +92,65 @@ import type {
   CatalogCategory,
   CatalogMaterial,
 } from "../utils/catalogTree.types";
-import { useGlobalContext } from "@/context/global-context/provider";
-import { classNames } from "@/utils/classnames";
-import { isMobile } from "@/utils/browser";
+import {
+  MaterialCoverArt,
+  coverVariantLabel,
+  resolveCoverVariant,
+} from "../components/MaterialCoverArt/MaterialCoverArt";
 
-/** Resolve the decorative emoji for a subject tile from its name. */
-function subjectIcon(name: string): string {
-  return (
-    SUBJECT_ICON_BY_NAME[name.trim().toLowerCase()] ?? DEFAULT_SUBJECT_ICON
-  );
+function firstTagName(material: CatalogMaterial): string {
+  for (const tags of Object.values(material.tagsByCategoryType)) {
+    if (tags.length > 0 && tags[0].name.trim().length > 0) {
+      return tags[0].name;
+    }
+  }
+  return DEFAULT_EXAM_TAG;
 }
 
-/** A single Study Material card linking to the material's view page. */
-function MaterialCard({ material }: { material: CatalogMaterial }) {
+function formatRank(index: number): string {
+  return String(index + 1).padStart(2, "0");
+}
+
+function RankCard({
+  material,
+  rank,
+}: {
+  material: CatalogMaterial;
+  rank: number;
+}) {
   const title =
     material.title.length > 0 ? material.title : UNTITLED_MATERIAL_LABEL;
+  const tag = firstTagName(material);
+  const coverVariant = resolveCoverVariant(material.id);
+
   return (
-    <Link href={`/materials/${material.id}`} className={styles.materialCard}>
-      <span className={styles.materialThumb} aria-hidden="true">
-        {MATERIAL_ICON}
-      </span>
-      <span className={styles.materialCardBody}>
-        <span className={styles.materialCardTitle}>{title}</span>
-        <span className={styles.materialCardAction}>
-          {OPEN_MATERIAL_LABEL} →
+    <Link href={`/materials/${material.id}`} className={styles.rankCard}>
+      <div className={styles.rankCover}>
+        <MaterialCoverArt
+          variant={coverVariant}
+          uid={material.id}
+          className={styles.rankCoverArt}
+        />
+        <span className={styles.rankNum} aria-hidden="true">
+          {formatRank(rank)}
         </span>
-      </span>
+        <span className={styles.coverBadge}>
+          {coverVariantLabel(coverVariant)}
+        </span>
+      </div>
+      <div className={styles.rankCardBody}>
+        <div className={styles.rankCardTop}>
+          <span className={styles.examTag}>{tag}</span>
+        </div>
+        <h3 className={styles.rankCardTitle}>{title}</h3>
+        <div className={styles.rankCardFoot}>
+          <span className={styles.linkArrow}>{OPEN_MATERIAL_LABEL} →</span>
+        </div>
+      </div>
     </Link>
   );
 }
 
-/**
- * Render a listing's Price for display. A product with no Price or a zero Price
- * shows the shared free indicator; a priced product shows its integer amount in
- * the smallest currency unit (paise) alongside its resolved Currency (Req 6.2,
- * 6.3). Classification and the free label come from the shared `utils/price`.
- */
 function listingPriceLabel(
   priceAmount: number | null,
   currency: string,
@@ -129,17 +161,6 @@ function listingPriceLabel(
   return `${priceAmount} ${resolveCurrency(currency)}`;
 }
 
-/**
- * A single Test Series / Sectional Test listing card: the product's title, its
- * Price (or free indicator), and an ownership-aware call-to-action. When the
- * Learner already owns the product (`isEntitled`), the card renders a "Start
- * test" action that hands off to the parent's `onStart`, which navigates into
- * the product's attempt route to begin/resume the test rather than initiating a
- * purchase (Req 2.1, 2.2, 2.4). Otherwise it renders the "Buy" action, handing
- * the product reference to the parent's `onBuy`, which drives the shared
- * `usePayment` product-cart checkout (Req 7.1); the Buy button is disabled while
- * any purchase is in flight so two carts cannot be initiated at once.
- */
 function ListingCard({
   title,
   priceAmount,
@@ -160,15 +181,15 @@ function ListingCard({
   const free = isFreeAmount(priceAmount);
   return (
     <div className={styles.testCard}>
-      <span className={styles.testThumb} aria-hidden="true">
-        {TEST_ICON}
-      </span>
-      <div className={styles.testCardBody}>
-        <span className={styles.testCardTitle}>{title}</span>
-        <span className={free ? styles.testCardFree : styles.testCardPrice}>
-          {listingPriceLabel(priceAmount, currency)}
+      <div className={styles.testCardTop}>
+        <span className={free ? styles.stampFree : styles.stampPaid}>
+          {free ? FREE_STAMP_LABEL : PAID_STAMP_LABEL}
         </span>
       </div>
+      <h3 className={styles.testCardTitle}>{title}</h3>
+      <span className={free ? styles.testCardFree : styles.testCardPrice}>
+        {listingPriceLabel(priceAmount, currency)}
+      </span>
       {isEntitled ? (
         <Button type="button" variant="primary" size="sm" onClick={onStart}>
           {START_TEST_LABEL}
@@ -176,7 +197,7 @@ function ListingCard({
       ) : (
         <Button
           type="button"
-          variant="primary"
+          variant="gold"
           size="sm"
           onClick={onBuy}
           disabled={disabled}
@@ -190,7 +211,6 @@ function ListingCard({
 
 function HomePage() {
   const router = useRouter();
-  const globalState = useGlobalContext();
   const { data, isLoading, error } = useCatalog();
   const {
     testSeries,
@@ -200,14 +220,12 @@ function HomePage() {
   } = useTestListings();
   const payment = usePayment();
   const [heroQuery, setHeroQuery] = useState("");
+  const [heroCategoryId, setHeroCategoryId] = useState("");
   const [showPurchaseSuccess, setShowPurchaseSuccess] =
     useState<boolean>(false);
 
   const { isEntitled, reset, startProductCheckout } = payment;
 
-  // On a verified product-cart Payment: show success and reset the flow so the
-  // Learner can purchase again (Req 7.4). Entitlement-derived listing state is
-  // owned by the server; the Home Page just confirms the outcome.
   useEffect(() => {
     if (isEntitled) {
       setShowPurchaseSuccess(true);
@@ -215,8 +233,6 @@ function HomePage() {
     }
   }, [isEntitled, reset]);
 
-  // A purchase is in flight while the order is being initiated or verified;
-  // disable every Buy button so only one product-cart order runs at a time.
   const isPurchasing = payment.isInitiating || payment.isVerifying;
 
   const buyProduct = useCallback(
@@ -234,18 +250,20 @@ function HomePage() {
   const handleHeroSearch = useCallback(
     (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
+      const params = new URLSearchParams();
       const trimmed = heroQuery.trim();
-      const href =
-        trimmed.length > 0
-          ? `${SEARCH_HREF}?${SEARCH_QUERY_PARAM}=${encodeURIComponent(trimmed)}`
-          : SEARCH_HREF;
-      router.push(href);
+      if (trimmed.length > 0) {
+        params.set(SEARCH_QUERY_PARAM, trimmed);
+      }
+      if (heroCategoryId.length > 0) {
+        params.set(SEARCH_CATEGORY_PARAM, heroCategoryId);
+      }
+      const qs = params.toString();
+      router.push(qs.length > 0 ? `${SEARCH_HREF}?${qs}` : SEARCH_HREF);
     },
-    [heroQuery, router],
+    [heroQuery, heroCategoryId, router],
   );
 
-  // Subjects come from the "Subject" Category Type; fall back to every category
-  // across all types when no dedicated Subject type exists yet.
   const subjects = useMemo<CatalogCategory[]>(() => {
     if (data === null) {
       return [];
@@ -260,66 +278,120 @@ function HomePage() {
     return source.slice(0, SUBJECTS_LIMIT);
   }, [data]);
 
+  const allCategories = useMemo<CatalogCategory[]>(() => {
+    if (data === null) {
+      return [];
+    }
+    return data.categoryTypes.flatMap((type) => type.categories);
+  }, [data]);
+
   const showError = error !== null;
   const showInitialLoading = isLoading && data === null;
   const hasMaterials = data !== null && data.materials.length > 0;
   const isEmptyCatalog = data !== null && data.materials.length === 0;
 
   const trending = hasMaterials ? data.materials.slice(0, TRENDING_LIMIT) : [];
-  // The catalog is ordered oldest→newest, so the newest materials are at the
-  // end; reverse a copy to surface the most recent first.
   const recentlyAdded = hasMaterials
     ? [...data.materials].reverse().slice(0, RECENTLY_ADDED_LIMIT)
     : [];
 
-  // Test listings states (Req 6.5–6.7). On failure the hook returns empty
-  // arrays, so gating the empty-states and rows on `!showTestsError` guarantees
-  // no partial, stale, or empty-state content is shown on error (Req 6.7). The
-  // loading indicator is shown while the request is in flight and suppresses
-  // both sections' empty-states (Req 6.5).
   const showTestsError = testsError !== null;
   const showTestsLoading = !showTestsError && isTestsLoading;
   const showTestsContent = !showTestsError && !isTestsLoading;
   const hasTestSeries = showTestsContent && testSeries.length > 0;
   const hasSectionalTests = showTestsContent && sectionalTests.length > 0;
 
-  const isMobile = globalState.screen.isMobile ?? false;
+  const materialCount = data?.materials.length ?? 0;
+  const categoryCount = allCategories.length;
+  const testCount = testSeries.length + sectionalTests.length;
 
   return (
     <div className={styles.page}>
-      {/* Hero banner (Req 7.5). */}
       <section className={styles.hero}>
         <div className={styles.heroInner}>
           <div className={styles.heroText}>
-            <h1
-              className={classNames(
-                styles.heroTitle,
-                isMobile && styles.smHeading,
-              )}
-            >
-              {HERO_TITLE}
+            <div className={styles.eyebrow}>{HERO_EYEBROW}</div>
+            <h1 className={styles.heroTitle}>
+              {HERO_TITLE_BEFORE}
+              <em>{HERO_TITLE_EMPHASIS}</em>
             </h1>
-            {!globalState.screen.isMobile && (
-              <p className={styles.heroSubtitle}>{HERO_SUBTITLE}</p>
-            )}
-            <form className={styles.heroSearch} onSubmit={handleHeroSearch}>
-              <Input
-                id={HERO_SEARCH_INPUT_ID}
-                className={styles.heroSearchInput}
-                label={HERO_SEARCH_LABEL}
-                hideLabel
-                type="search"
-                placeholder={HERO_SEARCH_PLACEHOLDER}
-                value={heroQuery}
-                onChange={(event) => setHeroQuery(event.target.value)}
-              />
-              <Button type="submit" variant="primary">
-                {HERO_SEARCH_SUBMIT_LABEL}
-              </Button>
-            </form>
+            <p className={styles.heroSubtitle}>{HERO_SUBTITLE}</p>
+            {hasMaterials || categoryCount > 0 || testCount > 0 ? (
+              <div className={styles.heroStats}>
+                {materialCount > 0 ? (
+                  <div className={styles.heroStat}>
+                    <div className={styles.heroStatNum}>{materialCount}</div>
+                    <div className={styles.heroStatLbl}>
+                      {STAT_MATERIALS_LABEL}
+                    </div>
+                  </div>
+                ) : null}
+                {categoryCount > 0 ? (
+                  <div className={styles.heroStat}>
+                    <div className={styles.heroStatNum}>{categoryCount}</div>
+                    <div className={styles.heroStatLbl}>
+                      {STAT_CATEGORIES_LABEL}
+                    </div>
+                  </div>
+                ) : null}
+                {testCount > 0 ? (
+                  <div className={styles.heroStat}>
+                    <div className={styles.heroStatNum}>{testCount}</div>
+                    <div className={styles.heroStatLbl}>{STAT_TESTS_LABEL}</div>
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
           </div>
-          <div className={styles.heroArt} aria-hidden="true">
-            <span className={styles.heroArtIcon}>{HERO_ART_ICON}</span>
+
+          <div className={styles.admitCard}>
+            <span className={styles.perforation} aria-hidden="true" />
+            <span
+              className={`${styles.perforation} ${styles.perforationRight}`}
+              aria-hidden="true"
+            />
+            <div className={styles.admitCardHead}>
+              <span className={styles.admitTag}>{ADMIT_CARD_TAG}</span>
+              <span className={styles.admitSerial}>{ADMIT_CARD_SERIAL}</span>
+            </div>
+            <form className={styles.admitCardBody} onSubmit={handleHeroSearch}>
+              <label className={styles.fieldLabel} htmlFor={HERO_CATEGORY_SELECT_ID}>
+                {HERO_CATEGORY_LABEL}
+              </label>
+              <div className={styles.searchField}>
+                <select
+                  id={HERO_CATEGORY_SELECT_ID}
+                  className={styles.searchSelect}
+                  value={heroCategoryId}
+                  onChange={(event) => setHeroCategoryId(event.target.value)}
+                >
+                  <option value="">{HERO_CATEGORY_ALL}</option>
+                  {allCategories.map((cat) => (
+                    <option key={cat.id} value={cat.id}>
+                      {cat.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <label className={styles.fieldLabel} htmlFor={HERO_SEARCH_INPUT_ID}>
+                {HERO_SEARCH_LABEL}
+              </label>
+              <div className={styles.searchField}>
+                <input
+                  id={HERO_SEARCH_INPUT_ID}
+                  className={styles.searchInput}
+                  type="search"
+                  placeholder={HERO_SEARCH_PLACEHOLDER}
+                  value={heroQuery}
+                  onChange={(event) => setHeroQuery(event.target.value)}
+                  aria-label={HERO_SEARCH_LABEL}
+                />
+              </div>
+              <button type="submit" className={styles.searchSubmit}>
+                {HERO_SEARCH_SUBMIT_LABEL}
+              </button>
+            </form>
           </div>
         </div>
       </section>
@@ -349,65 +421,22 @@ function HomePage() {
           />
         ) : null}
 
-        {/* Trending materials. */}
-        {trending.length > 0 ? (
-          <section className={styles.section}>
-            <div className={styles.sectionHeader}>
-              <h2 className={styles.sectionTitle}>{TRENDING_SECTION_TITLE}</h2>
-              <Link href={SEARCH_HREF} className={styles.viewAll}>
-                {VIEW_ALL_LABEL}
-              </Link>
-            </div>
-            <div className={styles.materialGrid}>
-              {trending.map((material) => (
-                <MaterialCard key={material.id} material={material} />
-              ))}
-            </div>
-          </section>
-        ) : null}
-
-        {/* Subject tiles. */}
-        {subjects.length > 0 ? (
-          <section className={styles.section}>
-            <div className={styles.sectionHeader}>
-              <h2 className={styles.sectionTitle}>{SUBJECTS_SECTION_TITLE}</h2>
-              <Link href={SEARCH_HREF} className={styles.viewAll}>
-                {VIEW_ALL_LABEL}
-              </Link>
-            </div>
-            <ul className={styles.subjectGrid}>
-              {subjects.map((subject) => (
-                <li key={subject.id} className={styles.subjectItem}>
-                  <Link
-                    href={`${SEARCH_HREF}?${SEARCH_CATEGORY_PARAM}=${encodeURIComponent(subject.id)}`}
-                    className={styles.subjectTile}
-                  >
-                    <span className={styles.subjectIcon} aria-hidden="true">
-                      {subjectIcon(subject.name)}
-                    </span>
-                    <span className={styles.subjectName}>{subject.name}</span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </section>
-        ) : null}
-
-        {/* Recently added materials. */}
         {recentlyAdded.length > 0 ? (
-          <section className={styles.section}>
-            <div className={styles.sectionHeader}>
-              <h2 className={styles.sectionTitle}>
-                {RECENTLY_ADDED_SECTION_TITLE}
-              </h2>
+          <section className={styles.section} id="recent">
+            <div className={styles.sectionHead}>
+              <div>
+                <h2 className={styles.sectionTitle}>
+                  {RECENTLY_ADDED_SECTION_TITLE}
+                </h2>
+              </div>
               <Link href={SEARCH_HREF} className={styles.viewAll}>
-                {VIEW_ALL_LABEL}
+                {VIEW_ALL_LABEL} →
               </Link>
             </div>
-            <div className={styles.materialGrid}>
-              {recentlyAdded.map((material) => (
-                <div key={material.id} className={styles.recentCardWrap}>
-                  <MaterialCard material={material} />
+            <div className={styles.trendingGrid}>
+              {recentlyAdded.map((material, index) => (
+                <div key={material.id} className={styles.recentWrap}>
+                  <RankCard material={material} rank={index} />
                   <span className={styles.recentCaption}>
                     {RECENTLY_ADDED_CAPTION}
                   </span>
@@ -417,10 +446,98 @@ function HomePage() {
           </section>
         ) : null}
 
-        {/* Test listings: a single failed load replaces both sections with an
-            error message and shows no partial/stale/empty content (Req 6.7);
-            while loading, a single loading indicator covers both sections and
-            no empty-state is shown (Req 6.5). */}
+        {trending.length > 0 ? (
+          <section className={styles.section} id="trending">
+            <div className={styles.sectionHead}>
+              <div>
+                <div className={styles.sectionEyebrow}>{TRENDING_EYEBROW}</div>
+                <h2 className={styles.sectionTitle}>{TRENDING_SECTION_TITLE}</h2>
+              </div>
+              <p className={styles.sectionDesc}>{TRENDING_DESC}</p>
+            </div>
+            <div className={styles.trendingGrid}>
+              {trending.map((material, index) => (
+                <RankCard
+                  key={material.id}
+                  material={material}
+                  rank={index}
+                />
+              ))}
+            </div>
+            <div className={styles.sectionFooter}>
+              <Link href={SEARCH_HREF} className={styles.viewAll}>
+                {VIEW_ALL_LABEL} →
+              </Link>
+            </div>
+          </section>
+        ) : null}
+      </div>
+
+      {subjects.length > 0 ? (
+        <section className={styles.catBand}>
+          <div className={styles.catInner}>
+            <div className={styles.sectionHead}>
+              <div>
+                <div className={styles.sectionEyebrow}>{SUBJECTS_EYEBROW}</div>
+                <h2 className={styles.sectionTitle}>{SUBJECTS_SECTION_TITLE}</h2>
+              </div>
+            </div>
+            <div className={styles.catGrid}>
+              {subjects.map((subject) => (
+                <Link
+                  key={subject.id}
+                  href={`${SEARCH_HREF}?${SEARCH_CATEGORY_PARAM}=${encodeURIComponent(subject.id)}`}
+                  className={styles.catTile}
+                >
+                  <span className={styles.catName}>{subject.name}</span>
+                  <span className={styles.catCount}>Browse →</span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      ) : null}
+
+      <section className={styles.section}>
+        <div className={styles.wrap}>
+          <div className={styles.sectionHead}>
+            <div>
+              <div className={styles.sectionEyebrow}>{HOW_IT_WORKS_EYEBROW}</div>
+              <h2 className={styles.sectionTitle}>{HOW_IT_WORKS_TITLE}</h2>
+            </div>
+          </div>
+          <div className={styles.steps}>
+            {HOW_IT_WORKS_STEPS.map((step) => (
+              <div key={step.index} className={styles.step}>
+                <span className={styles.stepIndex}>{step.index}</span>
+                <h3 className={styles.stepTitle}>{step.title}</h3>
+                <p className={styles.stepBody}>{step.body}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className={styles.ctaBand}>
+        <div className={styles.ctaInner}>
+          <div>
+            <h2 className={styles.ctaTitle}>{CTA_TITLE}</h2>
+            <p className={styles.ctaBody}>{CTA_BODY}</p>
+          </div>
+          <div className={styles.ctaActions}>
+            <Link href={CTA_PRIMARY_HREF}>
+              <Button type="button" variant="gold">
+                {CTA_PRIMARY_LABEL}
+              </Button>
+            </Link>
+            <Link href={CTA_SECONDARY_HREF} className={styles.ctaGhost}>
+              {CTA_SECONDARY_LABEL}
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <div className={styles.content}>
         {showTestsError ? (
           <ErrorMessage
             title={TEST_LISTINGS_ERROR_TITLE}
@@ -437,10 +554,6 @@ function HomePage() {
           />
         ) : null}
 
-        {/* Product-cart purchase outcome (Req 7.4, 7.5). A verified Payment
-            confirms success; an initiation/verification failure surfaces the
-            backend envelope message (ALREADY_ENTITLED / PAYMENT_NOT_REQUIRED /
-            VALIDATION_ERROR) inline, in addition to the global Toast. */}
         {showPurchaseSuccess ? (
           <p className={styles.status} role="status">
             {PURCHASE_SUCCESS_MESSAGE}
@@ -456,14 +569,14 @@ function HomePage() {
           />
         ) : null}
 
-        {/* Test Series section (every Test, including free), in the
-            server-provided deterministic order (Req 6.1, 6.4). */}
         {showTestsContent ? (
           <section className={styles.section}>
-            <div className={styles.sectionHeader}>
-              <h2 className={styles.sectionTitle}>
-                {TEST_SERIES_SECTION_TITLE}
-              </h2>
+            <div className={styles.sectionHead}>
+              <div>
+                <h2 className={styles.sectionTitle}>
+                  {TEST_SERIES_SECTION_TITLE}
+                </h2>
+              </div>
             </div>
             {hasTestSeries ? (
               <div className={styles.testGrid}>
@@ -490,14 +603,14 @@ function HomePage() {
           </section>
         ) : null}
 
-        {/* Sectional Tests section (Sections with a positive Price), in the
-            server-provided deterministic order (Req 6.1, 6.4). */}
         {showTestsContent ? (
           <section className={styles.section}>
-            <div className={styles.sectionHeader}>
-              <h2 className={styles.sectionTitle}>
-                {SECTIONAL_TESTS_SECTION_TITLE}
-              </h2>
+            <div className={styles.sectionHead}>
+              <div>
+                <h2 className={styles.sectionTitle}>
+                  {SECTIONAL_TESTS_SECTION_TITLE}
+                </h2>
+              </div>
             </div>
             {hasSectionalTests ? (
               <div className={styles.testGrid}>
@@ -529,8 +642,6 @@ function HomePage() {
         ) : null}
       </div>
 
-      {/* Learner identification before a product-cart Payment can be initiated
-          (Req 7.3, 6.10). */}
       <DownloadGateModal
         isOpen={payment.isGateOpen}
         onSubmit={payment.submitGate}
@@ -540,7 +651,6 @@ function HomePage() {
         submitError={payment.gateError}
       />
 
-      {/* Razorpay Checkout launcher for the product-cart buy flow (Req 7.1). */}
       <PaymentModal
         isOpen={payment.isModalOpen}
         order={payment.order}

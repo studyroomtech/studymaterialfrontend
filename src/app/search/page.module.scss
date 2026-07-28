@@ -1,8 +1,4 @@
-// Styling for the Search page (Requirements 4.1–4.5, 1.18, 1.20, 7.5).
-//
-// Matches the landing page's visual language: a gradient header band holding
-// the title and a white controls card, with results rendered as a card grid.
-// All presentation derives from the shared theme. No inline CSS (Req 1.19).
+// Styling for the Search page — StudyForGovt.
 
 @use "../../styles/theme" as theme;
 @use "../../styles/mixins" as mixins;
@@ -14,28 +10,41 @@
   padding-block: theme.space("xl");
 }
 
-// ---- Gradient header band ------------------------------------------------
+// ---- Ink header band -----------------------------------------------------
 .hero {
   @include mixins.flex(column, flex-start, stretch, theme.space("lg"));
 
   padding: theme.space("xl");
-  border-radius: theme.$radius-lg;
-  background-image: linear-gradient(
-    135deg,
-    theme.color("primary") 0%,
-    theme.color("primary-active") 55%,
-    #0f2a6b 100%
-  );
+  border-radius: theme.$radius-md;
+  background: theme.color("ink");
   box-shadow: theme.$shadow-md;
+  overflow: hidden;
+  position: relative;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 46px 46px;
+  mask-image: radial-gradient(ellipse at 70% 20%, black 0%, transparent 65%);
+  pointer-events: none;
 }
 
 .header {
   @include mixins.flex(column, flex-start, stretch, theme.space("xs"));
+
+  position: relative;
 }
 
 .title {
-  @include mixins.typography("2xl", "bold", theme.$line-height-heading);
-
+  font-family: theme.$font-family-display;
+  font-size: theme.font-size("2xl");
+  font-weight: theme.font-weight("semibold");
+  line-height: theme.$line-height-heading;
   margin: 0;
   color: theme.color("text-inverse");
 }
@@ -44,16 +53,18 @@
   @include mixins.typography("md", "regular");
 
   margin: 0;
-  color: rgba(255, 255, 255, 0.85);
+  color: #c9d2e4;
 }
 
-// White card holding the search input + filter so field labels stay readable.
+// Paper card holding the search input + filter.
 .controlsCard {
   @include mixins.flex(column, flex-start, stretch, theme.space("md"));
 
+  position: relative;
   padding: theme.space("lg");
   border-radius: theme.$radius-md;
-  background-color: theme.color("background");
+  background-color: theme.color("surface");
+  border: 1px solid theme.color("border");
   box-shadow: theme.$shadow-sm;
 
   @include mixins.respond-up("md") {
@@ -77,9 +88,12 @@
 }
 
 .filterLabel {
-  @include mixins.typography("sm", "medium");
-
-  color: theme.color("text");
+  font-family: theme.$font-family-mono;
+  font-size: theme.font-size("xs");
+  font-weight: theme.font-weight("medium");
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: theme.color("ink-soft");
 }
 
 .filterSelect {
@@ -88,22 +102,22 @@
   width: 100%;
   padding-block: theme.space("sm");
   padding-inline: theme.space("md");
-  border: 1px solid theme.color("border");
-  border-radius: theme.$radius-md;
-  background-color: theme.color("background");
-  color: theme.color("text");
+  border: 1.5px solid theme.color("border-dark");
+  border-radius: theme.$radius-sm;
+  background-color: theme.color("surface");
+  color: theme.color("ink");
   cursor: pointer;
   transition: border-color theme.$transition-base;
 }
 
 .filterSelect:hover {
-  border-color: theme.color("primary");
+  border-color: theme.color("gold");
 }
 
 .filterSelect:focus-visible {
   @include mixins.focus-ring;
 
-  border-color: theme.color("primary");
+  border-color: theme.color("gold");
 }
 
 // ---- Results -------------------------------------------------------------
@@ -114,7 +128,7 @@
 .resultGrid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: theme.space("md");
+  gap: 1.25rem;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -133,67 +147,134 @@
 }
 
 .resultCard {
-  @include mixins.flex(column, flex-start, flex-start, theme.space("sm"));
-
+  display: flex;
+  flex-direction: column;
   height: 100%;
-  padding: theme.space("md");
   border: 1px solid theme.color("border");
   border-radius: theme.$radius-md;
-  background-color: theme.color("background");
-  box-shadow: theme.$shadow-sm;
+  background-color: theme.color("surface");
+  overflow: hidden;
   text-decoration: none;
   color: inherit;
   transition:
-    transform 0.15s ease,
-    border-color 0.15s ease,
-    box-shadow 0.15s ease;
+    transform theme.$transition-base,
+    border-color theme.$transition-base,
+    box-shadow theme.$transition-base;
 }
 
 .resultCard:hover {
-  transform: translateY(-2px);
-  border-color: theme.color("primary");
+  transform: translateY(-3px);
+  border-color: theme.color("border-dark");
   box-shadow: theme.$shadow-md;
+  text-decoration: none;
+  color: inherit;
 }
 
 .resultCard:focus-visible {
   @include mixins.focus-ring;
 }
 
-.resultThumb {
-  @include mixins.flex(row, center, center, 0);
+.resultCover {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: theme.color("ink");
+}
 
-  width: 2.75rem;
-  height: 2.75rem;
-  font-size: 1.4rem;
-  border-radius: theme.$radius-md;
-  background-color: theme.color("surface-alt");
+.resultCoverArt {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.coverBadge {
+  position: absolute;
+  left: 0.75rem;
+  bottom: 0.75rem;
+  z-index: 1;
+  font-family: theme.$font-family-mono;
+  font-size: 0.625rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: theme.font-weight("semibold");
+  color: theme.color("ink");
+  background: theme.color("gold-bright");
+  padding: 0.3rem 0.55rem;
+  border-radius: theme.$radius-sm;
+}
+
+.resultBody {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 0.5rem;
+  padding: 1rem 1.15rem 1.1rem;
+}
+
+.examTag {
+  align-self: flex-start;
+  font-family: theme.$font-family-mono;
+  font-size: 0.65625rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: theme.color("paper-2");
+  color: theme.color("ink-soft");
+  padding: 0.25rem 0.5625rem;
+  border-radius: theme.$radius-sm;
 }
 
 .resultTitle {
-  @include mixins.typography("lg", "semibold", theme.$line-height-heading);
-
-  color: theme.color("text");
+  font-family: theme.$font-family-display;
+  font-size: 1.1rem;
+  font-weight: theme.font-weight("semibold");
+  line-height: 1.3;
+  color: theme.color("ink");
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .resultDescription {
   @include mixins.typography("sm", "regular");
 
-  color: theme.color("text-muted");
+  color: theme.color("ink-soft");
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .tagList {
   @include mixins.flex(row, flex-start, center, theme.space("xs"));
 
   flex-wrap: wrap;
-  margin-block-start: auto;
 }
 
 .tag {
-  @include mixins.typography("xs", "medium");
-
+  font-family: theme.$font-family-mono;
+  font-size: theme.font-size("xs");
+  font-weight: theme.font-weight("medium");
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   padding-block: theme.space("xs");
   padding-inline: theme.space("sm");
   border-radius: theme.$radius-sm;
-  background-color: theme.color("surface-alt");
-  color: theme.color("text-muted");
+  background-color: theme.color("paper-2");
+  color: theme.color("ink-soft");
+}
+
+.resultFoot {
+  margin-top: auto;
+  padding-top: 0.75rem;
+  border-top: 1px solid theme.color("border");
+  font-size: 0.8125rem;
+  font-weight: theme.font-weight("semibold");
+  color: theme.color("ink");
+  text-align: right;
+}
+
+.resultCard:hover .resultFoot {
+  color: theme.color("gold");
 }

@@ -1,49 +1,51 @@
-// Incremental Section + Questions editor styling (Requirements 3.1, 4.1, 5.1,
-// 5.2, 5.3).
+// Incremental Section + Questions editor styling — StudyForGovt (Requirements
+// 3.1, 4.1, 5.1, 5.2, 5.3).
 //
-// All presentation is authored here and derives every value from the shared
-// theme so the Section editor matches the platform's single color palette,
-// typography scale, and spacing scale. No inline CSS is used.
+// Dense admin Section editor. All presentation derives from the shared theme
+// (paper / ink / gold). No inline CSS is used.
 
 @use "../../styles/theme" as theme;
 @use "../../styles/mixins" as mixins;
 
 .editor {
-  @include mixins.flex(column, flex-start, stretch, theme.space("lg"));
+  @include mixins.flex(column, flex-start, stretch, theme.space("md"));
 }
 
 .heading {
-  @include mixins.typography("lg", "semibold");
-
+  font-family: theme.$font-family-display;
+  font-size: theme.font-size("md");
+  font-weight: theme.font-weight("semibold");
   margin: 0;
-  color: theme.color("text");
+  color: theme.color("ink");
 }
 
 .subHeading {
-  @include mixins.typography("md", "semibold");
-
+  font-family: theme.$font-family-display;
+  font-size: theme.font-size("sm");
+  font-weight: theme.font-weight("semibold");
   margin: 0;
-  color: theme.color("text");
+  color: theme.color("ink");
 }
 
 .feedback {
-  @include mixins.typography("sm", "medium");
-
+  font-family: theme.$font-family-mono;
+  font-size: theme.font-size("sm");
+  font-weight: theme.font-weight("medium");
   margin: 0;
   padding: theme.space("sm") theme.space("md");
-  border-radius: theme.$radius-md;
+  border-radius: theme.$radius-sm;
   border: 1px solid transparent;
 }
 
 .feedbackSuccess {
   color: theme.color("success");
-  background-color: theme.color("surface-alt");
+  background-color: rgba(47, 122, 79, 0.06);
   border-color: theme.color("success");
 }
 
 .feedbackError {
   color: theme.color("danger");
-  background-color: theme.color("surface-alt");
+  background-color: rgba(185, 28, 28, 0.06);
   border-color: theme.color("danger");
 }
 
@@ -51,13 +53,13 @@
   @include mixins.typography("sm", "regular");
 
   margin: 0;
-  color: theme.color("text-muted");
+  color: theme.color("ink-soft");
 }
 
 // ---- Saved sections list --------------------------------------------------
 
 .sectionList {
-  @include mixins.flex(column, flex-start, stretch, theme.space("md"));
+  @include mixins.flex(column, flex-start, stretch, theme.space("sm"));
 
   margin: 0;
   padding: 0;
@@ -65,16 +67,16 @@
 }
 
 .sectionCard {
-  @include mixins.flex(column, flex-start, stretch, theme.space("md"));
+  @include mixins.flex(column, flex-start, stretch, theme.space("sm"));
 
-  padding: theme.space("md");
+  padding: theme.space("sm") theme.space("md");
   background-color: theme.color("surface");
   border: 1px solid theme.color("border");
-  border-radius: theme.$radius-md;
+  border-radius: theme.$radius-sm;
 }
 
 .sectionHeader {
-  @include mixins.flex(row, space-between, flex-start, theme.space("md"));
+  @include mixins.flex(row, space-between, flex-start, theme.space("sm"));
 
   flex-wrap: wrap;
 }
@@ -84,22 +86,23 @@
 }
 
 .sectionName {
-  @include mixins.typography("md", "semibold");
-
+  font-family: theme.$font-family-display;
+  font-size: theme.font-size("md");
+  font-weight: theme.font-weight("semibold");
   margin: 0;
-  color: theme.color("text");
+  color: theme.color("ink");
 }
 
 .sectionDetail {
-  @include mixins.typography("sm", "regular");
-
-  color: theme.color("text-muted");
+  font-family: theme.$font-family-mono;
+  font-size: theme.font-size("xs");
+  color: theme.color("ink-soft");
 }
 
 // ---- Questions within a saved section ------------------------------------
 
 .questionList {
-  @include mixins.flex(column, flex-start, stretch, theme.space("sm"));
+  @include mixins.flex(column, flex-start, stretch, theme.space("xs"));
 
   margin: 0;
   padding: 0;
@@ -107,11 +110,11 @@
 }
 
 .questionItem {
-  @include mixins.flex(row, space-between, flex-start, theme.space("md"));
+  @include mixins.flex(row, space-between, flex-start, theme.space("sm"));
 
   flex-wrap: wrap;
   padding: theme.space("sm") theme.space("md");
-  background-color: theme.color("background");
+  background-color: theme.color("paper");
   border: 1px solid theme.color("border");
   border-radius: theme.$radius-sm;
 }
@@ -120,32 +123,32 @@
   @include mixins.typography("sm", "medium");
 
   margin: 0;
-  color: theme.color("text");
+  color: theme.color("ink");
 }
 
 .questionMeta {
-  @include mixins.typography("xs", "regular");
-
-  color: theme.color("text-muted");
+  font-family: theme.$font-family-mono;
+  font-size: theme.font-size("xs");
+  color: theme.color("ink-soft");
 }
 
 // ---- Forms ----------------------------------------------------------------
 
 .panel {
-  @include mixins.flex(column, flex-start, stretch, theme.space("md"));
+  @include mixins.flex(column, flex-start, stretch, theme.space("sm"));
 
   padding: theme.space("md");
-  background-color: theme.color("surface-alt");
-  border: 1px dashed theme.color("border");
-  border-radius: theme.$radius-md;
+  background-color: theme.color("paper-2");
+  border: 1px solid theme.color("border");
+  border-radius: theme.$radius-sm;
 }
 
 .form {
-  @include mixins.flex(column, flex-start, stretch, theme.space("md"));
+  @include mixins.flex(column, flex-start, stretch, theme.space("sm"));
 }
 
 .fieldRow {
-  @include mixins.flex(row, flex-start, flex-start, theme.space("md"));
+  @include mixins.flex(row, flex-start, flex-start, theme.space("sm"));
 
   flex-wrap: wrap;
 
@@ -155,8 +158,9 @@
 }
 
 .fieldError {
-  @include mixins.typography("sm", "medium");
-
+  font-family: theme.$font-family-mono;
+  font-size: theme.font-size("xs");
+  font-weight: theme.font-weight("medium");
   margin: 0;
   color: theme.color("danger");
 }
@@ -170,10 +174,10 @@
 // ---- Inline question editor ----------------------------------------------
 
 .questionEditor {
-  @include mixins.flex(column, flex-start, stretch, theme.space("md"));
+  @include mixins.flex(column, flex-start, stretch, theme.space("sm"));
 
   padding: theme.space("md");
-  background-color: theme.color("background");
+  background-color: theme.color("surface");
   border: 1px solid theme.color("border");
   border-radius: theme.$radius-sm;
 }
@@ -191,15 +195,18 @@
 .optionCorrect {
   @include mixins.flex(row, flex-start, center, theme.space("xs"));
 
-  @include mixins.typography("sm", "medium");
-
-  color: theme.color("text");
+  font-family: theme.$font-family-mono;
+  font-size: theme.font-size("xs");
+  font-weight: theme.font-weight("medium");
+  letter-spacing: 0.04em;
+  color: theme.color("ink");
   white-space: nowrap;
 }
 
 .checkbox {
   inline-size: 1rem;
   block-size: 1rem;
+  accent-color: theme.color("gold");
 
   &:focus-visible {
     @include mixins.focus-ring;

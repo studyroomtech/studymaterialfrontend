@@ -1,4 +1,4 @@
-// Styling for the ErrorMessage component (Requirements 1.18, 1.20, 7.5).
+// ErrorMessage styling — StudyForGovt.
 
 @use "../../styles/theme" as theme;
 @use "../../styles/mixins" as mixins;
@@ -15,8 +15,9 @@
 }
 
 .title {
-  @include mixins.typography("md", "semibold", theme.$line-height-heading);
-
+  font-family: theme.$font-family-display;
+  font-size: theme.font-size("md");
+  font-weight: theme.font-weight("semibold");
   margin: 0;
   color: theme.color("danger");
 }
@@ -25,7 +26,7 @@
   @include mixins.typography("sm", "regular");
 
   margin: 0;
-  color: theme.color("text-muted");
+  color: theme.color("ink-soft");
 }
 
 .retry {
@@ -38,7 +39,8 @@
   background-color: transparent;
   color: theme.color("danger");
   cursor: pointer;
-  transition: background-color theme.$transition-base,
+  transition:
+    background-color theme.$transition-base,
     color theme.$transition-base;
 
   &:hover {

@@ -1,119 +1,108 @@
-// Styling for the Footer component (Requirements 1.18, 1.19).
-//
-// A dark navy band matching the platform's primary palette. Layout and spacing
-// derive from the shared theme scales; the dark surface and hairline rules use
-// literal navy/white tints local to this presentational band.
+// Styling for the Footer component — StudyForGovt.
 
 @use "../../styles/theme" as theme;
 @use "../../styles/mixins" as mixins;
 
-// Local tints for the dark band (kept alongside the hero's dark navy accent).
-$footer-bg: #16273d;
-$hairline: rgba(255, 255, 255, 0.22);
-$muted-text: rgba(255, 255, 255, 0.72);
-
 .root {
   width: 100%;
-  background-color: $footer-bg;
-  color: theme.color("text-inverse");
+  background-color: theme.color("paper");
+  border-block-start: 1px solid theme.color("border");
+  color: theme.color("text");
 }
 
 .inner {
-  @include mixins.container;
-  @include mixins.flex(column, flex-start, stretch, theme.space("md"));
-
-  padding-block: theme.space("xl");
+  max-width: theme.$content-max-width;
+  margin-inline: auto;
+  padding: 3.5rem theme.space("lg") 1.75rem;
 }
 
-// ---- Top contact row -----------------------------------------------------
-.contact {
-  @include mixins.flex(row, center, center, theme.space("xl"));
+.grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 1fr;
+  gap: 2.5rem;
+  margin-bottom: 2.5rem;
+
+  @include mixins.respond-down("lg") {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  @include mixins.respond-down("sm") {
+    grid-template-columns: 1fr;
+  }
+}
+
+.brand {
+  @include mixins.flex(row, flex-start, center, 0.625rem);
+
+  font-family: theme.$font-family-display;
+  font-size: 1.375rem;
+  font-weight: theme.font-weight("semibold");
+  color: theme.color("ink");
+}
+
+.logoMark {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.125rem;
+  height: 2.125rem;
+  border-radius: theme.$radius-sm;
+  background: theme.color("ink");
+  color: theme.color("gold-bright");
+  font-family: theme.$font-family-display;
+  font-weight: theme.font-weight("bold");
+  font-size: 1.0625rem;
+}
+
+.logoMark::after {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  border: 1px solid rgba(232, 185, 72, 0.35);
+  border-radius: 2px;
+}
+
+.tagline {
+  margin-top: 0.875rem;
+  max-width: 17.5rem;
+  font-size: 0.84375rem;
+  line-height: 1.6;
+  color: theme.color("ink-soft");
+}
+
+.colTitle {
+  font-family: theme.$font-family-mono;
+  font-size: 0.6875rem;
+  font-weight: theme.font-weight("semibold");
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: theme.color("ink");
+  margin-bottom: 1rem;
+}
+
+.colLink {
+  display: block;
+  font-size: 0.875rem;
+  color: theme.color("ink-soft");
+  margin-bottom: 0.6875rem;
+  text-decoration: none;
+}
+
+.colLink:hover {
+  color: theme.color("ink");
+}
+
+.bottom {
+  @include mixins.flex(row, space-between, center, theme.space("md"));
 
   flex-wrap: wrap;
-  text-align: center;
+  padding-top: 1.5rem;
+  border-top: 1px solid theme.color("border");
+  font-size: 0.78125rem;
+  color: theme.color("ink-soft");
 }
 
-.contactItem {
-  @include mixins.typography("sm", "regular");
-
-  color: $muted-text;
-}
-
-.contactPrefix {
-  color: theme.color("text-inverse");
-}
-
-.contactLink {
-  color: $muted-text;
-  text-decoration: none;
-  word-break: break-word;
-
-  &:hover {
-    color: theme.color("text-inverse");
-    text-decoration: underline;
-  }
-
-  &:focus-visible {
-    @include mixins.focus-ring;
-
-    border-radius: theme.$radius-sm;
-  }
-}
-
-// ---- Divider -------------------------------------------------------------
-.rule {
-  width: 100%;
-  height: 0;
-  margin: 0;
-  border: 0;
-  border-block-start: 1px solid $hairline;
-}
-
-// ---- Quote ---------------------------------------------------------------
 .quote {
-  margin: 0;
-  padding-block: theme.space("sm");
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: theme.font-size("2xl");
-  font-style: italic;
-  font-weight: theme.font-weight("regular");
-  line-height: theme.$line-height-heading;
-  text-align: center;
-  color: theme.color("text-inverse");
-
-  @include mixins.respond-down("md") {
-    font-size: theme.font-size("xl");
-  }
-}
-
-// ---- Brand row -----------------------------------------------------------
-.brand {
-  @include mixins.flex(row, center, center, theme.space("md"));
-
-  width: 100%;
-}
-
-.brandRule {
-  flex: 1 1 auto;
-  height: 1px;
-  background-color: $hairline;
-}
-
-.brandMark {
-  @include mixins.flex(row, center, center, theme.space("sm"));
-
-  flex: 0 0 auto;
-  color: $muted-text;
-}
-
-.logo {
-  width: 2.25rem;
-  height: 1.875rem;
-}
-
-.brandName {
-  @include mixins.typography("sm", "semibold");
-
-  letter-spacing: 0.15em;
-  color: $muted-text;
+  font-family: theme.$font-family-mono;
 }

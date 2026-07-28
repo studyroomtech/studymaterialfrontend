@@ -9,7 +9,7 @@
 /** Page heading and supporting copy (Req 12.1). */
 export const PAID_PAGE_TITLE = "Paid materials";
 export const PAID_PAGE_SUBTITLE =
-  "Browse premium study materials. Buy once to view and download them anytime.";
+  "Browse premium government exam materials. Buy once to view and download anytime.";
 
 /** Accessible label for the rendered Paid Materials listing region. */
 export const PAID_RESULTS_LABEL = "Paid materials";

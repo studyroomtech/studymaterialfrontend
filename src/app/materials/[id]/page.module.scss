@@ -1,8 +1,4 @@
-// Styling for the Study Material view page (Requirements 1.18, 1.20, 7.5).
-//
-// All presentation derives from the shared theme so the page matches the
-// platform's single color palette, typography scale, and spacing scale. No
-// inline CSS is used (Req 1.19).
+// Styling for the Study Material view page — StudyForGovt.
 
 @use "../../../styles/theme" as theme;
 @use "../../../styles/mixins" as mixins;
@@ -15,15 +11,17 @@
 }
 
 .backLink {
-  @include mixins.typography("sm", "medium");
-
+  font-family: theme.$font-family-mono;
+  font-size: theme.font-size("sm");
+  font-weight: theme.font-weight("medium");
+  letter-spacing: 0.02em;
   align-self: flex-start;
-  color: theme.color("primary");
+  color: theme.color("ink");
   text-decoration: none;
 }
 
 .backLink:hover {
-  color: theme.color("primary-hover");
+  color: theme.color("gold");
   text-decoration: underline;
 }
 
@@ -52,14 +50,14 @@
   padding: theme.space("xl");
   border: 1px solid theme.color("border");
   border-radius: theme.$radius-md;
-  background-color: theme.color("surface-alt");
+  background-color: theme.color("surface");
 }
 
 .lockedMessage {
   @include mixins.typography("md", "regular");
 
   margin: 0;
-  color: theme.color("text-muted");
+  color: theme.color("ink-soft");
 }
 
 .priceRow {
@@ -69,15 +67,20 @@
 }
 
 .priceLabel {
-  @include mixins.typography("sm", "medium");
-
-  color: theme.color("text-muted");
+  font-family: theme.$font-family-mono;
+  font-size: theme.font-size("sm");
+  font-weight: theme.font-weight("medium");
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: theme.color("ink-soft");
 }
 
 .priceValue {
-  @include mixins.typography("xl", "semibold", theme.$line-height-heading);
-
-  color: theme.color("text");
+  font-family: theme.$font-family-display;
+  font-size: theme.font-size("xl");
+  font-weight: theme.font-weight("semibold");
+  line-height: theme.$line-height-heading;
+  color: theme.color("ink");
 }
 
 .payActions {
@@ -95,10 +98,12 @@
 }
 
 .title {
-  @include mixins.typography("2xl", "semibold", theme.$line-height-heading);
-
+  font-family: theme.$font-family-display;
+  font-size: theme.font-size("2xl");
+  font-weight: theme.font-weight("semibold");
+  line-height: theme.$line-height-heading;
   margin: 0;
-  color: theme.color("text");
+  color: theme.color("ink");
 }
 
 .section {
@@ -106,17 +111,19 @@
 }
 
 .sectionHeading {
-  @include mixins.typography("lg", "semibold", theme.$line-height-heading);
-
+  font-family: theme.$font-family-display;
+  font-size: theme.font-size("lg");
+  font-weight: theme.font-weight("semibold");
+  line-height: theme.$line-height-heading;
   margin: 0;
-  color: theme.color("text");
+  color: theme.color("ink");
 }
 
 .description {
   @include mixins.typography("md", "regular");
 
   margin: 0;
-  color: theme.color("text-muted");
+  color: theme.color("ink-soft");
   white-space: pre-wrap;
 }
 
@@ -133,10 +140,13 @@
 }
 
 .detailLabel {
-  @include mixins.typography("sm", "medium");
-
+  font-family: theme.$font-family-mono;
+  font-size: theme.font-size("sm");
+  font-weight: theme.font-weight("medium");
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   flex: 0 0 6rem;
-  color: theme.color("text-muted");
+  color: theme.color("ink-soft");
 }
 
 .detailValue {
@@ -144,7 +154,7 @@
 
   flex: 1 1 auto;
   margin: 0;
-  color: theme.color("text");
+  color: theme.color("ink");
   word-break: break-word;
 }
 
@@ -158,11 +168,14 @@
 }
 
 .tag {
-  @include mixins.typography("xs", "medium");
-
+  font-family: theme.$font-family-mono;
+  font-size: theme.font-size("xs");
+  font-weight: theme.font-weight("medium");
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   padding-block: theme.space("xs");
   padding-inline: theme.space("sm");
   border-radius: theme.$radius-sm;
-  background-color: theme.color("surface-alt");
-  color: theme.color("text");
+  background-color: theme.color("paper-2");
+  color: theme.color("ink-soft");
 }

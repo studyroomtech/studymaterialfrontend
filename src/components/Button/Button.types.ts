@@ -6,7 +6,12 @@ import type { ButtonHTMLAttributes, ReactNode } from "react";
  * Visual variants a Button can render as. Each maps to a class defined in the
  * component's module stylesheet, which in turn consumes the shared theme.
  */
-export type ButtonVariant = "primary" | "secondary" | "danger" | "ghost";
+export type ButtonVariant =
+  | "primary"
+  | "secondary"
+  | "danger"
+  | "ghost"
+  | "gold";
 
 /** Size steps for a Button, keyed to the shared spacing/typography scale. */
 export type ButtonSize = "sm" | "md" | "lg";

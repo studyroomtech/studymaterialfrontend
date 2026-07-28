@@ -11,7 +11,7 @@ export const BACK_TO_CATALOG_LABEL = "← Back to catalog";
 export const CATALOG_HREF = "/";
 
 /** Accessible label announced while the material is being retrieved (Req 5.2). */
-export const LOADING_LABEL = "Loading study material…";
+export const LOADING_LABEL = "Loading exam material…";
 
 /** Heading for the material description section. */
 export const DESCRIPTION_HEADING = "Description";
@@ -23,25 +23,25 @@ export const NO_DESCRIPTION_TEXT = "No description provided.";
 export const DOWNLOAD_LABEL = "Download";
 
 /** Title shown above the load-failure error message (Req 5.5). */
-export const LOAD_ERROR_TITLE = "Study material unavailable";
+export const LOAD_ERROR_TITLE = "Exam material unavailable";
 
 /**
  * Message shown when the material request fails/errors without a more specific
  * cause, indicating the material could not be loaded (Req 5.5).
  */
 export const LOAD_ERROR_MESSAGE =
-  "The study material could not be loaded. Please try again.";
+  "The exam material could not be loaded. Please try again.";
 
 /** Message shown when the material request does not respond within 5s (Req 5.5). */
 export const TIMEOUT_ERROR_MESSAGE =
-  "The study material took too long to load. Please try again.";
+  "The exam material took too long to load. Please try again.";
 
 /** Message shown when the requested Study Material does not exist (Req 5.4). */
 export const NOT_FOUND_ERROR_MESSAGE =
-  "The requested study material could not be found.";
+  "The requested exam material could not be found.";
 
 /** Message shown when no material identifier is present in the route. */
-export const INVALID_ID_MESSAGE = "No study material was specified.";
+export const INVALID_ID_MESSAGE = "No exam material was specified.";
 
 /** Title shown above a failed download's error message (Req 8.1). */
 export const DOWNLOAD_ERROR_TITLE = "Download failed";
@@ -66,11 +66,11 @@ export const PAYMENT_REQUIRED_CODE = "PAYMENT_REQUIRED";
 export const TIMEOUT_ERROR_KIND = "timeout";
 
 /** Heading for the entitlement gate shown for a locked Paid Material (Req 12.3). */
-export const LOCKED_TITLE = "This is a paid study material";
+export const LOCKED_TITLE = "This is a paid exam material";
 
 /** Explanatory copy shown beneath the locked-material heading (Req 12.3). */
 export const LOCKED_MESSAGE =
-  "Complete a one-time payment to unlock this study material. Your access is saved so you can view and download it again later.";
+  "Complete a one-time payment to unlock this exam material. Your access is saved so you can view and download it again later.";
 
 /** Prefix label shown before the formatted Price on the locked panel (Req 12.1). */
 export const PRICE_LABEL = "Price";

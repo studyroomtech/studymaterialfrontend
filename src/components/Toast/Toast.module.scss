@@ -1,8 +1,4 @@
-// Toast system styling.
-//
-// A fixed, bottom-center viewport stacks transient notifications in front of
-// the screen. Every value derives from the shared theme so toasts match the
-// platform's palette, typography, and spacing scales. No inline CSS is used.
+// Toast system styling — StudyForGovt.
 
 @use "../../styles/theme" as theme;
 @use "../../styles/mixins" as mixins;
@@ -19,31 +15,31 @@
   pointer-events: none;
 }
 
-// A rounded "pill" card: a white badge chip (colored dot + bold label) on the
-// leading edge, the message text in the variant's accent color, and a soft
-// tinted background. `--toast-accent` / `--toast-bg` are set per variant class.
 .toast {
   @include mixins.flex(row, flex-start, center, theme.space("sm"));
 
-  padding: theme.space("xs") theme.space("md");
-  border-radius: 999px;
+  padding: theme.space("sm") theme.space("md");
+  border-radius: theme.$radius-md;
+  border: 1px solid theme.color("border");
   background-color: var(--toast-bg);
   color: var(--toast-accent);
   box-shadow: theme.$shadow-md;
   pointer-events: auto;
 }
 
-// The leading badge: a white rounded chip carrying a colored status dot and the
-// bold variant label (e.g. "Error").
 .badge {
   @include mixins.flex(row, center, center, theme.space("xs"));
-  @include mixins.typography("sm", "bold");
 
   flex-shrink: 0;
   padding: theme.space("xs") theme.space("sm");
-  border-radius: 999px;
-  background-color: theme.color("background");
+  border-radius: theme.$radius-sm;
+  background-color: theme.color("surface");
   color: var(--toast-accent);
+  font-family: theme.$font-family-mono;
+  font-size: 0.6875rem;
+  font-weight: theme.font-weight("bold");
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .dot {
@@ -78,20 +74,17 @@
   opacity: 1;
 }
 
-// info -> grey
 .info {
-  --toast-accent: #{theme.color("text-muted")};
-  --toast-bg: #{rgba(#5a6472, 0.12)};
+  --toast-accent: #{theme.color("ink-soft")};
+  --toast-bg: #{theme.color("surface")};
 }
 
-// error -> red
 .error {
   --toast-accent: #{theme.color("danger")};
-  --toast-bg: #{rgba(#dc2626, 0.1)};
+  --toast-bg: #{rgba(#b91c1c, 0.08)};
 }
 
-// warning -> yellow / amber
 .warning {
-  --toast-accent: #{theme.color("warning")};
-  --toast-bg: #{rgba(#b45309, 0.12)};
+  --toast-accent: #{theme.color("gold")};
+  --toast-bg: #{rgba(#c99a2e, 0.12)};
 }

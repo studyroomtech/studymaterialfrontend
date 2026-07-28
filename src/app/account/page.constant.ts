@@ -10,7 +10,7 @@ export const HOME_PATH = '/';
 /** Page heading and supporting copy. */
 export const ACCOUNT_TITLE = 'Account settings';
 export const ACCOUNT_SUBTITLE =
-  'Sign in with your email to keep your downloads and purchases across visits.';
+  'Sign in with your email to keep StudyForGovt downloads and purchases across visits.';
 
 /** Signed-in view copy. */
 export const SIGNED_IN_HEADING = 'Signed in';

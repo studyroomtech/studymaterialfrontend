@@ -6,13 +6,13 @@
 // constant-literal exports (Req 1.16, 1.17).
 
 /** Page heading and supporting copy. */
-export const SEARCH_PAGE_TITLE = "Search study materials";
+export const SEARCH_PAGE_TITLE = "Search exam materials";
 export const SEARCH_PAGE_SUBTITLE =
-  "Find materials by title or tag, and narrow results by category.";
+  "Find StudyForGovt materials by title or tag, and narrow by category.";
 
 /** Search text input (Req 4.1). */
 export const SEARCH_INPUT_ID = "material-search";
-export const SEARCH_INPUT_LABEL = "Search study materials";
+export const SEARCH_INPUT_LABEL = "Search exam materials";
 export const SEARCH_INPUT_PLACEHOLDER = "Search by title or tag";
 /** Upper bound on the query length accepted by the input (Req 4.1: 1–100). */
 export const SEARCH_INPUT_MAX_LENGTH = 100;
@@ -34,3 +34,9 @@ export const SEARCH_ERROR_MESSAGE =
 
 /** Accessible label for the rendered results region. */
 export const SEARCH_RESULTS_LABEL = "Search results";
+
+/** Fallback tag when a material has no categories assigned. */
+export const DEFAULT_RESULT_TAG = "Material";
+
+/** Footer CTA on each result card. */
+export const VIEW_MATERIAL_LABEL = "View";

@@ -1,8 +1,4 @@
-// Button styling (Requirements 1.18, 1.19, 1.20, 7.5).
-//
-// All Button presentation is authored here and derives every value from the
-// shared theme so the component stays consistent with the platform's single
-// color palette, typography scale, and spacing scale.
+// Button styling — StudyForGovt.
 
 @use "../../styles/theme" as theme;
 @use "../../styles/mixins" as mixins;
@@ -12,16 +8,22 @@
 
   position: relative;
   border: 1px solid transparent;
-  border-radius: theme.$radius-md;
+  border-radius: theme.$radius-sm;
   cursor: pointer;
   user-select: none;
   text-align: center;
   white-space: nowrap;
+  letter-spacing: 0.01em;
   transition:
     background-color theme.$transition-base,
     border-color theme.$transition-base,
     color theme.$transition-base,
-    box-shadow theme.$transition-base;
+    box-shadow theme.$transition-base,
+    transform 0.12s ease;
+}
+
+.button:active:not(:disabled) {
+  transform: translateY(1px);
 }
 
 .button:focus-visible {
@@ -43,57 +45,48 @@
   flex: 0 0 auto;
 }
 
-// ---------------------------------------------------------------------------
-// Sizes — keyed to the shared spacing + typography scales
-// ---------------------------------------------------------------------------
 .sm {
-  @include mixins.typography("sm", "medium");
+  @include mixins.typography("sm", "semibold");
 
   padding-block: theme.space("xs");
   padding-inline: theme.space("sm");
 }
 
 .md {
-  @include mixins.typography("md", "medium");
-
-  padding-block: theme.space("sm");
-  padding-inline: theme.space("md");
+  font-size: 0.875rem;
+  font-weight: theme.font-weight("semibold");
+  padding-block: 0.625rem;
+  padding-inline: 1.25rem;
 }
 
 .lg {
-  @include mixins.typography("lg", "semibold");
+  @include mixins.typography("md", "semibold");
 
   padding-block: theme.space("sm");
   padding-inline: theme.space("lg");
 }
 
-// ---------------------------------------------------------------------------
-// Variants — colors sourced from the single shared palette
-// ---------------------------------------------------------------------------
 .primary {
   color: theme.color("text-inverse");
-  background-color: theme.color("primary");
-  border-color: theme.color("primary");
+  background-color: theme.color("ink");
+  border-color: theme.color("ink");
 }
 
 .primary:hover:not(:disabled) {
-  background-color: theme.color("primary-hover");
-  border-color: theme.color("primary-hover");
-}
-
-.primary:active:not(:disabled) {
-  background-color: theme.color("primary-active");
-  border-color: theme.color("primary-active");
+  background-color: theme.color("ink-2");
+  border-color: theme.color("ink-2");
+  box-shadow: theme.$shadow-md;
 }
 
 .secondary {
-  color: theme.color("text");
+  color: theme.color("ink");
   background-color: theme.color("surface");
-  border-color: theme.color("border");
+  border-color: theme.color("border-dark");
 }
 
 .secondary:hover:not(:disabled) {
-  background-color: theme.color("surface-alt");
+  border-color: theme.color("ink");
+  background-color: theme.color("surface");
 }
 
 .danger {
@@ -108,18 +101,27 @@
 }
 
 .ghost {
-  color: theme.color("primary");
+  color: theme.color("ink");
   background-color: transparent;
-  border-color: transparent;
+  border-color: theme.color("border-dark");
 }
 
 .ghost:hover:not(:disabled) {
-  background-color: theme.color("surface");
+  border-color: theme.color("ink");
+  background-color: transparent;
 }
 
-// ---------------------------------------------------------------------------
-// Modifiers / states
-// ---------------------------------------------------------------------------
+.gold {
+  color: theme.color("ink");
+  background-color: theme.color("gold");
+  border-color: theme.color("gold");
+}
+
+.gold:hover:not(:disabled) {
+  background-color: theme.color("gold-bright");
+  border-color: theme.color("gold-bright");
+}
+
 .fullWidth {
   width: 100%;
 }

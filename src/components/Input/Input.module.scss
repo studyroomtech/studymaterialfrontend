@@ -1,50 +1,45 @@
-// Input styling (Requirements 1.18, 1.19, 1.20, 7.5).
-//
-// All Input presentation is authored here and derives every value from the
-// shared theme so the field is consistent with the platform's single color
-// palette, typography scale, and spacing scale.
+// Input styling — StudyForGovt.
 
 @use "../../styles/theme" as theme;
 @use "../../styles/mixins" as mixins;
 
 .wrapper {
-  @include mixins.flex(column, flex-start, stretch, theme.space("xs"));
+  @include mixins.flex(column, flex-start, stretch, 0.4375rem);
 
   width: 100%;
 }
 
 .label {
-  @include mixins.typography("sm", "medium");
-
-  color: theme.color("text");
+  font-family: theme.$font-family-mono;
+  font-size: 0.65625rem;
+  font-weight: theme.font-weight("medium");
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #7a6a3c;
 }
 
 .labelHidden {
   @include mixins.visually-hidden;
 }
 
-// ---------------------------------------------------------------------------
-// Field shell — holds the leading icon + the native input
-// ---------------------------------------------------------------------------
 .field {
   @include mixins.flex(row, flex-start, center, theme.space("sm"));
 
-  background-color: theme.color("background");
-  border: 1px solid theme.color("border");
-  border-radius: theme.$radius-md;
+  background-color: theme.color("surface");
+  border: 1.5px solid theme.color("border-dark");
+  border-radius: theme.$radius-sm;
   transition:
     border-color theme.$transition-base,
     box-shadow theme.$transition-base;
 }
 
 .field:hover:not(.fieldDisabled) {
-  border-color: theme.color("text-muted");
+  border-color: theme.color("ink-soft");
 }
 
-// Reflect focus of the inner input onto the field shell for a clear focus ring.
 .field:focus-within {
-  border-color: theme.color("primary");
-  box-shadow: 0 0 0 2px theme.color("focus-ring");
+  border-color: theme.color("ink");
+  box-shadow: none;
 }
 
 .fieldError {
@@ -53,7 +48,7 @@
 
 .fieldError:focus-within {
   border-color: theme.color("danger");
-  box-shadow: 0 0 0 2px theme.color("danger");
+  box-shadow: 0 0 0 2px rgba(185, 28, 28, 0.2);
 }
 
 .fieldDisabled {
@@ -66,12 +61,9 @@
   @include mixins.flex(row, center, center);
 
   flex: 0 0 auto;
-  color: theme.color("text-muted");
+  color: theme.color("ink-soft");
 }
 
-// ---------------------------------------------------------------------------
-// Native input — transparent so the field shell provides the visual chrome
-// ---------------------------------------------------------------------------
 .input {
   flex: 1 1 auto;
   min-width: 0;
@@ -83,16 +75,14 @@
 }
 
 .input::placeholder {
-  color: theme.color("text-muted");
+  color: theme.color("ink-soft");
+  opacity: 0.7;
 }
 
 .input:disabled {
   cursor: not-allowed;
 }
 
-// ---------------------------------------------------------------------------
-// Sizes — padding + type scale keyed to the shared scales
-// ---------------------------------------------------------------------------
 .sm .input {
   @include mixins.typography("sm");
 
@@ -104,13 +94,12 @@
 }
 
 .md .input {
-  @include mixins.typography("md");
-
-  padding-block: theme.space("sm");
+  font-size: 0.90625rem;
+  padding-block: 0.75rem;
 }
 
 .md {
-  padding-inline: theme.space("md");
+  padding-inline: 0.875rem;
 }
 
 .lg .input {
@@ -123,14 +112,11 @@
   padding-inline: theme.space("md");
 }
 
-// ---------------------------------------------------------------------------
-// Messaging
-// ---------------------------------------------------------------------------
 .hint {
   @include mixins.typography("xs");
 
   margin-block-end: 0;
-  color: theme.color("text-muted");
+  color: theme.color("ink-soft");
 }
 
 .error {

@@ -1,14 +1,17 @@
-// TestManager authoring surface styling (Requirements 2.1, 2.5, 5.3).
+// TestManager authoring surface styling — StudyForGovt (Requirements 2.1, 2.5, 5.3).
 //
-// All presentation is authored here and derives every value from the shared
-// theme so the Test authoring UI matches the platform's single color palette,
-// typography scale, and spacing scale. No inline CSS is used.
+// Dense admin Test authoring UI. All presentation derives from the shared theme
+// (paper / ink / gold). No inline CSS is used.
 
 @use "../../styles/theme" as theme;
 @use "../../styles/mixins" as mixins;
 
 .manager {
-  @include mixins.flex(column, flex-start, stretch, theme.space("xl"));
+  @include mixins.container;
+  @include mixins.flex(column, flex-start, stretch, theme.space("md"));
+
+  padding-block: theme.space("lg");
+  background-color: theme.color("paper");
 }
 
 .header {
@@ -16,59 +19,63 @@
 }
 
 .title {
-  @include mixins.typography("2xl", "semibold", theme.$line-height-heading);
-
+  font-family: theme.$font-family-display;
+  font-size: theme.font-size("2xl");
+  font-weight: theme.font-weight("semibold");
+  line-height: theme.$line-height-heading;
   margin: 0;
-  color: theme.color("text");
+  color: theme.color("ink");
 }
 
 .subtitle {
   @include mixins.typography("sm", "regular");
 
   margin: 0;
-  color: theme.color("text-muted");
+  color: theme.color("ink-soft");
 }
 
 .feedback {
-  @include mixins.typography("sm", "medium");
-
+  font-family: theme.$font-family-mono;
+  font-size: theme.font-size("sm");
+  font-weight: theme.font-weight("medium");
   margin: 0;
   padding: theme.space("sm") theme.space("md");
-  border-radius: theme.$radius-md;
+  border-radius: theme.$radius-sm;
   border: 1px solid transparent;
 }
 
 .feedbackSuccess {
   color: theme.color("success");
-  background-color: theme.color("surface-alt");
+  background-color: rgba(47, 122, 79, 0.06);
   border-color: theme.color("success");
 }
 
 .feedbackError {
   color: theme.color("danger");
-  background-color: theme.color("surface-alt");
+  background-color: rgba(185, 28, 28, 0.06);
   border-color: theme.color("danger");
 }
 
 .panel {
-  @include mixins.flex(column, flex-start, stretch, theme.space("lg"));
+  @include mixins.flex(column, flex-start, stretch, theme.space("md"));
 
-  padding: theme.space("lg");
-  background-color: theme.color("background");
+  padding: theme.space("md");
+  background-color: theme.color("surface");
   border: 1px solid theme.color("border");
-  border-radius: theme.$radius-lg;
-  box-shadow: theme.$shadow-sm;
+  border-radius: theme.$radius-md;
 }
 
 .panelTitle {
-  @include mixins.typography("xl", "semibold", theme.$line-height-heading);
-
+  font-family: theme.$font-family-display;
+  font-size: theme.font-size("lg");
+  font-weight: theme.font-weight("semibold");
+  line-height: theme.$line-height-heading;
   margin: 0;
-  color: theme.color("text");
+  color: theme.color("ink");
 }
 
 .form {
-  @include mixins.flex(column, flex-start, stretch, theme.space("md"));
+  @include mixins.flex(column, flex-start, stretch, theme.space("sm"));
 }
 
 .fieldGroup {
@@ -76,19 +83,22 @@
 }
 
 .selectLabel {
-  @include mixins.typography("sm", "medium");
-
-  color: theme.color("text");
+  font-family: theme.$font-family-mono;
+  font-size: 0.65625rem;
+  font-weight: theme.font-weight("medium");
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #7a6a3c;
 }
 
 .select {
   @include mixins.typography("sm", "regular");
 
   padding: theme.space("sm");
-  color: theme.color("text");
-  background-color: theme.color("background");
-  border: 1px solid theme.color("border");
-  border-radius: theme.$radius-md;
+  color: theme.color("ink");
+  background-color: theme.color("surface");
+  border: 1.5px solid theme.color("border-dark");
+  border-radius: theme.$radius-sm;
 
   &:focus-visible {
     @include mixins.focus-ring;
@@ -96,8 +106,9 @@
 }
 
 .fieldError {
-  @include mixins.typography("sm", "medium");
-
+  font-family: theme.$font-family-mono;
+  font-size: theme.font-size("xs");
+  font-weight: theme.font-weight("medium");
   margin: 0;
   color: theme.color("danger");
 }
@@ -109,7 +120,7 @@
 }
 
 .testList {
-  @include mixins.flex(column, flex-start, stretch, theme.space("md"));
+  @include mixins.flex(column, flex-start, stretch, theme.space("sm"));
 
   margin: 0;
   padding: 0;
@@ -117,13 +128,13 @@
 }
 
 .testItem {
-  @include mixins.flex(row, space-between, center, theme.space("md"));
+  @include mixins.flex(row, space-between, center, theme.space("sm"));
 
   flex-wrap: wrap;
-  padding: theme.space("md");
+  padding: theme.space("sm") theme.space("md");
   background-color: theme.color("surface");
   border: 1px solid theme.color("border");
-  border-radius: theme.$radius-md;
+  border-radius: theme.$radius-sm;
 }
 
 .testMeta {
@@ -131,20 +142,24 @@
 }
 
 .testName {
-  @include mixins.typography("lg", "semibold");
-
+  font-family: theme.$font-family-display;
+  font-size: theme.font-size("md");
+  font-weight: theme.font-weight("semibold");
   margin: 0;
-  color: theme.color("text");
+  color: theme.color("ink");
 }
 
 .testPrice {
-  @include mixins.typography("sm", "medium");
-
-  color: theme.color("text-muted");
+  font-family: theme.$font-family-mono;
+  font-size: theme.font-size("xs");
+  font-weight: theme.font-weight("medium");
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: theme.color("ink-soft");
 }
 
 .editHeader {
-  @include mixins.flex(row, space-between, flex-start, theme.space("md"));
+  @include mixins.flex(row, space-between, flex-start, theme.space("sm"));
 
   flex-wrap: wrap;
 }
@@ -157,14 +172,15 @@
 }
 
 .sectionsHeading {
-  @include mixins.typography("lg", "semibold");
-
+  font-family: theme.$font-family-display;
+  font-size: theme.font-size("md");
+  font-weight: theme.font-weight("semibold");
   margin: 0;
-  color: theme.color("text");
+  color: theme.color("ink");
 }
 
 .sectionList {
-  @include mixins.flex(column, flex-start, stretch, theme.space("sm"));
+  @include mixins.flex(column, flex-start, stretch, theme.space("xs"));
 
   margin: 0;
   padding: 0;
@@ -176,26 +192,26 @@
 
   flex-wrap: wrap;
   padding: theme.space("sm") theme.space("md");
-  background-color: theme.color("surface");
+  background-color: theme.color("paper");
   border: 1px solid theme.color("border");
   border-radius: theme.$radius-sm;
 }
 
 .sectionName {
-  @include mixins.typography("md", "medium");
+  @include mixins.typography("sm", "medium");
 
-  color: theme.color("text");
+  color: theme.color("ink");
 }
 
 .sectionMeta {
-  @include mixins.typography("sm", "regular");
-
-  color: theme.color("text-muted");
+  font-family: theme.$font-family-mono;
+  font-size: theme.font-size("xs");
+  color: theme.color("ink-soft");
 }
 
 .emptyText {
   @include mixins.typography("sm", "regular");
 
   margin: 0;
-  color: theme.color("text-muted");
+  color: theme.color("ink-soft");
 }

@@ -1,8 +1,4 @@
-// Styling for the SecureAccountPrompt component (Requirements 5.1, 5.3).
-//
-// All presentation is authored here (no inline CSS) and derives every value
-// from the shared theme so the prompt stays consistent with the platform's
-// single color palette, typography scale, and spacing scale.
+// SecureAccountPrompt styling — StudyForGovt.
 
 @use "../../styles/theme" as theme;
 @use "../../styles/mixins" as mixins;
@@ -21,5 +17,5 @@
   @include mixins.typography("md", "medium");
 
   margin: 0;
-  color: theme.color("text");
+  color: theme.color("ink");
 }
