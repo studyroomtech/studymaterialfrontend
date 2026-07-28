@@ -697,52 +697,167 @@
   color: theme.color("success");
 }
 
-// ---- Mobile: notes-first, hide marketing / secondary content -------------
-// Desktop (md and up) is unchanged — these rules only apply below 768px.
+// ---- Mobile: denser cards & sections (all content kept) ------------------
 @include mixins.respond-down("md") {
-  .mobileHide {
-    display: none !important;
-  }
-
-  .heroText {
-    display: none;
-  }
-
   .heroInner {
-    gap: 0;
-    padding: 1.25rem theme.space("md") 1.5rem;
+    gap: 1.5rem;
+    padding: 2rem theme.space("md") 2.25rem;
+  }
+
+  .heroTitle {
+    font-size: 1.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .heroSubtitle {
+    font-size: 0.9375rem;
+    margin-bottom: 1rem;
+  }
+
+  .heroStats {
+    gap: 1rem;
+    margin-top: 0.25rem;
+  }
+
+  .heroStatNum {
+    font-size: 1.25rem;
   }
 
   .admitCard {
     transform: none;
   }
 
-  .perforation {
-    display: none;
-  }
-
-  .admitSerial {
-    display: none;
-  }
-
   .admitCardBody {
     padding: 1.15rem 1rem 1.1rem;
   }
 
+  .searchField {
+    padding: 0.6rem 0.75rem;
+    margin-bottom: 0.65rem;
+  }
+
+  .searchSubmit {
+    padding: 0.7rem;
+    font-size: 0.875rem;
+  }
+
   .section {
-    padding: 1.5rem 0 1.75rem;
+    padding: 2rem 0;
   }
 
   .sectionHead {
     margin-bottom: 1.15rem;
+    gap: 0.75rem;
+  }
+
+  .sectionTitle {
+    font-size: 1.375rem;
   }
 
   .content {
     padding-inline: theme.space("md");
   }
 
+  .wrap {
+    padding-inline: theme.space("md");
+  }
+
+  .trendingGrid {
+    gap: 0.75rem;
+  }
+
   .rankCover {
-    aspect-ratio: 2 / 1;
+    aspect-ratio: 2.2 / 1;
+  }
+
+  .rankNum {
+    font-size: 1.5rem;
+    top: 0.35rem;
+    right: 0.5rem;
+  }
+
+  .coverBadge {
+    left: 0.5rem;
+    bottom: 0.5rem;
+    font-size: 0.5625rem;
+    padding: 0.2rem 0.4rem;
+  }
+
+  .rankCardBody {
+    padding: 0.75rem 0.85rem 0.8rem;
+  }
+
+  .rankCardTitle {
+    font-size: 0.95rem;
+    margin: 0.5rem 0 0;
+  }
+
+  .rankCardFoot {
+    padding-top: 0.55rem;
+    margin-top: 0.55rem;
+  }
+
+  .linkArrow {
+    font-size: 0.75rem;
+  }
+
+  .recentCaption {
+    font-size: 0.625rem;
+  }
+
+  .catInner {
+    padding: 2rem theme.space("md");
+  }
+
+  .catGrid {
+    gap: 0.5rem;
+  }
+
+  .catTile {
+    padding: 0.85rem 0.75rem;
+  }
+
+  .catName {
+    font-size: 0.8125rem;
+  }
+
+  .steps {
+    gap: 1rem;
+  }
+
+  .stepTitle {
+    font-size: 1.05rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .stepBody {
+    font-size: 0.8125rem;
+  }
+
+  .ctaInner {
+    padding: 2rem theme.space("md");
+    gap: 1.25rem;
+  }
+
+  .ctaTitle {
+    font-size: 1.25rem;
+  }
+
+  .ctaBody {
+    font-size: 0.8125rem;
+  }
+
+  .testGrid {
+    gap: 0.75rem;
+  }
+
+  .testCard {
+    padding: 0.9rem;
+    gap: 0.5rem;
+  }
+
+  .testCardTitle {
+    font-size: 1rem;
   }
 }
 

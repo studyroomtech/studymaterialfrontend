@@ -355,25 +355,23 @@ function HomePage() {
               <span className={styles.admitSerial}>{ADMIT_CARD_SERIAL}</span>
             </div>
             <form className={styles.admitCardBody} onSubmit={handleHeroSearch}>
-              <div className={styles.mobileHide}>
-                <label className={styles.fieldLabel} htmlFor={HERO_CATEGORY_SELECT_ID}>
-                  {HERO_CATEGORY_LABEL}
-                </label>
-                <div className={styles.searchField}>
-                  <select
-                    id={HERO_CATEGORY_SELECT_ID}
-                    className={styles.searchSelect}
-                    value={heroCategoryId}
-                    onChange={(event) => setHeroCategoryId(event.target.value)}
-                  >
-                    <option value="">{HERO_CATEGORY_ALL}</option>
-                    {allCategories.map((cat) => (
-                      <option key={cat.id} value={cat.id}>
-                        {cat.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+              <label className={styles.fieldLabel} htmlFor={HERO_CATEGORY_SELECT_ID}>
+                {HERO_CATEGORY_LABEL}
+              </label>
+              <div className={styles.searchField}>
+                <select
+                  id={HERO_CATEGORY_SELECT_ID}
+                  className={styles.searchSelect}
+                  value={heroCategoryId}
+                  onChange={(event) => setHeroCategoryId(event.target.value)}
+                >
+                  <option value="">{HERO_CATEGORY_ALL}</option>
+                  {allCategories.map((cat) => (
+                    <option key={cat.id} value={cat.id}>
+                      {cat.name}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <label className={styles.fieldLabel} htmlFor={HERO_SEARCH_INPUT_ID}>
@@ -449,10 +447,7 @@ function HomePage() {
         ) : null}
 
         {trending.length > 0 ? (
-          <section
-            className={`${styles.section} ${styles.mobileHide}`}
-            id="trending"
-          >
+          <section className={styles.section} id="trending">
             <div className={styles.sectionHead}>
               <div>
                 <div className={styles.sectionEyebrow}>{TRENDING_EYEBROW}</div>
@@ -479,7 +474,7 @@ function HomePage() {
       </div>
 
       {subjects.length > 0 ? (
-        <section className={`${styles.catBand} ${styles.mobileHide}`}>
+        <section className={styles.catBand}>
           <div className={styles.catInner}>
             <div className={styles.sectionHead}>
               <div>
@@ -503,7 +498,7 @@ function HomePage() {
         </section>
       ) : null}
 
-      <section className={`${styles.section} ${styles.mobileHide}`}>
+      <section className={styles.section}>
         <div className={styles.wrap}>
           <div className={styles.sectionHead}>
             <div>
@@ -523,7 +518,7 @@ function HomePage() {
         </div>
       </section>
 
-      <section className={`${styles.ctaBand} ${styles.mobileHide}`}>
+      <section className={styles.ctaBand}>
         <div className={styles.ctaInner}>
           <div>
             <h2 className={styles.ctaTitle}>{CTA_TITLE}</h2>
@@ -542,7 +537,7 @@ function HomePage() {
         </div>
       </section>
 
-      <div className={`${styles.content} ${styles.mobileHide}`}>
+      <div className={styles.content}>
         {showTestsError ? (
           <ErrorMessage
             title={TEST_LISTINGS_ERROR_TITLE}
