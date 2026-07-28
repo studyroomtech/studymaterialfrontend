@@ -94,8 +94,8 @@ import type {
 } from "../utils/catalogTree.types";
 import {
   MaterialCoverArt,
-  coverThemeLabel,
-  resolveCoverTheme,
+  coverVariantLabel,
+  resolveCoverVariant,
 } from "../components/MaterialCoverArt/MaterialCoverArt";
 
 function firstTagName(material: CatalogMaterial): string {
@@ -121,20 +121,22 @@ function RankCard({
   const title =
     material.title.length > 0 ? material.title : UNTITLED_MATERIAL_LABEL;
   const tag = firstTagName(material);
-  const coverTheme = resolveCoverTheme(title, tag, material.id);
+  const coverVariant = resolveCoverVariant(material.id);
 
   return (
     <Link href={`/materials/${material.id}`} className={styles.rankCard}>
       <div className={styles.rankCover}>
         <MaterialCoverArt
-          theme={coverTheme}
+          variant={coverVariant}
           uid={material.id}
           className={styles.rankCoverArt}
         />
         <span className={styles.rankNum} aria-hidden="true">
           {formatRank(rank)}
         </span>
-        <span className={styles.coverBadge}>{coverThemeLabel(coverTheme)}</span>
+        <span className={styles.coverBadge}>
+          {coverVariantLabel(coverVariant)}
+        </span>
       </div>
       <div className={styles.rankCardBody}>
         <div className={styles.rankCardTop}>
@@ -419,6 +421,31 @@ function HomePage() {
           />
         ) : null}
 
+        {recentlyAdded.length > 0 ? (
+          <section className={styles.section} id="recent">
+            <div className={styles.sectionHead}>
+              <div>
+                <h2 className={styles.sectionTitle}>
+                  {RECENTLY_ADDED_SECTION_TITLE}
+                </h2>
+              </div>
+              <Link href={SEARCH_HREF} className={styles.viewAll}>
+                {VIEW_ALL_LABEL} →
+              </Link>
+            </div>
+            <div className={styles.trendingGrid}>
+              {recentlyAdded.map((material, index) => (
+                <div key={material.id} className={styles.recentWrap}>
+                  <RankCard material={material} rank={index} />
+                  <span className={styles.recentCaption}>
+                    {RECENTLY_ADDED_CAPTION}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </section>
+        ) : null}
+
         {trending.length > 0 ? (
           <section className={styles.section} id="trending">
             <div className={styles.sectionHead}>
@@ -511,31 +538,6 @@ function HomePage() {
       </section>
 
       <div className={styles.content}>
-        {recentlyAdded.length > 0 ? (
-          <section className={styles.section}>
-            <div className={styles.sectionHead}>
-              <div>
-                <h2 className={styles.sectionTitle}>
-                  {RECENTLY_ADDED_SECTION_TITLE}
-                </h2>
-              </div>
-              <Link href={SEARCH_HREF} className={styles.viewAll}>
-                {VIEW_ALL_LABEL} →
-              </Link>
-            </div>
-            <div className={styles.trendingGrid}>
-              {recentlyAdded.map((material, index) => (
-                <div key={material.id} className={styles.recentWrap}>
-                  <RankCard material={material} rank={index} />
-                  <span className={styles.recentCaption}>
-                    {RECENTLY_ADDED_CAPTION}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </section>
-        ) : null}
-
         {showTestsError ? (
           <ErrorMessage
             title={TEST_LISTINGS_ERROR_TITLE}

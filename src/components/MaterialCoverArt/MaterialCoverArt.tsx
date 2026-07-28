@@ -1,89 +1,15 @@
-// Subject-themed cover illustrations for material cards — StudyForGovt.
+// Generic cover illustrations for material cards — StudyForGovt.
 // Catalog materials have no uploaded thumbnails; these SVG covers give each
-// card a clear visual cue by subject / exam keyword.
+// card a clear “notes / PDF” visual without subject-specific artwork.
 
-export type CoverTheme =
-  | "polity"
-  | "quant"
-  | "history"
-  | "science"
-  | "english"
-  | "banking"
-  | "railways"
-  | "notes";
-
-const THEME_KEYWORDS: Record<CoverTheme, string[]> = {
-  polity: [
-    "polity",
-    "constitution",
-    "civics",
-    "governance",
-    "laxmikanth",
-    "political",
-  ],
-  quant: [
-    "quant",
-    "math",
-    "arithmetic",
-    "aptitude",
-    "reasoning",
-    "numerical",
-    "algebra",
-  ],
-  history: [
-    "history",
-    "ancient",
-    "medieval",
-    "modern",
-    "movement",
-    "civilization",
-  ],
-  science: [
-    "science",
-    "physics",
-    "chemistry",
-    "biology",
-    "environment",
-    "geography",
-  ],
-  english: [
-    "english",
-    "grammar",
-    "comprehension",
-    "vocabulary",
-    "language",
-  ],
-  banking: ["bank", "ibps", "sbi", "po", "clerk", "finance", "economy"],
-  railways: ["railway", "rrb", "ntpc", "group d", "alp"],
-  notes: [],
-};
+export type CoverVariant = "notes" | "binder" | "stack" | "open";
 
 /**
- * Pick a cover theme from a material title and primary tag.
- * Falls back to a stable notes theme keyed by id so cards stay varied.
+ * Pick a stable generic cover variant from the material id so cards stay
+ * visually varied without implying a specific subject.
  */
-export function resolveCoverTheme(
-  title: string,
-  tag: string,
-  materialId: string,
-): CoverTheme {
-  const haystack = `${title} ${tag}`.toLowerCase();
-  for (const [theme, keywords] of Object.entries(THEME_KEYWORDS) as Array<
-    [CoverTheme, string[]]
-  >) {
-    if (theme === "notes") continue;
-    if (keywords.some((kw) => haystack.includes(kw))) {
-      return theme;
-    }
-  }
-  const cycle: CoverTheme[] = [
-    "notes",
-    "polity",
-    "quant",
-    "history",
-    "science",
-    "english",
-  ];
+export function resolveCoverVariant(materialId: string): CoverVariant {
+  const cycle: CoverVariant[] = ["notes", "binder", "stack", "open"];
   let hash = 0;
   for (let i = 0; i < materialId.length; i += 1) {
     hash = (hash + materialId.charCodeAt(i) * (i + 1)) % cycle.length;
@@ -91,30 +17,23 @@ export function resolveCoverTheme(
   return cycle[hash];
 }
 
-const THEME_LABEL: Record<CoverTheme, string> = {
-  polity: "Polity & Civics",
-  quant: "Quant & Aptitude",
-  history: "History",
-  science: "Science & GS",
-  english: "English",
-  banking: "Banking",
-  railways: "Railways",
-  notes: "Study Notes",
-};
-
-export function coverThemeLabel(theme: CoverTheme): string {
-  return THEME_LABEL[theme];
+export function coverVariantLabel(_variant: CoverVariant): string {
+  return "Study notes";
 }
 
 type CoverProps = {
-  theme: CoverTheme;
+  variant: CoverVariant;
   className?: string;
   /** Unique suffix so multiple covers on one page do not clash on gradient ids. */
   uid?: string;
 };
 
 /** Decorative SVG cover art (aria-hidden; parent card carries the label). */
-export function MaterialCoverArt({ theme, className, uid = theme }: CoverProps) {
+export function MaterialCoverArt({
+  variant,
+  className,
+  uid = variant,
+}: CoverProps) {
   const bgId = `cover-bg-${uid}`;
   const gridId = `cover-grid-${uid}`;
 
@@ -148,252 +67,13 @@ export function MaterialCoverArt({ theme, className, uid = theme }: CoverProps) 
 
       <rect width="320" height="180" fill={`url(#${bgId})`} />
       <rect width="320" height="180" fill={`url(#${gridId})`} />
-
       <rect x="0" y="0" width="320" height="4" fill="#E8B948" />
 
-      {theme === "polity" && <PolityArt />}
-      {theme === "quant" && <QuantArt />}
-      {theme === "history" && <HistoryArt />}
-      {theme === "science" && <ScienceArt />}
-      {theme === "english" && <EnglishArt />}
-      {theme === "banking" && <BankingArt />}
-      {theme === "railways" && <RailwaysArt />}
-      {theme === "notes" && <NotesArt />}
+      {variant === "notes" && <NotesArt />}
+      {variant === "binder" && <BinderArt />}
+      {variant === "stack" && <StackArt />}
+      {variant === "open" && <OpenBookArt />}
     </svg>
-  );
-}
-
-function PolityArt() {
-  return (
-    <g fill="none" stroke="#E8B948" strokeWidth="2" strokeLinecap="round">
-      <path d="M160 48 L160 138" />
-      <path d="M118 70 L202 70" />
-      <circle cx="160" cy="58" r="10" fill="#E8B948" stroke="none" />
-      <path d="M130 90 L160 78 L190 90" />
-      <path d="M136 90 V120 H184 V90" stroke="#C9D2E4" />
-      <path d="M112 138 H208" stroke="#C9D2E4" />
-      <text
-        x="24"
-        y="158"
-        fill="#9FADCA"
-        fontFamily="IBM Plex Mono, monospace"
-        fontSize="11"
-        letterSpacing="1.5"
-      >
-        CONSTITUTION
-      </text>
-    </g>
-  );
-}
-
-function QuantArt() {
-  return (
-    <g>
-      <text
-        x="36"
-        y="78"
-        fill="#E8B948"
-        fontFamily="Fraunces, Georgia, serif"
-        fontSize="42"
-        fontWeight="600"
-      >
-        ∑
-      </text>
-      <text
-        x="90"
-        y="72"
-        fill="#C9D2E4"
-        fontFamily="IBM Plex Mono, monospace"
-        fontSize="18"
-      >
-        x² + y
-      </text>
-      <text
-        x="90"
-        y="100"
-        fill="#E8B948"
-        fontFamily="IBM Plex Mono, monospace"
-        fontSize="16"
-      >
-        = 42
-      </text>
-      <rect
-        x="210"
-        y="48"
-        width="72"
-        height="72"
-        rx="4"
-        fill="none"
-        stroke="rgba(232,185,72,0.45)"
-        strokeWidth="1.5"
-      />
-      <path
-        d="M222 108 L246 72 L270 96"
-        fill="none"
-        stroke="#E8B948"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <text
-        x="24"
-        y="158"
-        fill="#9FADCA"
-        fontFamily="IBM Plex Mono, monospace"
-        fontSize="11"
-        letterSpacing="1.5"
-      >
-        APTITUDE
-      </text>
-    </g>
-  );
-}
-
-function HistoryArt() {
-  return (
-    <g fill="none" stroke="#E8B948" strokeWidth="2" strokeLinecap="round">
-      <path d="M80 120 H240" stroke="#C9D2E4" />
-      <path d="M100 120 V70 H140 V120" />
-      <path d="M160 120 V55 H200 V120" />
-      <path d="M110 70 H130 M170 55 H190" stroke="#C9D2E4" strokeWidth="1.5" />
-      <circle cx="250" cy="58" r="18" stroke="#E8B948" />
-      <path d="M250 48 V58 H258" stroke="#E8B948" />
-      <text
-        x="24"
-        y="158"
-        fill="#9FADCA"
-        fontFamily="IBM Plex Mono, monospace"
-        fontSize="11"
-        letterSpacing="1.5"
-      >
-        HISTORY
-      </text>
-    </g>
-  );
-}
-
-function ScienceArt() {
-  return (
-    <g fill="none" stroke="#E8B948" strokeWidth="2">
-      <ellipse cx="160" cy="88" rx="48" ry="18" transform="rotate(0 160 88)" />
-      <ellipse
-        cx="160"
-        cy="88"
-        rx="48"
-        ry="18"
-        transform="rotate(60 160 88)"
-        stroke="#C9D2E4"
-      />
-      <ellipse
-        cx="160"
-        cy="88"
-        rx="48"
-        ry="18"
-        transform="rotate(120 160 88)"
-        stroke="#C9D2E4"
-      />
-      <circle cx="160" cy="88" r="8" fill="#E8B948" stroke="none" />
-      <text
-        x="24"
-        y="158"
-        fill="#9FADCA"
-        fontFamily="IBM Plex Mono, monospace"
-        fontSize="11"
-        letterSpacing="1.5"
-      >
-        SCIENCE
-      </text>
-    </g>
-  );
-}
-
-function EnglishArt() {
-  return (
-    <g>
-      <text
-        x="40"
-        y="95"
-        fill="#E8B948"
-        fontFamily="Fraunces, Georgia, serif"
-        fontSize="64"
-        fontStyle="italic"
-        fontWeight="500"
-      >
-        Aa
-      </text>
-      <text
-        x="150"
-        y="70"
-        fill="#C9D2E4"
-        fontFamily="IBM Plex Sans, sans-serif"
-        fontSize="14"
-      >
-        Grammar · Vocab
-      </text>
-      <text
-        x="150"
-        y="96"
-        fill="#9FADCA"
-        fontFamily="IBM Plex Mono, monospace"
-        fontSize="12"
-      >
-        comprehension
-      </text>
-      <text
-        x="24"
-        y="158"
-        fill="#9FADCA"
-        fontFamily="IBM Plex Mono, monospace"
-        fontSize="11"
-        letterSpacing="1.5"
-      >
-        ENGLISH
-      </text>
-    </g>
-  );
-}
-
-function BankingArt() {
-  return (
-    <g fill="none" stroke="#E8B948" strokeWidth="2" strokeLinecap="round">
-      <path d="M100 118 H220" stroke="#C9D2E4" />
-      <path d="M110 118 V78 H210 V118" />
-      <path d="M160 52 L210 78 H110 Z" />
-      <path d="M130 90 V108 M160 90 V108 M190 90 V108" stroke="#C9D2E4" />
-      <text
-        x="24"
-        y="158"
-        fill="#9FADCA"
-        fontFamily="IBM Plex Mono, monospace"
-        fontSize="11"
-        letterSpacing="1.5"
-      >
-        BANKING
-      </text>
-    </g>
-  );
-}
-
-function RailwaysArt() {
-  return (
-    <g fill="none" stroke="#E8B948" strokeWidth="2" strokeLinecap="round">
-      <rect x="70" y="70" width="180" height="48" rx="6" />
-      <circle cx="100" cy="130" r="12" stroke="#C9D2E4" />
-      <circle cx="220" cy="130" r="12" stroke="#C9D2E4" />
-      <path d="M70 100 H250" stroke="#C9D2E4" strokeWidth="1.5" />
-      <path d="M130 78 V100 M170 78 V100" stroke="#C9D2E4" />
-      <path d="M55 142 H265" stroke="#9FADCA" strokeWidth="1.5" />
-      <text
-        x="24"
-        y="158"
-        fill="#9FADCA"
-        fontFamily="IBM Plex Mono, monospace"
-        fontSize="11"
-        letterSpacing="1.5"
-      >
-        RAILWAYS
-      </text>
-    </g>
   );
 }
 
@@ -412,6 +92,93 @@ function NotesArt() {
         letterSpacing="1.5"
       >
         NOTES · PDF
+      </text>
+    </g>
+  );
+}
+
+function BinderArt() {
+  return (
+    <g fill="none" stroke="#E8B948" strokeWidth="2" strokeLinecap="round">
+      <rect x="98" y="40" width="124" height="104" rx="5" fill="#20335A" />
+      <path d="M112 40 V144" stroke="#C9D2E4" strokeWidth="1.5" />
+      <circle cx="112" cy="62" r="4" fill="#E8B948" stroke="none" />
+      <circle cx="112" cy="92" r="4" fill="#E8B948" stroke="none" />
+      <circle cx="112" cy="122" r="4" fill="#E8B948" stroke="none" />
+      <path d="M132 70 H200 M132 90 H200 M132 110 H176" stroke="#C9D2E4" />
+      <text
+        x="24"
+        y="158"
+        fill="#9FADCA"
+        fontFamily="IBM Plex Mono, monospace"
+        fontSize="11"
+        letterSpacing="1.5"
+      >
+        STUDY MATERIAL
+      </text>
+    </g>
+  );
+}
+
+function StackArt() {
+  return (
+    <g fill="none" stroke="#E8B948" strokeWidth="2" strokeLinecap="round">
+      <rect
+        x="92"
+        y="78"
+        width="136"
+        height="54"
+        rx="3"
+        fill="#1a2a4a"
+        stroke="#8B93A8"
+      />
+      <rect
+        x="100"
+        y="62"
+        width="136"
+        height="54"
+        rx="3"
+        fill="#1f3158"
+        stroke="#C9D2E4"
+      />
+      <rect x="108" y="46" width="136" height="54" rx="3" fill="#20335A" />
+      <path d="M128 66 H220 M128 82 H200" stroke="#C9D2E4" />
+      <text
+        x="24"
+        y="158"
+        fill="#9FADCA"
+        fontFamily="IBM Plex Mono, monospace"
+        fontSize="11"
+        letterSpacing="1.5"
+      >
+        NOTES · PDF
+      </text>
+    </g>
+  );
+}
+
+function OpenBookArt() {
+  return (
+    <g fill="none" stroke="#E8B948" strokeWidth="2" strokeLinecap="round">
+      <path
+        d="M160 52 C132 48 108 52 96 58 V126 C112 118 136 116 160 122 C184 116 208 118 224 126 V58 C212 52 188 48 160 52 Z"
+        fill="#20335A"
+      />
+      <path d="M160 52 V122" stroke="#C9D2E4" />
+      <path
+        d="M118 78 H146 M118 94 H146 M174 78 H202 M174 94 H196"
+        stroke="#C9D2E4"
+        strokeWidth="1.5"
+      />
+      <text
+        x="24"
+        y="158"
+        fill="#9FADCA"
+        fontFamily="IBM Plex Mono, monospace"
+        fontSize="11"
+        letterSpacing="1.5"
+      >
+        STUDY NOTES
       </text>
     </g>
   );

@@ -26,6 +26,11 @@ import { NO_MATCHING_MATERIALS_MESSAGE } from "@/components/EmptyState/EmptyStat
 import ErrorMessage from "@/components/ErrorMessage/ErrorMessage";
 import Input from "@/components/Input/Input";
 import LoadingIndicator from "@/components/LoadingIndicator/LoadingIndicator";
+import {
+  MaterialCoverArt,
+  coverVariantLabel,
+  resolveCoverVariant,
+} from "@/components/MaterialCoverArt/MaterialCoverArt";
 import { useCatalog } from "@/hooks/api/useCatalog";
 import { useSearchMaterials } from "@/hooks/api/useSearchMaterials";
 import { useDebounce } from "@/hooks/useDebounce";
@@ -36,6 +41,7 @@ import {
   ALL_CATEGORIES_VALUE,
   CATEGORY_FILTER_ID,
   CATEGORY_FILTER_LABEL,
+  DEFAULT_RESULT_TAG,
   SEARCH_ERROR_MESSAGE,
   SEARCH_ERROR_TITLE,
   SEARCH_INPUT_ID,
@@ -46,7 +52,19 @@ import {
   SEARCH_PAGE_SUBTITLE,
   SEARCH_PAGE_TITLE,
   SEARCH_RESULTS_LABEL,
+  VIEW_MATERIAL_LABEL,
 } from "./page.constant";
+
+function firstTagName(
+  tagsByCategoryType: Record<string, Array<{ categoryId: string; name: string }>>,
+): string {
+  for (const tags of Object.values(tagsByCategoryType)) {
+    if (tags.length > 0 && tags[0].name.trim().length > 0) {
+      return tags[0].name;
+    }
+  }
+  return DEFAULT_RESULT_TAG;
+}
 
 function SearchPage() {
   // Raw query drives the input; the debounced copy drives the request so the
@@ -160,30 +178,49 @@ function SearchPage() {
           <ul className={styles.resultGrid}>
             {materials.map((material) => {
               const tags = Object.values(material.tagsByCategoryType).flat();
+              const primaryTag = firstTagName(material.tagsByCategoryType);
+              const coverVariant = resolveCoverVariant(material.id);
               return (
                 <li key={material.id} className={styles.resultItem}>
                   <Link
                     className={styles.resultCard}
                     href={`/materials/${material.id}`}
                   >
-                    <span className={styles.resultThumb} aria-hidden="true">
-                      📄
-                    </span>
-                    <span className={styles.resultTitle}>{material.title}</span>
-                    {material.description ? (
-                      <span className={styles.resultDescription}>
-                        {material.description}
+                    <div className={styles.resultCover}>
+                      <MaterialCoverArt
+                        variant={coverVariant}
+                        uid={`search-${material.id}`}
+                        className={styles.resultCoverArt}
+                      />
+                      <span className={styles.coverBadge}>
+                        {coverVariantLabel(coverVariant)}
                       </span>
-                    ) : null}
-                    {tags.length > 0 && (
-                      <span className={styles.tagList}>
-                        {tags.map((tag) => (
-                          <span key={tag.categoryId} className={styles.tag}>
-                            {tag.name}
-                          </span>
-                        ))}
+                    </div>
+                    <div className={styles.resultBody}>
+                      {tags.length > 0 ? (
+                        <span className={styles.examTag}>{primaryTag}</span>
+                      ) : null}
+                      <span className={styles.resultTitle}>
+                        {material.title}
                       </span>
-                    )}
+                      {material.description ? (
+                        <span className={styles.resultDescription}>
+                          {material.description}
+                        </span>
+                      ) : null}
+                      {tags.length > 1 ? (
+                        <span className={styles.tagList}>
+                          {tags.slice(1).map((tag) => (
+                            <span key={tag.categoryId} className={styles.tag}>
+                              {tag.name}
+                            </span>
+                          ))}
+                        </span>
+                      ) : null}
+                      <span className={styles.resultFoot}>
+                        {VIEW_MATERIAL_LABEL} →
+                      </span>
+                    </div>
                   </Link>
                 </li>
               );
