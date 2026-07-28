@@ -1,0 +1,37 @@
+// RatingBadge styling — StudyForGovt.
+
+@use "../../styles/theme" as theme;
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.28em;
+  line-height: 1;
+  color: theme.color("ink");
+  font-family: theme.$font-family-mono;
+  font-weight: theme.font-weight("medium");
+}
+
+.sm {
+  font-size: theme.font-size("xs");
+}
+
+.md {
+  font-size: theme.font-size("sm");
+}
+
+.lg {
+  font-size: theme.font-size("md");
+}
+
+.star {
+  color: theme.color("gold");
+}
+
+.value {
+  color: theme.color("ink");
+}
+
+.count {
+  color: theme.color("ink-soft");
+}

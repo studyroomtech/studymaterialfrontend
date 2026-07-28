@@ -81,6 +81,7 @@ import Footer from "../components/Footer/Footer";
 import ErrorMessage from "../components/ErrorMessage/ErrorMessage";
 import LoadingIndicator from "../components/LoadingIndicator/LoadingIndicator";
 import PaymentModal from "../components/PaymentModal/PaymentModal";
+import RatingBadge from "../components/RatingBadge/RatingBadge";
 import { usePayment } from "../hooks/api/usePayment";
 import { PAYMENT_PHASE } from "../hooks/api/usePayment.constant";
 import { useCatalog } from "../hooks/api/useCatalog";
@@ -141,6 +142,10 @@ function RankCard({
       <div className={styles.rankCardBody}>
         <div className={styles.rankCardTop}>
           <span className={styles.examTag}>{tag}</span>
+          <RatingBadge
+            averageRating={material.averageRating}
+            reviewCount={material.reviewCount}
+          />
         </div>
         <h3 className={styles.rankCardTitle}>{title}</h3>
         <div className={styles.rankCardFoot}>

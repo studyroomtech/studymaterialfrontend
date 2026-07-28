@@ -22,6 +22,8 @@ export const ADMIN_API_ROUTES = {
   materials: '/api/admin/materials',
   categoryTypes: '/api/admin/category-types',
   categories: '/api/admin/categories',
+  // `reviews` -> DELETE /api/admin/reviews/:reviewId  (admin review moderation)
+  reviews: '/api/admin/reviews',
 } as const;
 
 /** Path segment appended to a material route for its Tag assignments (Req 2.2, 2.3). */

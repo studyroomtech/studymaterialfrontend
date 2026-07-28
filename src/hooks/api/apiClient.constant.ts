@@ -95,6 +95,12 @@ export const ATTEMPT_SUBMIT_SEGMENT = 'submit';
 // `GET /api/attempts/:id/questions` (Req 9.4).
 export const ATTEMPT_QUESTIONS_SEGMENT = 'questions';
 
+// Sub-path appended to a material route to reach its reviews endpoint, e.g.
+//   GET    /api/materials/:id/reviews  (list + aggregate + canReview + myReview)
+//   POST   /api/materials/:id/reviews  (upsert the caller's rating/review)
+//   DELETE /api/materials/:id/reviews  (delete the caller's own review)
+export const MATERIAL_REVIEWS_ACTION = 'reviews';
+
 // Sub-path appended to a material route to reach its download endpoint, e.g.
 // `/api/materials/:id/download` (Req 6.8).
 export const MATERIAL_DOWNLOAD_ACTION = 'download';

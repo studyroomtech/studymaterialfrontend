@@ -57,6 +57,10 @@ export interface SearchMaterial {
   title: string;
   description?: string;
   tagsByCategoryType: Record<string, MaterialTag[]>;
+  /** The material's average rating, or `null` when it has no ratings yet. */
+  averageRating?: number | null;
+  /** The number of ratings the material has received (0 when none). */
+  reviewCount?: number;
 }
 
 /**
@@ -96,4 +100,36 @@ export interface MaterialDetail {
   currency: string | null;
   /** `true` when the material is a Paid Material requiring an entitlement. */
   isPaid: boolean;
+  /** The material's average rating, or `null` when it has no ratings yet. */
+  averageRating?: number | null;
+  /** The number of ratings the material has received (0 when none). */
+  reviewCount?: number;
+}
+
+/**
+ * A single review as returned by `GET /api/materials/:id/reviews`. The reviewer
+ * is identified by display name only; the email is never exposed. `isOwn` marks
+ * the signed-in caller's own review so the UI can offer edit/delete.
+ */
+export interface MaterialReview {
+  id: string;
+  reviewerName: string;
+  rating: number;
+  body: string;
+  createdAt: string;
+  updatedAt: string;
+  isOwn: boolean;
+}
+
+/**
+ * The reviews payload for a Study Material: the list plus the aggregate,
+ * whether the caller may submit a review, and the caller's own review (for
+ * prefill), as returned by `GET /api/materials/:id/reviews`.
+ */
+export interface MaterialReviewsResult {
+  reviews: MaterialReview[];
+  averageRating: number | null;
+  reviewCount: number;
+  canReview: boolean;
+  myReview: MaterialReview | null;
 }

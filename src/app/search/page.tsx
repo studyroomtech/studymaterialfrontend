@@ -26,6 +26,7 @@ import { NO_MATCHING_MATERIALS_MESSAGE } from "@/components/EmptyState/EmptyStat
 import ErrorMessage from "@/components/ErrorMessage/ErrorMessage";
 import Input from "@/components/Input/Input";
 import LoadingIndicator from "@/components/LoadingIndicator/LoadingIndicator";
+import RatingBadge from "@/components/RatingBadge/RatingBadge";
 import {
   MaterialCoverArt,
   coverVariantLabel,
@@ -203,6 +204,10 @@ function SearchPage() {
                       <span className={styles.resultTitle}>
                         {material.title}
                       </span>
+                      <RatingBadge
+                        averageRating={material.averageRating}
+                        reviewCount={material.reviewCount}
+                      />
                       {material.description ? (
                         <span className={styles.resultDescription}>
                           {material.description}

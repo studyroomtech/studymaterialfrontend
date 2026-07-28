@@ -20,6 +20,10 @@ export interface CatalogMaterial {
   id: string;
   title: string;
   tagsByCategoryType: Record<string, CatalogTag[]>;
+  /** The material's average rating, or `null` when it has no ratings yet. */
+  averageRating?: number | null;
+  /** The number of ratings the material has received (0 when none). */
+  reviewCount?: number;
 }
 
 /** A Category (classification value) belonging to a single Category Type. */

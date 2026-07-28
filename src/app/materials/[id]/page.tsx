@@ -33,6 +33,7 @@ import ErrorMessage from "@/components/ErrorMessage/ErrorMessage";
 import LoadingIndicator from "@/components/LoadingIndicator/LoadingIndicator";
 import NotesPreview from "@/components/NotesPreview/NotesPreview";
 import PaymentModal from "@/components/PaymentModal/PaymentModal";
+import ReviewsSection from "@/components/ReviewsSection/ReviewsSection";
 import { usePaidMaterials } from "@/hooks/api/usePaidMaterials";
 import { usePayment } from "@/hooks/api/usePayment";
 import { PAYMENT_PHASE } from "@/hooks/api/usePayment.constant";
@@ -215,19 +216,22 @@ function MaterialViewPage() {
       ) : null}
 
       {data !== null ? (
-        <MaterialContent
-          title={data.title}
-          description={data.description}
-          fileName={data.fileName}
-          isDownloading={isDownloading}
-          downloadError={downloadError}
-          onDownload={() => requestDownload(data.id)}
-          previewUrl={previewUrl}
-          previewContentType={previewContentType}
-          isPreviewing={isPreviewing}
-          onRequestPreview={() => requestPreview(data.id)}
-          onClearPreview={clearPreview}
-        />
+        <>
+          <MaterialContent
+            title={data.title}
+            description={data.description}
+            fileName={data.fileName}
+            isDownloading={isDownloading}
+            downloadError={downloadError}
+            onDownload={() => requestDownload(data.id)}
+            previewUrl={previewUrl}
+            previewContentType={previewContentType}
+            isPreviewing={isPreviewing}
+            onRequestPreview={() => requestPreview(data.id)}
+            onClearPreview={clearPreview}
+          />
+          <ReviewsSection materialId={data.id} isPaid={data.isPaid} />
+        </>
       ) : null}
 
       <DownloadGateModal

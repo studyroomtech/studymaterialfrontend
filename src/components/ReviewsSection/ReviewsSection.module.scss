@@ -1,0 +1,217 @@
+// ReviewsSection styling — StudyForGovt.
+
+@use "../../styles/theme" as theme;
+@use "../../styles/mixins" as mixins;
+
+.section {
+  @include mixins.flex(column, flex-start, stretch, theme.space("lg"));
+
+  margin-top: theme.space("xl");
+  padding-top: theme.space("lg");
+  border-top: 1px solid theme.color("border");
+}
+
+.head {
+  @include mixins.flex(row, space-between, center, theme.space("md"));
+}
+
+.heading {
+  font-family: theme.$font-family-display;
+  font-size: theme.font-size("xl");
+  font-weight: theme.font-weight("semibold");
+  line-height: theme.$line-height-heading;
+  margin: 0;
+  color: theme.color("ink");
+}
+
+.aggregate {
+  @include mixins.flex(row, flex-start, center, theme.space("sm"));
+
+  flex-wrap: wrap;
+}
+
+.average {
+  font-family: theme.$font-family-display;
+  font-size: theme.font-size("2xl");
+  font-weight: theme.font-weight("bold");
+  line-height: 1;
+  color: theme.color("ink");
+}
+
+.count {
+  @include mixins.typography("sm", "medium");
+
+  color: theme.color("ink-soft");
+}
+
+// --- Prompts / locked note -------------------------------------------------
+.prompt {
+  @include mixins.flex(row, space-between, center, theme.space("md"));
+
+  flex-wrap: wrap;
+  padding: theme.space("md") theme.space("lg");
+  background-color: theme.color("surface-alt");
+  border: 1px solid theme.color("border");
+  border-radius: theme.$radius-md;
+}
+
+.promptText {
+  @include mixins.typography("sm", "medium");
+
+  margin: 0;
+  color: theme.color("ink");
+}
+
+.lockedNote {
+  @include mixins.typography("sm", "regular");
+
+  margin: 0;
+  color: theme.color("ink-soft");
+}
+
+// --- My review card --------------------------------------------------------
+.myReview {
+  @include mixins.flex(column, flex-start, stretch, theme.space("sm"));
+
+  padding: theme.space("lg");
+  background-color: theme.color("surface");
+  border: 1px solid theme.color("border");
+  border-left: 3px solid theme.color("gold");
+  border-radius: theme.$radius-md;
+}
+
+.myReviewHead {
+  @include mixins.flex(row, space-between, center, theme.space("md"));
+
+  flex-wrap: wrap;
+}
+
+.ownActions {
+  @include mixins.flex(row, flex-start, center, theme.space("xs"));
+}
+
+// --- Form ------------------------------------------------------------------
+.form {
+  @include mixins.flex(column, flex-start, stretch, theme.space("md"));
+
+  padding: theme.space("lg");
+  background-color: theme.color("surface");
+  border: 1px solid theme.color("border");
+  border-radius: theme.$radius-md;
+}
+
+.field {
+  @include mixins.flex(column, flex-start, flex-start, theme.space("xs"));
+}
+
+.fieldLabel {
+  @include mixins.typography("sm", "semibold");
+
+  color: theme.color("ink");
+}
+
+.textarea {
+  width: 100%;
+  padding: theme.space("sm") theme.space("md");
+  font-family: theme.$font-family-base;
+  font-size: theme.font-size("md");
+  line-height: theme.$line-height-base;
+  color: theme.color("text");
+  background-color: theme.color("surface");
+  border: 1px solid theme.color("border");
+  border-radius: theme.$radius-md;
+  resize: vertical;
+}
+
+.textarea:focus-visible {
+  @include mixins.focus-ring;
+
+  border-color: theme.color("border-dark");
+}
+
+.formError {
+  @include mixins.typography("sm", "medium");
+
+  margin: 0;
+  color: theme.color("danger");
+}
+
+.formActions {
+  @include mixins.flex(row, flex-start, center, theme.space("sm"));
+
+  flex-wrap: wrap;
+}
+
+// --- List ------------------------------------------------------------------
+.list {
+  @include mixins.flex(column, flex-start, stretch, theme.space("md"));
+
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.item {
+  @include mixins.flex(column, flex-start, stretch, theme.space("xs"));
+
+  padding-bottom: theme.space("md");
+  border-bottom: 1px solid theme.color("border");
+}
+
+.item:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.itemHead {
+  @include mixins.flex(row, space-between, center, theme.space("md"));
+
+  flex-wrap: wrap;
+}
+
+.reviewer {
+  @include mixins.flex(row, flex-start, center, theme.space("sm"));
+
+  flex-wrap: wrap;
+}
+
+.reviewerName {
+  @include mixins.typography("md", "semibold");
+
+  color: theme.color("ink");
+}
+
+.itemStars {
+  flex-shrink: 0;
+}
+
+.date {
+  @include mixins.typography("xs", "regular");
+
+  color: theme.color("ink-soft");
+}
+
+.reviewBody {
+  @include mixins.typography("sm", "regular");
+
+  margin: 0;
+  color: theme.color("text");
+  white-space: pre-wrap;
+}
+
+.itemActions {
+  @include mixins.flex(row, flex-start, center, theme.space("xs"));
+
+  margin-top: theme.space("xs");
+}
+
+.empty {
+  @include mixins.typography("sm", "regular");
+
+  margin: 0;
+  color: theme.color("ink-soft");
+}
+
+.loading {
+  align-self: flex-start;
+}
