@@ -92,6 +92,11 @@ import type {
   CatalogCategory,
   CatalogMaterial,
 } from "../utils/catalogTree.types";
+import {
+  MaterialCoverArt,
+  coverThemeLabel,
+  resolveCoverTheme,
+} from "../components/MaterialCoverArt/MaterialCoverArt";
 
 function firstTagName(material: CatalogMaterial): string {
   for (const tags of Object.values(material.tagsByCategoryType)) {
@@ -115,19 +120,30 @@ function RankCard({
 }) {
   const title =
     material.title.length > 0 ? material.title : UNTITLED_MATERIAL_LABEL;
+  const tag = firstTagName(material);
+  const coverTheme = resolveCoverTheme(title, tag, material.id);
+
   return (
     <Link href={`/materials/${material.id}`} className={styles.rankCard}>
-      <span className={styles.rankNum} aria-hidden="true">
-        {formatRank(rank)}
-      </span>
-      <div className={styles.rankCardTop}>
-        <span className={styles.examTag}>{firstTagName(material)}</span>
-      </div>
-      <h3 className={styles.rankCardTitle}>{title}</h3>
-      <div className={styles.rankCardFoot}>
-        <span className={styles.linkArrow}>
-          {OPEN_MATERIAL_LABEL} →
+      <div className={styles.rankCover}>
+        <MaterialCoverArt
+          theme={coverTheme}
+          uid={material.id}
+          className={styles.rankCoverArt}
+        />
+        <span className={styles.rankNum} aria-hidden="true">
+          {formatRank(rank)}
         </span>
+        <span className={styles.coverBadge}>{coverThemeLabel(coverTheme)}</span>
+      </div>
+      <div className={styles.rankCardBody}>
+        <div className={styles.rankCardTop}>
+          <span className={styles.examTag}>{tag}</span>
+        </div>
+        <h3 className={styles.rankCardTitle}>{title}</h3>
+        <div className={styles.rankCardFoot}>
+          <span className={styles.linkArrow}>{OPEN_MATERIAL_LABEL} →</span>
+        </div>
       </div>
     </Link>
   );
