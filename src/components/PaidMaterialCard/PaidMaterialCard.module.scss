@@ -1,8 +1,4 @@
-// PaidMaterialCard styling (Requirements 1.18, 1.19, 1.20, 7.5, 12.1).
-//
-// All PaidMaterialCard presentation is authored here and derives every value
-// from the shared theme so the card matches the platform's single color
-// palette, typography scale, and spacing scale (no inline CSS).
+// PaidMaterialCard styling — StudyForGovt.
 
 @use "../../styles/theme" as theme;
 @use "../../styles/mixins" as mixins;
@@ -14,13 +10,17 @@
   padding: theme.space("lg");
   background-color: theme.color("surface");
   border: 1px solid theme.color("border");
-  border-radius: theme.$radius-lg;
-  box-shadow: theme.$shadow-sm;
-  transition: box-shadow theme.$transition-base;
+  border-radius: theme.$radius-md;
+  transition:
+    box-shadow theme.$transition-base,
+    border-color theme.$transition-base,
+    transform theme.$transition-base;
 }
 
 .card:hover {
   box-shadow: theme.$shadow-md;
+  border-color: theme.color("border-dark");
+  transform: translateY(-2px);
 }
 
 .content {
@@ -28,23 +28,27 @@
 }
 
 .title {
-  @include mixins.typography("lg", "semibold", theme.$line-height-heading);
-
+  font-family: theme.$font-family-display;
+  font-size: theme.font-size("lg");
+  font-weight: theme.font-weight("semibold");
+  line-height: theme.$line-height-heading;
   margin: 0;
-  color: theme.color("text");
+  color: theme.color("ink");
 }
 
 .description {
   @include mixins.typography("sm", "regular");
 
   margin: 0;
-  color: theme.color("text-muted");
+  color: theme.color("ink-soft");
 }
 
 .footer {
   @include mixins.flex(row, space-between, center, theme.space("md"));
 
   flex-wrap: wrap;
+  padding-top: theme.space("md");
+  border-top: 1px solid theme.color("border");
 }
 
 .price {
@@ -54,17 +58,20 @@
 }
 
 .priceLabel {
-  @include mixins.typography("xs", "medium");
-
-  color: theme.color("text-muted");
+  font-family: theme.$font-family-mono;
+  font-size: theme.font-size("xs");
+  font-weight: theme.font-weight("medium");
+  color: theme.color("ink-soft");
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.09em;
 }
 
 .priceValue {
-  @include mixins.typography("xl", "bold", theme.$line-height-heading);
-
-  color: theme.color("text");
+  font-family: theme.$font-family-display;
+  font-size: theme.font-size("xl");
+  font-weight: theme.font-weight("bold");
+  line-height: theme.$line-height-heading;
+  color: theme.color("ink");
 }
 
 .actions {

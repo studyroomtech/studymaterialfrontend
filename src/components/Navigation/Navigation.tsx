@@ -1,10 +1,4 @@
-// Navigation component (Requirement 7.6).
-//
-// Renders the primary navigation controls linking to the Material Catalog and
-// to search. It is mounted by the App Router root layout so the same controls
-// appear on every primary page. The currently active destination is marked via
-// `aria-current` so the navigation is accessible. Styling is authored entirely
-// in `Navigation.module.scss` (no inline CSS, Req 1.19).
+// Navigation component — StudyForGovt.
 
 "use client";
 
@@ -19,20 +13,36 @@ import {
   ADMIN_NAV_LINK,
   CART_NAV_LINK,
   NAV_BRAND_LABEL,
+  NAV_BRAND_MARK,
   NAV_LINKS,
 } from "./Navigation.constant";
 import type { NavigationProps } from "./Navigation.types";
 
-/**
- * Determine whether a nav link is the active destination for the current path.
- * The Catalog root ("/") matches only an exact path; other links match their
- * path or any nested route beneath it.
- */
 function isActivePath(pathname: string, href: string): boolean {
   if (href === "/") {
     return pathname === "/";
   }
   return pathname === href || pathname.startsWith(`${href}/`);
+}
+
+function CartIcon() {
+  return (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <circle cx="9" cy="20" r="1.5" />
+      <circle cx="18" cy="20" r="1.5" />
+      <path d="M3 4h2l2.4 11.2a1.5 1.5 0 0 0 1.5 1.2h8.4a1.5 1.5 0 0 0 1.45-1.1L21 8H7" />
+    </svg>
+  );
 }
 
 function Navigation({ className }: NavigationProps) {
@@ -41,9 +51,6 @@ function Navigation({ className }: NavigationProps) {
 
   const { isAdmin } = useAccessToken();
   const { count: cartCount } = useCart();
-  // Only reflect admin state after mount so the server-rendered markup (which
-  // has no access to the stored token) matches the initial client render,
-  // avoiding a hydration mismatch; the Manage link then appears for admins.
   const [hasMounted, setHasMounted] = useState(false);
   useEffect(() => {
     setHasMounted(true);
@@ -56,6 +63,9 @@ function Navigation({ className }: NavigationProps) {
     <header className={rootClassName}>
       <nav className={styles.bar} aria-label="Primary">
         <Link href="/" className={styles.brand}>
+          <span className={styles.logoMark} aria-hidden="true">
+            {NAV_BRAND_MARK}
+          </span>
           {NAV_BRAND_LABEL}
         </Link>
         <ul className={styles.links}>
@@ -65,7 +75,9 @@ function Navigation({ className }: NavigationProps) {
               <li key={link.href} className={styles.item}>
                 <Link
                   href={link.href}
-                  className={active ? `${styles.link} ${styles.active}` : styles.link}
+                  className={
+                    active ? `${styles.link} ${styles.active}` : styles.link
+                  }
                   aria-current={active ? "page" : undefined}
                 >
                   {link.label}
@@ -78,16 +90,20 @@ function Navigation({ className }: NavigationProps) {
               href={CART_NAV_LINK.href}
               className={
                 isActivePath(pathname, CART_NAV_LINK.href)
-                  ? `${styles.link} ${styles.active}`
-                  : styles.link
+                  ? `${styles.cartLink} ${styles.active}`
+                  : styles.cartLink
               }
+              aria-label={CART_NAV_LINK.label}
               aria-current={
                 isActivePath(pathname, CART_NAV_LINK.href) ? "page" : undefined
               }
             >
-              {CART_NAV_LINK.label}
+              <CartIcon />
               {hasMounted && cartCount > 0 ? (
-                <span className={styles.badge} aria-label={`${cartCount} items in cart`}>
+                <span
+                  className={styles.badge}
+                  aria-label={`${cartCount} items in cart`}
+                >
                   {cartCount}
                 </span>
               ) : null}

@@ -1,10 +1,4 @@
-// PaymentModal styling (Requirements 1.18, 1.19, 1.20, 7.5).
-//
-// The component renders a lightweight overlay that shows a "preparing checkout"
-// state (while the Razorpay script loads and the gateway opens) or an error
-// state when the gateway cannot be launched. The Razorpay Checkout overlay
-// renders above this on success. Every value derives from the shared theme and
-// no inline CSS is used.
+// PaymentModal styling — StudyForGovt.
 
 @use "../../styles/theme" as theme;
 @use "../../styles/mixins" as mixins;
@@ -17,48 +11,52 @@
   z-index: 900;
   padding: theme.space("md");
   background-color: theme.color("overlay");
+  backdrop-filter: blur(3px);
   overflow-y: auto;
 }
 
 .dialog {
-  @include mixins.flex(column, flex-start, stretch, theme.space("lg"));
+  @include mixins.flex(column, flex-start, stretch, 0);
 
   width: 100%;
   max-width: 26rem;
-  padding: theme.space("xl");
-  background-color: theme.color("background");
-  border: 1px solid theme.color("border");
+  background-color: theme.color("paper");
   border-radius: theme.$radius-lg;
-  box-shadow: theme.$shadow-md;
+  box-shadow: theme.$shadow-lg;
+  overflow: hidden;
   text-align: center;
 }
 
 .header {
   @include mixins.flex(column, flex-start, stretch, theme.space("xs"));
+
+  padding: 1.625rem 1.75rem 1.375rem;
+  background: theme.color("ink");
 }
 
 .title {
-  @include mixins.typography("xl", "semibold", theme.$line-height-heading);
-
+  font-family: theme.$font-family-display;
+  font-size: 1.5rem;
+  font-weight: theme.font-weight("semibold");
   margin: 0;
-  color: theme.color("text");
+  color: theme.color("text-inverse");
 }
 
 .description {
   @include mixins.typography("sm", "regular");
 
   margin: 0;
-  color: theme.color("text-muted");
+  color: #b9c4dc;
 }
 
 .body {
   @include mixins.flex(column, center, center, theme.space("md"));
 
-  padding-block: theme.space("md");
+  padding: 1.625rem 1.75rem;
 }
 
 .actions {
   @include mixins.flex(row, center, center, theme.space("sm"));
 
-  margin-block-start: theme.space("xs");
+  padding: 0 1.75rem 1.875rem;
 }

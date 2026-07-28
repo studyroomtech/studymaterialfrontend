@@ -1,25 +1,24 @@
-// StudyMaterialTab styling (Requirements 1.18, 1.19, 1.20, 7.5).
+// StudyMaterialTab styling — StudyForGovt (Requirements 1.18, 1.19, 1.20, 7.5).
 //
-// All presentation is authored here and derives every value from the shared
-// theme so the content-management UI matches the platform's single color
-// palette, typography scale, and spacing scale. No inline CSS is used.
+// Dense admin content-management UI. All presentation derives from the shared
+// theme (paper / ink / gold). No inline CSS is used.
 
 @use "../../styles/theme" as theme;
 @use "../../styles/mixins" as mixins;
 
 .page {
   min-height: 100vh;
-  padding-block: theme.space("xl");
-  background-color: theme.color("surface");
+  padding-block: theme.space("lg");
+  background-color: theme.color("paper");
 }
 
 .container {
   @include mixins.container;
-  @include mixins.flex(column, flex-start, stretch, theme.space("xl"));
+  @include mixins.flex(column, flex-start, stretch, theme.space("md"));
 }
 
 .header {
-  @include mixins.flex(row, space-between, flex-start, theme.space("md"));
+  @include mixins.flex(row, space-between, flex-start, theme.space("sm"));
 
   flex-wrap: wrap;
 }
@@ -29,59 +28,63 @@
 }
 
 .title {
-  @include mixins.typography("3xl", "semibold", theme.$line-height-heading);
-
+  font-family: theme.$font-family-display;
+  font-size: theme.font-size("2xl");
+  font-weight: theme.font-weight("semibold");
+  line-height: theme.$line-height-heading;
   margin: 0;
-  color: theme.color("text");
+  color: theme.color("ink");
 }
 
 .subtitle {
   @include mixins.typography("sm", "regular");
 
   margin: 0;
-  color: theme.color("text-muted");
+  color: theme.color("ink-soft");
 }
 
 .feedback {
-  @include mixins.typography("sm", "medium");
-
+  font-family: theme.$font-family-mono;
+  font-size: theme.font-size("sm");
+  font-weight: theme.font-weight("medium");
   margin: 0;
   padding: theme.space("sm") theme.space("md");
-  border-radius: theme.$radius-md;
+  border-radius: theme.$radius-sm;
   border: 1px solid transparent;
 }
 
 .feedbackSuccess {
   color: theme.color("success");
-  background-color: theme.color("surface-alt");
+  background-color: rgba(47, 122, 79, 0.06);
   border-color: theme.color("success");
 }
 
 .feedbackError {
   color: theme.color("danger");
-  background-color: theme.color("surface-alt");
+  background-color: rgba(185, 28, 28, 0.06);
   border-color: theme.color("danger");
 }
 
 .section {
-  @include mixins.flex(column, flex-start, stretch, theme.space("lg"));
+  @include mixins.flex(column, flex-start, stretch, theme.space("md"));
 
-  padding: theme.space("lg");
-  background-color: theme.color("background");
+  padding: theme.space("md");
+  background-color: theme.color("surface");
   border: 1px solid theme.color("border");
-  border-radius: theme.$radius-lg;
-  box-shadow: theme.$shadow-sm;
+  border-radius: theme.$radius-md;
 }
 
 .sectionTitle {
-  @include mixins.typography("xl", "semibold", theme.$line-height-heading);
-
+  font-family: theme.$font-family-display;
+  font-size: theme.font-size("lg");
+  font-weight: theme.font-weight("semibold");
+  line-height: theme.$line-height-heading;
   margin: 0;
-  color: theme.color("text");
+  color: theme.color("ink");
 }
 
 .form {
-  @include mixins.flex(column, flex-start, stretch, theme.space("md"));
+  @include mixins.flex(column, flex-start, stretch, theme.space("sm"));
 }
 
 .inlineForm {
@@ -99,24 +102,32 @@
 }
 
 .fileLabel {
-  @include mixins.typography("sm", "medium");
-
-  color: theme.color("text");
+  font-family: theme.$font-family-mono;
+  font-size: 0.65625rem;
+  font-weight: theme.font-weight("medium");
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #7a6a3c;
 }
 
 .fileInput {
   @include mixins.typography("sm", "regular");
 
   padding: theme.space("sm");
-  color: theme.color("text");
+  color: theme.color("ink");
   background-color: theme.color("surface");
-  border: 1px solid theme.color("border");
-  border-radius: theme.$radius-md;
+  border: 1.5px solid theme.color("border-dark");
+  border-radius: theme.$radius-sm;
+
+  &:focus-visible {
+    @include mixins.focus-ring;
+  }
 }
 
 .fieldError {
-  @include mixins.typography("sm", "medium");
-
+  font-family: theme.$font-family-mono;
+  font-size: theme.font-size("xs");
+  font-weight: theme.font-weight("medium");
   margin: 0;
   color: theme.color("danger");
 }
@@ -129,7 +140,7 @@
 
 .categoryTypeList,
 .materialList {
-  @include mixins.flex(column, flex-start, stretch, theme.space("md"));
+  @include mixins.flex(column, flex-start, stretch, theme.space("sm"));
 
   margin: 0;
   padding: 0;
@@ -138,12 +149,12 @@
 
 .categoryTypeItem,
 .materialItem {
-  @include mixins.flex(column, flex-start, stretch, theme.space("md"));
+  @include mixins.flex(column, flex-start, stretch, theme.space("sm"));
 
-  padding: theme.space("md");
+  padding: theme.space("sm") theme.space("md");
   background-color: theme.color("surface");
   border: 1px solid theme.color("border");
-  border-radius: theme.$radius-md;
+  border-radius: theme.$radius-sm;
 }
 
 .itemHeader {
@@ -153,21 +164,22 @@
 }
 
 .itemName {
-  @include mixins.typography("lg", "semibold");
-
+  font-family: theme.$font-family-display;
+  font-size: theme.font-size("md");
+  font-weight: theme.font-weight("semibold");
   margin: 0;
-  color: theme.color("text");
+  color: theme.color("ink");
 }
 
 .itemDescription {
   @include mixins.typography("sm", "regular");
 
   margin: 0;
-  color: theme.color("text-muted");
+  color: theme.color("ink-soft");
 }
 
 .categoryList {
-  @include mixins.flex(column, flex-start, stretch, theme.space("sm"));
+  @include mixins.flex(column, flex-start, stretch, theme.space("xs"));
 
   margin: 0;
   padding-block-start: theme.space("sm");
@@ -183,20 +195,20 @@
 }
 
 .categoryName {
-  @include mixins.typography("md", "regular");
+  @include mixins.typography("sm", "regular");
 
-  color: theme.color("text");
+  color: theme.color("ink");
 }
 
 .emptyText {
   @include mixins.typography("sm", "regular");
 
   margin: 0;
-  color: theme.color("text-muted");
+  color: theme.color("ink-soft");
 }
 
 .tagList {
-  @include mixins.flex(row, flex-start, center, theme.space("sm"));
+  @include mixins.flex(row, flex-start, center, theme.space("xs"));
 
   flex-wrap: wrap;
   margin: 0;
@@ -208,19 +220,22 @@
   @include mixins.flex(row, flex-start, center, theme.space("xs"));
 
   padding: theme.space("xs") theme.space("sm");
-  color: theme.color("text");
-  background-color: theme.color("surface-alt");
+  color: theme.color("ink");
+  background-color: theme.color("paper-2");
   border: 1px solid theme.color("border");
   border-radius: theme.$radius-sm;
 }
 
 .tagName {
-  @include mixins.typography("sm", "medium");
+  font-family: theme.$font-family-mono;
+  font-size: theme.font-size("xs");
+  font-weight: theme.font-weight("medium");
 }
 
 .tagRemove {
-  @include mixins.typography("xs", "medium");
-
+  font-family: theme.$font-family-mono;
+  font-size: theme.font-size("xs");
+  font-weight: theme.font-weight("medium");
   padding: 0 theme.space("xs");
   color: theme.color("danger");
   background: none;
@@ -233,10 +248,13 @@
 }
 
 .fieldGroupLabel {
-  @include mixins.typography("sm", "semibold");
-
+  font-family: theme.$font-family-mono;
+  font-size: 0.65625rem;
+  font-weight: theme.font-weight("medium");
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   margin: 0;
-  color: theme.color("text");
+  color: #7a6a3c;
 }
 
 .categoryPicker {
@@ -247,27 +265,33 @@
   @include mixins.typography("sm", "regular");
 
   margin: 0;
-  color: theme.color("text-muted");
+  color: theme.color("ink-soft");
 }
 
 .categoryChoices {
-  @include mixins.flex(row, flex-start, center, theme.space("sm"));
+  @include mixins.flex(row, flex-start, center, theme.space("xs"));
 
   flex-wrap: wrap;
 }
 
 .categoryChoice {
-  @include mixins.typography("sm", "medium");
-
+  font-family: theme.$font-family-mono;
+  font-size: theme.font-size("xs");
+  font-weight: theme.font-weight("medium");
+  letter-spacing: 0.04em;
   padding: theme.space("xs") theme.space("sm");
-  color: theme.color("text");
+  color: theme.color("ink");
   background-color: theme.color("surface");
   border: 1px solid theme.color("border");
   border-radius: theme.$radius-sm;
   cursor: pointer;
+  transition:
+    border-color theme.$transition-base,
+    background-color theme.$transition-base,
+    color theme.$transition-base;
 
   &:hover {
-    border-color: theme.color("primary");
+    border-color: theme.color("gold");
   }
 
   &:focus-visible {
@@ -277,18 +301,18 @@
 
 .categoryChoiceSelected {
   color: theme.color("text-inverse");
-  background-color: theme.color("primary");
-  border-color: theme.color("primary");
+  background-color: theme.color("ink");
+  border-color: theme.color("ink");
 }
 
 .select {
   @include mixins.typography("sm", "regular");
 
   padding: theme.space("sm");
-  color: theme.color("text");
-  background-color: theme.color("background");
-  border: 1px solid theme.color("border");
-  border-radius: theme.$radius-md;
+  color: theme.color("ink");
+  background-color: theme.color("surface");
+  border: 1.5px solid theme.color("border-dark");
+  border-radius: theme.$radius-sm;
 
   &:focus-visible {
     @include mixins.focus-ring;

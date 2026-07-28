@@ -1,4 +1,4 @@
-// Styling for the cart page (Req 1.18, 1.19, 7.5).
+// Styling for the cart page — StudyForGovt.
 
 @use "../../styles/theme" as theme;
 @use "../../styles/mixins" as mixins;
@@ -15,27 +15,30 @@
 }
 
 .title {
-  @include mixins.typography("2xl", "semibold", theme.$line-height-heading);
-
+  font-family: theme.$font-family-display;
+  font-size: theme.font-size("2xl");
+  font-weight: theme.font-weight("semibold");
+  line-height: theme.$line-height-heading;
   margin: 0;
-  color: theme.color("text");
+  color: theme.color("ink");
 }
 
 .subtitle {
   @include mixins.typography("md", "regular");
 
   margin: 0;
-  color: theme.color("text-muted");
+  color: theme.color("ink-soft");
 }
 
 .successBanner {
-  @include mixins.typography("sm", "medium");
-
+  font-family: theme.$font-family-mono;
+  font-size: theme.font-size("sm");
+  font-weight: theme.font-weight("medium");
   margin: 0;
   padding: theme.space("sm") theme.space("md");
   border-radius: theme.$radius-md;
   color: theme.color("success");
-  background-color: theme.color("surface-alt");
+  background-color: rgba(47, 122, 79, 0.06);
   border: 1px solid theme.color("success");
 }
 
@@ -54,7 +57,7 @@
   padding: theme.space("md");
   border: 1px solid theme.color("border");
   border-radius: theme.$radius-md;
-  background-color: theme.color("background");
+  background-color: theme.color("surface");
 }
 
 .itemInfo {
@@ -64,15 +67,16 @@
 }
 
 .itemTitle {
-  @include mixins.typography("md", "semibold");
-
-  color: theme.color("text");
+  font-family: theme.$font-family-display;
+  font-size: theme.font-size("md");
+  font-weight: theme.font-weight("semibold");
+  color: theme.color("ink");
 }
 
 .itemPrice {
-  @include mixins.typography("sm", "regular");
-
-  color: theme.color("text-muted");
+  font-family: theme.$font-family-mono;
+  font-size: theme.font-size("sm");
+  color: theme.color("ink-soft");
 }
 
 .summary {
@@ -88,15 +92,20 @@
 }
 
 .totalLabel {
-  @include mixins.typography("sm", "medium");
-
-  color: theme.color("text-muted");
+  font-family: theme.$font-family-mono;
+  font-size: theme.font-size("sm");
+  font-weight: theme.font-weight("medium");
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: theme.color("ink-soft");
 }
 
 .totalValue {
-  @include mixins.typography("xl", "bold", theme.$line-height-heading);
-
-  color: theme.color("text");
+  font-family: theme.$font-family-display;
+  font-size: theme.font-size("xl");
+  font-weight: theme.font-weight("bold");
+  line-height: theme.$line-height-heading;
+  color: theme.color("ink");
 }
 
 .summaryActions {

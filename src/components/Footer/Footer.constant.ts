@@ -1,29 +1,28 @@
-// Constants for the Footer component (Requirement 1.16).
-//
-// Centralizes the footer's user-facing copy and external destinations so the
-// component module stays free of constant-literal declarations.
+// Constants for the Footer component — StudyForGovt.
 
-// ---- YouTube -------------------------------------------------------------
-// The YouTube channel the footer links to.
 export const YOUTUBE_URL = "https://www.youtube.com/@SakshiFocusRoom";
-// Leading label shown before the YouTube link.
-export const YOUTUBE_PREFIX = "YouTube:";
-// Accessible label for the YouTube link.
-export const YOUTUBE_LABEL = "Visit our YouTube channel";
-
-// ---- Support -------------------------------------------------------------
-// The support email address surfaced in the footer.
+export const YOUTUBE_LABEL = "YouTube — Sakshi Focus Room";
 export const SUPPORT_EMAIL = "studyroomsupport@gmail.com";
-// Leading label shown before the support email link.
-export const SUPPORT_PREFIX = "Support Email:";
-// `mailto:` href built from the support email address.
 export const SUPPORT_MAILTO = `mailto:${SUPPORT_EMAIL}`;
 
-// ---- Quote / brand -------------------------------------------------------
-// Inspirational quote displayed as the footer's centerpiece.
 export const FOOTER_QUOTE =
   "Education is not the filling of a pail, but the lighting of a fire.";
-// Brand wordmark shown beside the logo in the bottom row.
-export const BRAND_NAME = "STUDY FOCUS";
-// Accessible label for the decorative brand logo.
-export const BRAND_LOGO_LABEL = "Study Focus";
+export const BRAND_NAME = "StudyForGovt";
+export const BRAND_MARK = "S";
+export const BRAND_TAGLINE =
+  "Study notes, past papers, and test series for India's government exams — organised, verified, and kept current.";
+export const COPYRIGHT_LABEL = "© 2026 StudyForGovt. All rights reserved.";
+
+export const EXPLORE_LINKS = [
+  { label: "Catalog", href: "/" },
+  { label: "Trending", href: "/#trending" },
+  { label: "Paid library", href: "/paid" },
+  { label: "Search", href: "/search" },
+] as const;
+
+export const ACCOUNT_LINKS = [
+  { label: "Log in", href: "/account" },
+  { label: "Create account", href: "/account" },
+  { label: "Cart", href: "/cart" },
+  { label: "My attempts", href: "/attempts" },
+] as const;

@@ -1,4 +1,4 @@
-// Styling for the EmptyState component (Requirements 1.18, 1.20, 7.5).
+// EmptyState styling — StudyForGovt.
 
 @use "../../styles/theme" as theme;
 @use "../../styles/mixins" as mixins;
@@ -8,22 +8,24 @@
 
   width: 100%;
   padding: theme.space("2xl") theme.space("lg");
-  border: 1px dashed theme.color("border");
+  border: 1px dashed theme.color("border-dark");
   border-radius: theme.$radius-md;
   background-color: theme.color("surface");
   text-align: center;
 }
 
 .title {
-  @include mixins.typography("lg", "semibold", theme.$line-height-heading);
-
+  font-family: theme.$font-family-display;
+  font-size: theme.font-size("lg");
+  font-weight: theme.font-weight("semibold");
+  line-height: theme.$line-height-heading;
   margin: 0;
-  color: theme.color("text");
+  color: theme.color("ink");
 }
 
 .message {
   @include mixins.typography("sm", "regular");
 
   margin: 0;
-  color: theme.color("text-muted");
+  color: theme.color("ink-soft");
 }

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { Fraunces, IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
 
 import "../styles/globals.scss";
 import styles from "./layout.module.scss";
@@ -8,27 +9,44 @@ import ToastProvider from "../components/Toast/ToastProvider";
 import GlobalProvider from "../context/global-context/provider";
 import { isMobile } from "../utils/browser";
 
-// Provided as a function (not a const-literal export) so the metadata object
-// literal is not authored outside a *.constant.ts file (Requirements 1.16, 1.17).
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  variable: "--font-display",
+  display: "swap",
+  weight: ["300", "500", "600", "700"],
+});
+
+const ibmPlexSans = IBM_Plex_Sans({
+  subsets: ["latin"],
+  variable: "--font-sans",
+  display: "swap",
+  weight: ["400", "500", "600", "700"],
+});
+
+const ibmPlexMono = IBM_Plex_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
+  display: "swap",
+  weight: ["400", "500", "600"],
+});
+
 export function generateMetadata(): Metadata {
   return {
-    title: "Study Materials Platform",
+    title: "StudyForGovt — Government Exam Study Materials",
     description:
-      "Browse, search, view, and download study materials organized by a multi-dimensional category system.",
+      "Notes, previous papers, and test series for SSC, Railways, Banking, TSPSC, APPSC and other government exams — free and paid.",
   };
 }
 
-// The root layout renders the primary navigation (links to the Material Catalog
-// and search) above every page so those controls are present on every primary
-// page (Req 7.6), then hosts the routed page inside a shared content region.
 async function RootLayout({ children }: { children: ReactNode }) {
-  // Detect a mobile client from the request User-Agent so the global context
-  // has an SSR-safe screen default before the client can measure the viewport.
   const initialIsMobile = await isMobile();
 
   return (
-    <html lang="en">
-      <body>
+    <html
+      lang="en"
+      className={`${fraunces.variable} ${ibmPlexSans.variable} ${ibmPlexMono.variable}`}
+    >
+      <body className={ibmPlexSans.className}>
         <GlobalProvider initialIsMobile={initialIsMobile}>
           <ToastProvider>
             <div className={styles.shell}>

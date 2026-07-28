@@ -1,13 +1,10 @@
-// Styling for the Section-scoped attempt page (task 18.4).
-//
-// The interactive attempt UI is rendered by the shared AttemptRunner (which
-// carries its own container styles); this module only styles the invalid-id
-// fallback container so it matches the platform spacing scale. No inline CSS.
+// Styling for the Section-scoped attempt page — StudyForGovt.
 
 @use "../../../styles/theme" as theme;
 @use "../../../styles/mixins" as mixins;
 
 .main {
+  @include mixins.container;
   @include mixins.flex(column, flex-start, stretch, theme.space("lg"));
 
   padding-block: theme.space("xl");

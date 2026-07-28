@@ -1,4 +1,4 @@
-// Styling for the LoadingIndicator component (Requirements 1.18, 1.20, 7.5).
+// LoadingIndicator styling — StudyForGovt.
 
 @use "../../styles/theme" as theme;
 @use "../../styles/mixins" as mixins;
@@ -6,7 +6,7 @@
 .root {
   @include mixins.flex(row, center, center, theme.space("sm"));
 
-  color: theme.color("text-muted");
+  color: theme.color("ink-soft");
 }
 
 .fullPanel {
@@ -19,8 +19,8 @@
   flex: none;
   border-radius: 50%;
   border-style: solid;
-  border-color: theme.color("surface-alt");
-  border-top-color: theme.color("primary");
+  border-color: theme.color("border");
+  border-top-color: theme.color("gold");
   animation: spin 0.7s linear infinite;
 }
 

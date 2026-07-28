@@ -1,6 +1,4 @@
-// Styling for the NotesPreview component (Req 1.18, 1.19, 7.5).
-//
-// Derives entirely from the shared theme. No inline CSS.
+// NotesPreview styling — StudyForGovt.
 
 @use "../../styles/theme" as theme;
 @use "../../styles/mixins" as mixins;
@@ -11,22 +9,25 @@
   width: 100%;
   padding: theme.space("lg");
   border: 1px solid theme.color("border");
-  border-radius: theme.$radius-lg;
+  border-radius: theme.$radius-md;
   background-color: theme.color("surface");
-  box-shadow: theme.$shadow-sm;
 }
 
 .header {
   @include mixins.flex(row, space-between, center, theme.space("sm"));
 
   flex-wrap: wrap;
+  padding-bottom: theme.space("sm");
+  border-bottom: 1px solid theme.color("border");
 }
 
 .heading {
-  @include mixins.typography("lg", "semibold", theme.$line-height-heading);
-
+  font-family: theme.$font-family-display;
+  font-size: theme.font-size("lg");
+  font-weight: theme.font-weight("semibold");
+  line-height: theme.$line-height-heading;
   margin: 0;
-  color: theme.color("text");
+  color: theme.color("ink");
 }
 
 .placeholder {
@@ -37,7 +38,7 @@
   @include mixins.typography("sm", "regular");
 
   margin: 0;
-  color: theme.color("text-muted");
+  color: theme.color("ink-soft");
 }
 
 .loading {
@@ -53,8 +54,8 @@
   height: 70vh;
   min-height: 24rem;
   border: 1px solid theme.color("border");
-  border-radius: theme.$radius-md;
-  background-color: theme.color("background");
+  border-radius: theme.$radius-sm;
+  background-color: theme.color("paper");
 }
 
 .image {
@@ -64,25 +65,28 @@
   max-height: 70vh;
   object-fit: contain;
   border: 1px solid theme.color("border");
-  border-radius: theme.$radius-md;
-  background-color: theme.color("background");
+  border-radius: theme.$radius-sm;
+  background-color: theme.color("paper");
 }
 
 .unsupported {
   @include mixins.flex(column, flex-start, flex-start, theme.space("sm"));
 
   padding: theme.space("lg");
-  border: 1px dashed theme.color("border");
+  border: 1px dashed theme.color("border-dark");
   border-radius: theme.$radius-md;
+  background-color: theme.color("paper-2");
 }
 
 .newTabLink {
-  @include mixins.typography("sm", "semibold");
-
-  color: theme.color("primary");
+  font-family: theme.$font-family-mono;
+  font-size: theme.font-size("sm");
+  font-weight: theme.font-weight("semibold");
+  color: theme.color("ink");
   text-decoration: none;
 
   &:hover {
+    color: theme.color("gold");
     text-decoration: underline;
   }
 

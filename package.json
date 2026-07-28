@@ -2,7 +2,7 @@
   "name": "frontend",
   "version": "0.1.0",
   "private": true,
-  "description": "Study Materials Platform — Next.js (App Router) frontend written in TypeScript and styled with SCSS modules.",
+  "description": "StudyForGovt — Next.js (App Router) frontend for government exam study materials, styled with SCSS modules.",
   "scripts": {
     "dev": "next dev -p 4000",
     "build": "next build",

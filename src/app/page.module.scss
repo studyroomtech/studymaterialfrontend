@@ -1,358 +1,662 @@
-// Styling for the home / landing page (Requirements 1.18, 1.19, 7.5).
-//
-// Derives entirely from the shared theme so the landing page matches the
-// platform's single color palette, typography scale, and spacing scale. No
-// inline CSS is used.
+// Home / landing page — StudyForGovt.
 
 @use "../styles/theme" as theme;
 @use "../styles/mixins" as mixins;
 
 .page {
-  @include mixins.flex(column, flex-start, stretch, theme.space("xl"));
+  @include mixins.flex(column, flex-start, stretch, 0);
 
+  width: 100%;
+}
+
+.wrap {
+  max-width: theme.$content-max-width;
+  margin-inline: auto;
+  padding-inline: theme.space("lg");
   width: 100%;
 }
 
 // ---- Hero ----------------------------------------------------------------
 .hero {
+  position: relative;
+  z-index: 1;
   width: 100%;
-  border-radius: theme.$radius-lg;
-  background-image: linear-gradient(
-    135deg,
-    theme.color("primary") 0%,
-    theme.color("primary-active") 55%,
-    #0f2a6b 100%
-  );
-  box-shadow: theme.$shadow-md;
+  background: theme.color("ink");
+  color: theme.color("text-inverse");
   overflow: hidden;
 }
 
-.heroInner {
-  @include mixins.flex(row, space-between, center, theme.space("xl"));
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 46px 46px;
+  mask-image: radial-gradient(ellipse at 70% 20%, black 0%, transparent 65%);
+  pointer-events: none;
+}
 
-  padding: theme.space("2xl") theme.space("xl");
-  flex-wrap: wrap;
+.heroInner {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 3.5rem;
+  align-items: center;
+  max-width: theme.$content-max-width;
+  margin-inline: auto;
+  padding: 4.75rem theme.space("lg") 5.25rem;
+
+  @include mixins.respond-down("lg") {
+    grid-template-columns: 1fr;
+    padding-top: 3.5rem;
+  }
 }
 
 .heroText {
-  @include mixins.flex(column, flex-start, stretch, theme.space("md"));
+  @include mixins.flex(column, flex-start, stretch, 0);
+}
 
-  flex: 1 1 20rem;
-  max-width: 40rem;
+.eyebrow,
+.sectionEyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: theme.$font-family-mono;
+  font-size: 0.71875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: theme.color("gold-bright");
+  margin-bottom: 1.375rem;
+}
+
+.eyebrow::before,
+.sectionEyebrow::before {
+  content: "";
+  width: 1rem;
+  height: 1px;
+  background: currentColor;
+}
+
+.sectionEyebrow {
+  color: theme.color("gold");
 }
 
 .heroTitle {
-  @include mixins.typography("3xl", "bold", theme.$line-height-heading);
-
-  margin: 0;
+  font-family: theme.$font-family-display;
+  font-weight: theme.font-weight("semibold");
+  font-size: clamp(2.125rem, 4.2vw, 3.375rem);
+  line-height: 1.08;
+  letter-spacing: -0.015em;
+  margin-bottom: 1.375rem;
   color: theme.color("text-inverse");
 }
 
-.heroSubtitle {
-  @include mixins.typography("lg", "regular");
-
-  margin: 0;
-  color: rgba(255, 255, 255, 0.85);
+.heroTitle em {
+  font-style: italic;
+  color: theme.color("gold-bright");
+  font-weight: theme.font-weight("medium");
 }
 
-.heroSearch {
-  @include mixins.flex(row, flex-start, flex-start, theme.space("sm"));
+.heroSubtitle {
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  color: #c9d2e4;
+  max-width: 30rem;
+  margin-bottom: 2.125rem;
+}
 
-  margin-block-start: theme.space("sm");
+.heroStats {
+  display: flex;
+  gap: 1.75rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+
+.heroStat {
+  border-left: 1px solid rgba(255, 255, 255, 0.18);
+  padding-left: 0.875rem;
+}
+
+.heroStatNum {
+  font-family: theme.$font-family-display;
+  font-size: 1.5rem;
+  font-weight: theme.font-weight("semibold");
+  color: theme.color("text-inverse");
+}
+
+.heroStatLbl {
+  font-family: theme.$font-family-mono;
+  font-size: 0.6875rem;
+  color: #9fadca;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-top: 0.125rem;
+}
+
+// ---- Admit card ----------------------------------------------------------
+.admitCard {
+  position: relative;
+  background: theme.color("paper");
+  color: theme.color("text");
+  border-radius: theme.$radius-md;
+  box-shadow: theme.$shadow-lg;
+  transform: rotate(0.6deg);
+}
+
+.perforation {
+  position: absolute;
+  left: -0.5625rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1.125rem;
+  height: 1.125rem;
+  border-radius: 50%;
+  background: theme.color("ink");
+  z-index: 2;
+}
+
+.perforationRight {
+  left: auto;
+  right: -0.5625rem;
+}
+
+.admitCardHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: theme.color("ink");
+  color: theme.color("text-inverse");
+  padding: 0.875rem 1.375rem;
+  border-radius: theme.$radius-md theme.$radius-md 0 0;
+}
+
+.admitTag {
+  font-family: theme.$font-family-mono;
+  font-size: 0.65625rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: theme.color("gold-bright");
+}
+
+.admitSerial {
+  font-family: theme.$font-family-mono;
+  font-size: 0.6875rem;
+  color: #9fadca;
+}
+
+.admitCardBody {
+  position: relative;
+  padding: 1.625rem 1.375rem 1.5rem;
+}
+
+.admitCardBody::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 0;
+  right: 0;
+  border-top: 2px dashed theme.color("border-dark");
+  opacity: 0.5;
+}
+
+.fieldLabel {
+  display: block;
+  font-family: theme.$font-family-mono;
+  font-size: 0.65625rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: #7a6a3c;
+  margin-bottom: 0.4375rem;
+}
+
+.searchField {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  background: theme.color("surface");
+  border: 1.5px solid theme.color("border-dark");
+  border-radius: theme.$radius-sm;
+  padding: 0.75rem 0.875rem;
+  margin-bottom: 0.875rem;
+}
+
+.searchSelect,
+.searchInput {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 0.90625rem;
+  width: 100%;
+  color: theme.color("text");
+}
+
+.searchSelect {
+  appearance: none;
+  font-weight: theme.font-weight("medium");
+}
+
+.searchSubmit {
+  width: 100%;
+  padding: 0.8125rem;
+  background: theme.color("gold");
+  color: theme.color("ink");
+  border-radius: theme.$radius-sm;
+  font-weight: theme.font-weight("bold");
+  font-size: 0.90625rem;
+  letter-spacing: 0.01em;
+  border: none;
+  transition: background theme.$transition-base;
+}
+
+.searchSubmit:hover {
+  background: theme.color("gold-bright");
+}
+
+// ---- Content / sections --------------------------------------------------
+.content {
+  @include mixins.flex(column, flex-start, stretch, 0);
+
+  width: 100%;
+  max-width: theme.$content-max-width;
+  margin-inline: auto;
+  padding-inline: theme.space("lg");
+}
+
+.status {
+  margin: theme.space("xl") 0 0;
+}
+
+.section {
+  padding: 4.75rem 0;
+  width: 100%;
+}
+
+.sectionHead {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
   flex-wrap: wrap;
 }
 
-.heroSearchInput {
-  flex: 1 1 18rem;
+.sectionTitle {
+  font-family: theme.$font-family-display;
+  font-weight: theme.font-weight("semibold");
+  font-size: clamp(1.625rem, 3vw, 2.25rem);
+  color: theme.color("ink");
+  letter-spacing: -0.01em;
+  margin: 0;
 }
 
-.heroArt {
-  @include mixins.flex(row, center, center, 0);
-
-  flex: 0 0 auto;
-  width: 9rem;
-  height: 9rem;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.14);
+.sectionDesc {
+  color: theme.color("ink-soft");
+  font-size: 0.90625rem;
+  max-width: 22.5rem;
+  text-align: right;
+  margin: 0;
 
   @include mixins.respond-down("md") {
     display: none;
   }
 }
 
-.heroArtIcon {
-  font-size: 4.5rem;
-  line-height: 1;
-}
-
-// ---- Content container ---------------------------------------------------
-.content {
-  @include mixins.flex(column, flex-start, stretch, theme.space("xl"));
-
-  width: 100%;
-}
-
-.status {
-  margin: 0;
-}
-
-// ---- Sections ------------------------------------------------------------
-.section {
-  @include mixins.flex(column, flex-start, stretch, theme.space("md"));
-
-  width: 100%;
-}
-
-.sectionHeader {
-  @include mixins.flex(row, space-between, center, theme.space("sm"));
-}
-
-.sectionTitle {
-  @include mixins.typography("xl", "semibold", theme.$line-height-heading);
-
-  margin: 0;
-  color: theme.color("text");
+.sectionFooter {
+  margin-top: 1.5rem;
 }
 
 .viewAll {
-  @include mixins.typography("sm", "semibold");
-
-  color: theme.color("primary");
+  font-size: 0.875rem;
+  font-weight: theme.font-weight("semibold");
+  color: theme.color("ink");
   text-decoration: none;
-
-  &:hover {
-    text-decoration: underline;
-  }
-
-  &:focus-visible {
-    @include mixins.focus-ring;
-  }
 }
 
-// ---- Material cards ------------------------------------------------------
-.materialGrid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: theme.space("md");
+.viewAll:hover {
+  color: theme.color("gold");
+}
 
-  @include mixins.respond-up("sm") {
+// ---- Trending / rank cards -----------------------------------------------
+.trendingGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+
+  @include mixins.respond-down("lg") {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  @include mixins.respond-up("lg") {
-    grid-template-columns: repeat(3, 1fr);
+  @include mixins.respond-down("md") {
+    grid-template-columns: 1fr;
   }
 }
 
-.materialCard {
-  @include mixins.flex(row, flex-start, center, theme.space("md"));
-
-  padding: theme.space("md");
-  background: theme.color("background");
+.rankCard {
+  position: relative;
+  display: block;
+  background: theme.color("surface");
   border: 1px solid theme.color("border");
   border-radius: theme.$radius-md;
-  box-shadow: theme.$shadow-sm;
+  padding: 1.375rem 1.25rem 1.25rem;
+  overflow: hidden;
   text-decoration: none;
+  color: inherit;
   transition:
-    transform 0.15s ease,
-    border-color 0.15s ease,
-    box-shadow 0.15s ease;
-
-  &:hover {
-    transform: translateY(-2px);
-    border-color: theme.color("primary");
-    box-shadow: theme.$shadow-md;
-  }
-
-  &:focus-visible {
-    @include mixins.focus-ring;
-  }
+    transform theme.$transition-base,
+    box-shadow theme.$transition-base,
+    border-color theme.$transition-base;
 }
 
-.materialThumb {
-  @include mixins.flex(row, center, center, 0);
-
-  flex: 0 0 auto;
-  width: 3rem;
-  height: 3rem;
-  font-size: 1.5rem;
-  border-radius: theme.$radius-md;
-  background: theme.color("surface-alt");
+.rankCard:hover {
+  transform: translateY(-3px);
+  box-shadow: theme.$shadow-md;
+  border-color: theme.color("border-dark");
+  text-decoration: none;
+  color: inherit;
 }
 
-.materialCardBody {
-  @include mixins.flex(column, center, flex-start, theme.space("xs"));
-
-  min-width: 0;
+.rankNum {
+  position: absolute;
+  top: 0.375rem;
+  right: 0.875rem;
+  font-family: theme.$font-family-display;
+  font-size: 2.625rem;
+  font-weight: theme.font-weight("semibold");
+  line-height: 1;
+  color: transparent;
+  -webkit-text-stroke: 1px theme.color("border-dark");
+  z-index: 0;
 }
 
-.materialCardTitle {
-  @include mixins.typography("md", "semibold");
-
-  color: theme.color("text");
+.rankCardTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  position: relative;
+  z-index: 1;
 }
 
-.materialCardAction {
-  @include mixins.typography("sm", "medium");
-
-  color: theme.color("primary");
+.examTag {
+  font-family: theme.$font-family-mono;
+  font-size: 0.65625rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: theme.color("paper-2");
+  color: theme.color("ink-soft");
+  padding: 0.25rem 0.5625rem;
+  border-radius: theme.$radius-sm;
 }
 
-.recentCardWrap {
-  @include mixins.flex(column, flex-start, stretch, theme.space("xs"));
+.rankCardTitle {
+  font-family: theme.$font-family-display;
+  font-weight: theme.font-weight("semibold");
+  font-size: 1.15625rem;
+  color: theme.color("ink");
+  margin: 1rem 0 0.5rem;
+  line-height: 1.3;
+  position: relative;
+  z-index: 1;
+}
+
+.rankCardFoot {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  border-top: 1px solid theme.color("border");
+  padding-top: 0.875rem;
+  margin-top: 1rem;
+  position: relative;
+  z-index: 1;
+}
+
+.linkArrow {
+  font-size: 0.8125rem;
+  font-weight: theme.font-weight("semibold");
+  color: theme.color("ink");
+}
+
+.rankCard:hover .linkArrow {
+  color: theme.color("gold");
+}
+
+.recentWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .recentCaption {
-  @include mixins.typography("xs", "medium");
-
-  color: theme.color("text-muted");
-  padding-inline: theme.space("xs");
+  font-family: theme.$font-family-mono;
+  font-size: 0.6875rem;
+  color: theme.color("ink-soft");
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
-// ---- Test listing cards --------------------------------------------------
-.testGrid {
+// ---- Category band -------------------------------------------------------
+.catBand {
+  background: theme.color("paper-2");
+  border-top: 1px solid theme.color("border");
+  border-bottom: 1px solid theme.color("border");
+  width: 100%;
+}
+
+.catInner {
+  max-width: theme.$content-max-width;
+  margin-inline: auto;
+  padding: 4.75rem theme.space("lg");
+}
+
+.catGrid {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: theme.space("md");
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.875rem;
 
-  @include mixins.respond-up("sm") {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  @include mixins.respond-up("lg") {
+  @include mixins.respond-down("lg") {
     grid-template-columns: repeat(3, 1fr);
   }
+
+  @include mixins.respond-down("md") {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.catTile {
+  background: theme.color("surface");
+  border: 1px solid theme.color("border");
+  border-radius: theme.$radius-md;
+  padding: 1.25rem 1rem;
+  text-align: left;
+  text-decoration: none;
+  color: inherit;
+  transition:
+    border-color theme.$transition-base,
+    transform theme.$transition-base;
+}
+
+.catTile:hover {
+  border-color: theme.color("gold");
+  transform: translateY(-2px);
+  text-decoration: none;
+  color: inherit;
+}
+
+.catName {
+  display: block;
+  font-weight: theme.font-weight("semibold");
+  font-size: 0.90625rem;
+  color: theme.color("ink");
+  margin-bottom: 0.25rem;
+}
+
+.catCount {
+  font-family: theme.$font-family-mono;
+  font-size: 0.71875rem;
+  color: theme.color("ink-soft");
+}
+
+// ---- How it works --------------------------------------------------------
+.steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.75rem;
+
+  @include mixins.respond-down("lg") {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+}
+
+.stepIndex {
+  display: block;
+  font-family: theme.$font-family-mono;
+  font-size: 0.75rem;
+  color: theme.color("gold");
+  letter-spacing: 0.06em;
+  margin-bottom: 0.875rem;
+}
+
+.stepTitle {
+  font-family: theme.$font-family-display;
+  font-size: 1.25rem;
+  font-weight: theme.font-weight("semibold");
+  color: theme.color("ink");
+  margin-bottom: 0.625rem;
+}
+
+.stepBody {
+  font-size: 0.90625rem;
+  color: theme.color("ink-soft");
+  line-height: 1.6;
+  margin: 0;
+}
+
+// ---- CTA band ------------------------------------------------------------
+.ctaBand {
+  background: theme.color("ink");
+  color: theme.color("text-inverse");
+  width: 100%;
+}
+
+.ctaInner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  flex-wrap: wrap;
+  max-width: theme.$content-max-width;
+  margin-inline: auto;
+  padding: 3.5rem theme.space("lg");
+}
+
+.ctaTitle {
+  font-family: theme.$font-family-display;
+  font-size: clamp(1.5rem, 2.6vw, 2rem);
+  font-weight: theme.font-weight("semibold");
+  max-width: 32.5rem;
+  line-height: 1.2;
+  margin: 0;
+  color: theme.color("text-inverse");
+}
+
+.ctaBody {
+  color: #b9c4dc;
+  margin-top: 0.625rem;
+  font-size: 0.90625rem;
+  margin-bottom: 0;
+}
+
+.ctaActions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.ctaGhost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.625rem 1.25rem;
+  border-radius: theme.$radius-sm;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #fff;
+  font-size: 0.875rem;
+  font-weight: theme.font-weight("semibold");
+  text-decoration: none;
+}
+
+.ctaGhost:hover {
+  border-color: #fff;
+  color: #fff;
+}
+
+// ---- Test cards ----------------------------------------------------------
+.testGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  gap: 1.25rem;
 }
 
 .testCard {
-  @include mixins.flex(row, flex-start, center, theme.space("md"));
-
-  padding: theme.space("md");
-  background: theme.color("background");
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  background: theme.color("surface");
   border: 1px solid theme.color("border");
   border-radius: theme.$radius-md;
-  box-shadow: theme.$shadow-sm;
+  padding: 1.25rem;
 }
 
-.testThumb {
-  @include mixins.flex(row, center, center, 0);
-
-  flex: 0 0 auto;
-  width: 3rem;
-  height: 3rem;
-  font-size: 1.5rem;
-  border-radius: theme.$radius-md;
-  background: theme.color("surface-alt");
+.testCardTop {
+  display: flex;
+  justify-content: flex-end;
 }
 
-.testCardBody {
-  @include mixins.flex(column, center, flex-start, theme.space("xs"));
+.stampFree,
+.stampPaid {
+  font-family: theme.$font-family-mono;
+  font-size: 0.625rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: theme.font-weight("semibold");
+  padding: 0.3125rem 0.625rem;
+  border-radius: 50px;
+  border: 1.5px dashed;
+  transform: rotate(-4deg);
+}
 
-  flex: 1 1 auto;
-  min-width: 0;
+.stampFree {
+  color: theme.color("success");
+  border-color: theme.color("success");
+  background: rgba(47, 122, 79, 0.06);
+}
+
+.stampPaid {
+  color: theme.color("gold");
+  border-color: theme.color("gold");
+  background: rgba(201, 154, 46, 0.08);
 }
 
 .testCardTitle {
-  @include mixins.typography("md", "semibold");
-
-  color: theme.color("text");
+  font-family: theme.$font-family-display;
+  font-size: 1.125rem;
+  font-weight: theme.font-weight("semibold");
+  color: theme.color("ink");
+  margin: 0;
+  line-height: 1.3;
 }
 
+.testCardFree,
 .testCardPrice {
-  @include mixins.typography("sm", "medium");
-
-  color: theme.color("text");
+  font-family: theme.$font-family-mono;
+  font-size: 0.8125rem;
+  color: theme.color("ink-soft");
 }
 
 .testCardFree {
-  @include mixins.typography("sm", "semibold");
-
-  color: theme.color("primary");
-}
-
-// ---- Subject tiles -------------------------------------------------------
-.subjectGrid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: theme.space("md");
-  margin: 0;
-  padding: 0;
-  list-style: none;
-
-  @include mixins.respond-up("sm") {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-  @include mixins.respond-up("md") {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-
-.subjectItem {
-  width: 100%;
-}
-
-.subjectTile {
-  @include mixins.flex(column, center, center, theme.space("sm"));
-
-  width: 100%;
-  min-height: 7rem;
-  padding: theme.space("lg") theme.space("md");
-  border-radius: theme.$radius-lg;
-  text-decoration: none;
-  color: theme.color("text-inverse");
-  box-shadow: theme.$shadow-sm;
-  transition:
-    transform 0.15s ease,
-    box-shadow 0.15s ease;
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: theme.$shadow-md;
-  }
-
-  &:focus-visible {
-    @include mixins.focus-ring;
-  }
-}
-
-// Cycle a small palette across the subject tiles for a colorful grid.
-.subjectItem:nth-child(8n + 1) .subjectTile {
-  background-image: linear-gradient(135deg, #2563eb, #1d4ed8);
-}
-.subjectItem:nth-child(8n + 2) .subjectTile {
-  background-image: linear-gradient(135deg, #15803d, #0f6a30);
-}
-.subjectItem:nth-child(8n + 3) .subjectTile {
-  background-image: linear-gradient(135deg, #b45309, #92400e);
-}
-.subjectItem:nth-child(8n + 4) .subjectTile {
-  background-image: linear-gradient(135deg, #7c3aed, #5b21b6);
-}
-.subjectItem:nth-child(8n + 5) .subjectTile {
-  background-image: linear-gradient(135deg, #dc2626, #b91c1c);
-}
-.subjectItem:nth-child(8n + 6) .subjectTile {
-  background-image: linear-gradient(135deg, #0891b2, #0e7490);
-}
-.subjectItem:nth-child(8n + 7) .subjectTile {
-  background-image: linear-gradient(135deg, #db2777, #9d174d);
-}
-.subjectItem:nth-child(8n + 8) .subjectTile {
-  background-image: linear-gradient(135deg, #4f46e5, #3730a3);
-}
-
-.subjectIcon {
-  font-size: 2.25rem;
-  line-height: 1;
-}
-
-.subjectName {
-  @include mixins.typography("md", "semibold");
-
-  text-align: center;
-}
-
-.smHeading {
-  font-size: 24px;
+  color: theme.color("success");
 }

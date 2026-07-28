@@ -14,7 +14,7 @@ export const RAZORPAY_SCRIPT_ELEMENT_ID = "razorpay-checkout-js";
 export const RAZORPAY_PAYMENT_FAILED_EVENT = "payment.failed";
 
 /** Merchant name shown in the Razorpay Checkout header. */
-export const CHECKOUT_NAME = "Study Materials Platform";
+export const CHECKOUT_NAME = "StudyForGovt";
 
 /** Fallback checkout description when no material title is supplied. */
 export const DEFAULT_CHECKOUT_DESCRIPTION = "Study Material purchase";

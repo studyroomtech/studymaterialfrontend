@@ -1,8 +1,4 @@
-// TestPlayer styling (Req 9.3, 10.1, 10.3, 12.5).
-//
-// All TestPlayer presentation is authored here and derives every value from the
-// shared theme so the player matches the platform's single color palette,
-// typography scale, and spacing scale (no inline CSS).
+// TestPlayer styling — StudyForGovt.
 
 @use "../../styles/theme" as theme;
 @use "../../styles/mixins" as mixins;
@@ -13,8 +9,7 @@
   padding: theme.space("lg");
   background-color: theme.color("surface");
   border: 1px solid theme.color("border");
-  border-radius: theme.$radius-lg;
-  box-shadow: theme.$shadow-sm;
+  border-radius: theme.$radius-md;
 }
 
 .header {
@@ -32,27 +27,34 @@
 
 .statusLabel,
 .timerLabel {
-  @include mixins.typography("xs", "medium");
-
-  color: theme.color("text-muted");
+  font-family: theme.$font-family-mono;
+  font-size: theme.font-size("xs");
+  font-weight: theme.font-weight("medium");
+  color: theme.color("ink-soft");
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.09em;
 }
 
 .statusBadge {
-  @include mixins.typography("sm", "semibold");
-
+  font-family: theme.$font-family-mono;
+  font-size: theme.font-size("sm");
+  font-weight: theme.font-weight("semibold");
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   align-self: flex-start;
   padding: theme.space("xs") theme.space("sm");
-  border-radius: theme.$radius-sm;
-  background-color: theme.color("surface-alt");
-  color: theme.color("text");
+  border-radius: 50px;
+  border: 1.5px dashed theme.color("border-dark");
+  background-color: theme.color("paper-2");
+  color: theme.color("ink");
 }
 
 .timerValue {
-  @include mixins.typography("2xl", "bold", theme.$line-height-heading);
-
-  color: theme.color("text");
+  font-family: theme.$font-family-display;
+  font-size: theme.font-size("2xl");
+  font-weight: theme.font-weight("bold");
+  line-height: theme.$line-height-heading;
+  color: theme.color("ink");
   font-variant-numeric: tabular-nums;
 }
 
@@ -62,38 +64,44 @@
   flex-wrap: wrap;
 }
 
-// Attempt / Section status accents (class names mirror the server status enum).
 .in_progress {
-  background-color: theme.color("surface-alt");
-  color: theme.color("primary-active");
+  color: theme.color("ink-2");
+  border-color: theme.color("ink-2");
+  background-color: rgba(32, 51, 90, 0.06);
 }
 
 .paused {
-  background-color: theme.color("surface-alt");
-  color: theme.color("warning");
+  color: theme.color("gold");
+  border-color: theme.color("gold");
+  background-color: rgba(201, 154, 46, 0.08);
 }
 
 .completed {
-  background-color: theme.color("surface-alt");
   color: theme.color("success");
+  border-color: theme.color("success");
+  background-color: rgba(47, 122, 79, 0.06);
 }
 
 .banner {
-  @include mixins.typography("sm", "medium");
-
+  font-family: theme.$font-family-mono;
+  font-size: theme.font-size("sm");
+  font-weight: theme.font-weight("medium");
   margin: 0;
   padding: theme.space("sm") theme.space("md");
   border-radius: theme.$radius-md;
+  border: 1px solid theme.color("border");
 }
 
 .bannerCompleted {
-  background-color: theme.color("surface-alt");
+  background-color: rgba(47, 122, 79, 0.06);
+  border-color: theme.color("success");
   color: theme.color("success");
 }
 
 .bannerPaused {
-  background-color: theme.color("surface-alt");
-  color: theme.color("warning");
+  background-color: rgba(201, 154, 46, 0.08);
+  border-color: theme.color("gold");
+  color: theme.color("gold");
 }
 
 .feedback {
@@ -105,11 +113,12 @@
 }
 
 .sectionsLabel {
-  @include mixins.typography("xs", "medium");
-
-  color: theme.color("text-muted");
+  font-family: theme.$font-family-mono;
+  font-size: theme.font-size("xs");
+  font-weight: theme.font-weight("medium");
+  color: theme.color("ink-soft");
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.09em;
 }
 
 .sectionList {
@@ -127,19 +136,24 @@
   padding: theme.space("xs") theme.space("sm");
   border: 1px solid theme.color("border");
   border-radius: theme.$radius-sm;
+  background-color: theme.color("paper");
 }
 
 .sectionStatus {
-  @include mixins.typography("xs", "semibold");
-
+  font-family: theme.$font-family-mono;
+  font-size: theme.font-size("xs");
+  font-weight: theme.font-weight("semibold");
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   padding: 0 theme.space("xs");
   border-radius: theme.$radius-sm;
 }
 
 .sectionTime {
-  @include mixins.typography("sm", "medium");
-
-  color: theme.color("text");
+  font-family: theme.$font-family-mono;
+  font-size: theme.font-size("sm");
+  font-weight: theme.font-weight("medium");
+  color: theme.color("ink");
   font-variant-numeric: tabular-nums;
 }
 
@@ -148,7 +162,7 @@
 
   margin: 0;
   padding: theme.space("xl");
-  color: theme.color("text-muted");
+  color: theme.color("ink-soft");
   text-align: center;
 }
 
@@ -170,20 +184,24 @@
 }
 
 .navItem {
-  @include mixins.typography("sm", "medium");
-
+  font-family: theme.$font-family-mono;
+  font-size: theme.font-size("sm");
+  font-weight: theme.font-weight("medium");
   min-width: 2.25rem;
   padding: theme.space("xs") theme.space("sm");
-  background-color: theme.color("background");
+  background-color: theme.color("paper");
   border: 1px solid theme.color("border");
   border-radius: theme.$radius-sm;
-  color: theme.color("text");
+  color: theme.color("ink");
   cursor: pointer;
-  transition: background-color theme.$transition-base;
+  transition:
+    background-color theme.$transition-base,
+    border-color theme.$transition-base;
 }
 
 .navItem:hover {
-  background-color: theme.color("surface-alt");
+  background-color: theme.color("paper-2");
+  border-color: theme.color("border-dark");
 }
 
 .navItem:focus-visible {
@@ -191,14 +209,15 @@
 }
 
 .navItemActive {
-  background-color: theme.color("primary");
-  border-color: theme.color("primary");
+  background-color: theme.color("ink");
+  border-color: theme.color("ink");
   color: theme.color("text-inverse");
 }
 
 .navItemAnswered:not(.navItemActive) {
-  border-color: theme.color("primary");
-  color: theme.color("primary-active");
+  border-color: theme.color("gold");
+  color: theme.color("ink");
+  background-color: rgba(201, 154, 46, 0.08);
 }
 
 .question {
@@ -206,26 +225,30 @@
 }
 
 .questionProgress {
-  @include mixins.typography("xs", "medium");
-
+  font-family: theme.$font-family-mono;
+  font-size: theme.font-size("xs");
+  font-weight: theme.font-weight("medium");
   margin: 0;
-  color: theme.color("text-muted");
+  color: theme.color("ink-soft");
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.09em;
 }
 
 .questionText {
-  @include mixins.typography("lg", "semibold", theme.$line-height-heading);
-
+  font-family: theme.$font-family-display;
+  font-size: theme.font-size("lg");
+  font-weight: theme.font-weight("semibold");
+  line-height: theme.$line-height-heading;
   margin: 0;
-  color: theme.color("text");
+  color: theme.color("ink");
 }
 
 .sectionClosed {
-  @include mixins.typography("sm", "medium");
-
+  font-family: theme.$font-family-mono;
+  font-size: theme.font-size("sm");
+  font-weight: theme.font-weight("medium");
   margin: 0;
-  color: theme.color("warning");
+  color: theme.color("gold");
 }
 
 .options {
@@ -245,21 +268,22 @@
 
   width: 100%;
   padding: theme.space("sm") theme.space("md");
-  background-color: theme.color("background");
+  background-color: theme.color("paper");
   border: 1px solid theme.color("border");
-  border-radius: theme.$radius-md;
+  border-radius: theme.$radius-sm;
   cursor: pointer;
   transition: border-color theme.$transition-base;
 }
 
 .optionLabel:hover {
-  border-color: theme.color("primary");
+  border-color: theme.color("gold");
 }
 
 .optionInput {
   flex: 0 0 auto;
   margin: 0;
   cursor: pointer;
+  accent-color: theme.color("ink");
 }
 
 .optionInput:disabled {
@@ -269,7 +293,7 @@
 .optionText {
   @include mixins.typography("md", "regular");
 
-  color: theme.color("text");
+  color: theme.color("ink");
 }
 
 .questionActions {

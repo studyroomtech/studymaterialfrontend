@@ -2,11 +2,11 @@
 
 export const CART_PAGE_TITLE = "Your cart";
 export const CART_PAGE_SUBTITLE =
-  "Review your selected study materials and pay for them together.";
+  "Review your selected exam materials and pay for them together.";
 
 export const CART_EMPTY_TITLE = "Your cart is empty";
 export const CART_EMPTY_MESSAGE =
-  "Browse paid study materials and add them to your cart to check out.";
+  "Browse paid exam materials and add them to your cart to check out.";
 export const BROWSE_PAID_LABEL = "Browse paid materials";
 export const BROWSE_PAID_HREF = "/paid";
 

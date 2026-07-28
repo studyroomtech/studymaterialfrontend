@@ -1,4 +1,4 @@
-// Manage Page two-tab switch styling (Requirements 1.1, 1.2, 1.3).
+// Manage Page two-tab switch styling — StudyForGovt (Requirements 1.1, 1.2, 1.3).
 //
 // Presentation for the admin dashboard tab bar. Every value derives from the
 // shared theme so the switch matches the platform's palette, typography, and
@@ -13,22 +13,38 @@
   @include mixins.flex(row, flex-start, stretch, theme.space("xs"));
 
   flex-wrap: wrap;
-  padding-block-start: theme.space("xl");
+  padding-block-start: theme.space("lg");
+  border-block-end: 1px solid theme.color("border");
+  background-color: theme.color("paper");
 }
 
 .tab {
-  @include mixins.typography("sm", "medium");
-
-  padding: theme.space("sm") theme.space("lg");
-  color: theme.color("text-muted");
+  font-family: theme.$font-family-mono;
+  font-size: theme.font-size("xs");
+  font-weight: theme.font-weight("medium");
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: theme.space("sm") theme.space("md");
+  color: theme.color("ink-soft");
   background-color: transparent;
   border: 1px solid transparent;
   border-bottom: 2px solid transparent;
-  border-radius: theme.$radius-md theme.$radius-md 0 0;
+  border-radius: theme.$radius-sm theme.$radius-sm 0 0;
   cursor: pointer;
+  transition:
+    color theme.$transition-base,
+    border-color theme.$transition-base;
+
+  &:hover {
+    color: theme.color("ink");
+  }
+
+  &:focus-visible {
+    @include mixins.focus-ring;
+  }
 }
 
 .tabActive {
-  color: theme.color("primary");
-  border-bottom-color: theme.color("primary");
+  color: theme.color("ink");
+  border-bottom-color: theme.color("gold");
 }

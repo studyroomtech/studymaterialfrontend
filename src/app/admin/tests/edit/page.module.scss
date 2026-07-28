@@ -1,4 +1,4 @@
-// Edit Page shell styling (`/admin/tests/edit`) (Req 1.1, 2.2, 2.3, 3.5).
+// Edit Page shell styling (`/admin/tests/edit`) — StudyForGovt (Req 1.1, 2.2, 2.3, 3.5).
 //
 // Lays out the page container that wraps the loading indicator, the relocated
 // `TestEditView` editor, and the inline error surface. Every value derives from
@@ -10,7 +10,9 @@
 
 .page {
   @include mixins.container;
-  @include mixins.flex(column, flex-start, stretch, theme.space("lg"));
+  @include mixins.flex(column, flex-start, stretch, theme.space("md"));
 
-  padding-block: theme.space("xl");
+  min-height: 100vh;
+  padding-block: theme.space("lg");
+  background-color: theme.color("paper");
 }

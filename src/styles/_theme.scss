@@ -1,7 +1,6 @@
-// Shared visual theme (Requirements 7.5, 1.18).
+// Shared visual theme — StudyForGovt design system.
 //
-// Defines the single source of truth for the platform's visual language:
-// exactly one color palette, one typography scale, and one spacing scale.
+// Single source of truth for color palette, typography, and spacing.
 // Consumed by module stylesheets, `_mixins.scss`, and `globals.scss` via `@use`.
 //
 // Usage from a module stylesheet:
@@ -11,25 +10,33 @@
 @use "sass:map";
 
 // ---------------------------------------------------------------------------
-// Color palette (one palette)
+// Color palette (StudyForGovt — ink / paper / gold)
 // ---------------------------------------------------------------------------
 $colors: (
-  "background": #ffffff,
-  "surface": #f5f7fa,
-  "surface-alt": #eef1f6,
-  "border": #d7dce3,
-  "text": #1a1f29,
-  "text-muted": #5a6472,
-  "text-inverse": #ffffff,
-  "primary": #2563eb,
-  "primary-hover": #1d4ed8,
-  "primary-active": #1e40af,
-  "focus-ring": #93c5fd,
-  "success": #15803d,
-  "warning": #b45309,
-  "danger": #dc2626,
-  "danger-hover": #b91c1c,
-  "overlay": rgba(15, 23, 42, 0.5),
+  "background": #f5f1e4,
+  "surface": #fffdf8,
+  "surface-alt": #eee8d4,
+  "border": #d9cfb2,
+  "border-dark": #8b93a8,
+  "text": #24262b,
+  "text-muted": #3a4c74,
+  "text-inverse": #fffdf8,
+  "ink": #16233f,
+  "ink-2": #20335a,
+  "ink-soft": #3a4c74,
+  "paper": #f5f1e4,
+  "paper-2": #eee8d4,
+  "gold": #c99a2e,
+  "gold-bright": #e8b948,
+  "primary": #16233f,
+  "primary-hover": #20335a,
+  "primary-active": #0f1a2e,
+  "focus-ring": #e8b948,
+  "success": #2f7a4f,
+  "warning": #c99a2e,
+  "danger": #b91c1c,
+  "danger-hover": #991b1b,
+  "overlay": rgba(22, 35, 63, 0.55),
 );
 
 @function color($name) {
@@ -40,18 +47,19 @@ $colors: (
 }
 
 // ---------------------------------------------------------------------------
-// Typography scale (one scale)
+// Typography scale
 // ---------------------------------------------------------------------------
 $font-family-base:
-  "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", roboto, oxygen,
-  ubuntu, cantarell, "Helvetica Neue", arial, sans-serif;
-$font-family-mono:
-  "SFMono-Regular", consolas, "Liberation Mono", menlo, monospace;
+  var(--font-sans), "IBM Plex Sans", -apple-system, blinkmacsystemfont,
+  "Segoe UI", sans-serif;
+$font-family-display: var(--font-display), "Fraunces", georgia, "Times New Roman",
+  serif;
+$font-family-mono: var(--font-mono), "IBM Plex Mono", ui-monospace, consolas,
+  monospace;
 
 $line-height-base: 1.5;
 $line-height-heading: 1.2;
 
-// Modular type scale keyed by semantic step.
 $font-sizes: (
   "xs": 0.75rem,
   "sm": 0.875rem,
@@ -84,7 +92,7 @@ $font-weights: (
 }
 
 // ---------------------------------------------------------------------------
-// Spacing scale (one scale)
+// Spacing scale
 // ---------------------------------------------------------------------------
 $spacing: (
   "none": 0,
@@ -105,16 +113,16 @@ $spacing: (
 }
 
 // ---------------------------------------------------------------------------
-// Shared design tokens derived from the scales above
+// Shared design tokens
 // ---------------------------------------------------------------------------
-$radius-sm: 0.25rem;
-$radius-md: 0.5rem;
-$radius-lg: 0.75rem;
+$radius-sm: 0.1875rem; // ~3px
+$radius-md: 0.375rem; // ~6px
+$radius-lg: 0.5rem; // ~8px
 
-$shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.08);
-$shadow-md: 0 4px 12px rgba(15, 23, 42, 0.12);
+$shadow-sm: 0 1px 2px rgba(22, 35, 63, 0.08);
+$shadow-md: 0 10px 30px rgba(22, 35, 63, 0.1);
+$shadow-lg: 0 24px 60px rgba(0, 0, 0, 0.35);
 
-// Responsive breakpoints consumed by `_mixins.scss`.
 $breakpoints: (
   "sm": 480px,
   "md": 768px,
@@ -129,5 +137,5 @@ $breakpoints: (
   @return map.get($breakpoints, $name);
 }
 
-$content-max-width: 1200px;
-$transition-base: 150ms ease-in-out;
+$content-max-width: 1180px;
+$transition-base: 150ms ease;
