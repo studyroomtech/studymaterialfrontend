@@ -30,6 +30,7 @@ import { buildApiUrl } from './apiClient';
 import {
   ADMIN_API_ROUTES,
   ADMIN_MATERIAL_FORM_FIELDS,
+  ADMIN_MATERIAL_LINK_GROUP_SEGMENT,
   ADMIN_MATERIAL_TAGS_SEGMENT,
 } from './useAdminMaterials.constant';
 import type {
@@ -39,6 +40,8 @@ import type {
   AdminMutationResult,
   CreateCategoryInput,
   CreateMaterialInput,
+  LinkGroupMutationResponse,
+  LinkGroupResponse,
   UpdateMaterialInput,
   UseAdminMaterialsResult,
 } from './useAdminMaterials.types';
@@ -163,6 +166,17 @@ export const useAdminMaterials = (): UseAdminMaterialsResult => {
       }
       if (input.jobs !== undefined && input.jobs.length > 0) {
         form.set(ADMIN_MATERIAL_FORM_FIELDS.jobs, JSON.stringify(input.jobs));
+      }
+      // Link the new material with existing ones on creation; only sent when at
+      // least one is chosen so a plain upload stays ungrouped (Req 1.1–1.4).
+      if (
+        input.linkedMaterialIds !== undefined &&
+        input.linkedMaterialIds.length > 0
+      ) {
+        form.set(
+          ADMIN_MATERIAL_FORM_FIELDS.linkedMaterialIds,
+          JSON.stringify(input.linkedMaterialIds),
+        );
       }
 
       return runAuthedRequest<AdminMaterial>(
@@ -325,6 +339,56 @@ export const useAdminMaterials = (): UseAdminMaterialsResult => {
     [runAuthedRequest],
   );
 
+  // ---- Link Group management (linked-material-entitlement) ----------------
+  // The subject material's id goes in the path; the POST body carries the other
+  // material ids to link/merge with it. A DELETE removes the subject from its
+  // group entirely. All three sit behind requireAdmin on the Backend.
+
+  const getLinkGroup = useCallback(
+    (materialId: string): Promise<AdminMutationResult<LinkGroupResponse>> =>
+      runAuthedRequest<LinkGroupResponse>(
+        buildApiUrl(
+          `${ADMIN_API_ROUTES.materials}/${seg(materialId)}/${ADMIN_MATERIAL_LINK_GROUP_SEGMENT}`,
+        ),
+        { method: 'GET', headers: { Accept: 'application/json' } },
+      ),
+    [runAuthedRequest],
+  );
+
+  const linkMaterials = useCallback(
+    (
+      materialId: string,
+      materialIds: string[],
+    ): Promise<AdminMutationResult<LinkGroupMutationResponse>> =>
+      runAuthedRequest<LinkGroupMutationResponse>(
+        buildApiUrl(
+          `${ADMIN_API_ROUTES.materials}/${seg(materialId)}/${ADMIN_MATERIAL_LINK_GROUP_SEGMENT}`,
+        ),
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+          },
+          body: JSON.stringify({ materialIds }),
+        },
+      ),
+    [runAuthedRequest],
+  );
+
+  const unlinkMaterial = useCallback(
+    (
+      materialId: string,
+    ): Promise<AdminMutationResult<LinkGroupMutationResponse>> =>
+      runAuthedRequest<LinkGroupMutationResponse>(
+        buildApiUrl(
+          `${ADMIN_API_ROUTES.materials}/${seg(materialId)}/${ADMIN_MATERIAL_LINK_GROUP_SEGMENT}`,
+        ),
+        { method: 'DELETE', headers: { Accept: 'application/json' } },
+      ),
+    [runAuthedRequest],
+  );
+
   return useMemo(
     () => ({
       isAdmin,
@@ -342,6 +406,9 @@ export const useAdminMaterials = (): UseAdminMaterialsResult => {
       createCategory,
       renameCategory,
       deleteCategory,
+      getLinkGroup,
+      linkMaterials,
+      unlinkMaterial,
     }),
     [
       isAdmin,
@@ -359,6 +426,9 @@ export const useAdminMaterials = (): UseAdminMaterialsResult => {
       createCategory,
       renameCategory,
       deleteCategory,
+      getLinkGroup,
+      linkMaterials,
+      unlinkMaterial,
     ],
   );
 };

@@ -44,7 +44,11 @@ import type {
   DashboardCatalog,
   DashboardFeedback,
   DashboardMaterial,
+  LinkGroupEditorProps,
+  LinkTargetOption,
   MaterialEditDraft,
+  MaterialMultiPickerProps,
+  MaterialOption,
   ParsedPrice,
 } from './StudyMaterialTab.types';
 import {
@@ -66,6 +70,23 @@ import {
   JOB_CATEGORY_TYPE_NAME,
   JOBS_HINT,
   JOBS_LABEL,
+  LINK_MATERIALS_LABEL,
+  LINK_MATERIALS_PLACEHOLDER_OPTION,
+  LINK_NO_CHANGE_MESSAGE,
+  LINK_SUBMIT_LABEL,
+  LINK_SUCCESS_MESSAGE,
+  UNLINK_NO_CHANGE_MESSAGE,
+  UNLINK_SUCCESS_MESSAGE,
+  LINKED_MATERIALS_EMPTY_TEXT,
+  LINKED_MATERIALS_HINT,
+  LINKED_MATERIALS_LABEL,
+  LINKED_MATERIALS_LOADING_TEXT,
+  NO_OTHER_MATERIALS_TEXT,
+  UPLOAD_LINK_LABEL,
+  UPLOAD_LINK_HINT,
+  UPLOAD_LINK_PLACEHOLDER_OPTION,
+  UPLOAD_LINK_EMPTY_TEXT,
+  UNLINK_LABEL,
   LOGOUT_LABEL,
   MATERIAL_DESCRIPTION_FIELD_ID,
   MATERIAL_DESCRIPTION_LABEL,
@@ -271,6 +292,272 @@ function CategoryPicker({
   );
 }
 
+/**
+ * Collapse a flat list of materials into choosable link targets: each ungrouped
+ * material is its own target, while all materials sharing a Link Group collapse
+ * into a single target labelled with every member (picking it links to the
+ * whole group, which the Backend merges). Group targets are keyed by a
+ * representative member id.
+ */
+function collapseToLinkTargets(
+  materials: MaterialOption[],
+): LinkTargetOption[] {
+  const ungrouped: LinkTargetOption[] = [];
+  const groups = new Map<string, MaterialOption[]>();
+  for (const material of materials) {
+    const groupId = material.linkGroupId ?? null;
+    if (groupId === null) {
+      ungrouped.push({
+        value: material.id,
+        label: material.title,
+        memberIds: [material.id],
+      });
+    } else {
+      const members = groups.get(groupId) ?? [];
+      members.push(material);
+      groups.set(groupId, members);
+    }
+  }
+  const grouped: LinkTargetOption[] = [];
+  for (const members of groups.values()) {
+    if (members.length === 0) {
+      continue;
+    }
+    grouped.push({
+      value: members[0].id,
+      label:
+        members.length > 1
+          ? `Group: ${members.map((m) => m.title).join(' + ')}`
+          : members[0].title,
+      memberIds: members.map((m) => m.id),
+    });
+  }
+  return [...ungrouped, ...grouped];
+}
+
+/**
+ * Inline multi-select picker for choosing existing materials to link a new
+ * upload with. Selected materials render as removable chips; a dropdown adds
+ * one at a time. Purely local selection — the actual grouping happens on the
+ * Backend after the material is created (linked-material-entitlement Req 1.1–1.4).
+ */
+function MaterialMultiPicker({
+  label,
+  hint,
+  placeholderOption,
+  emptyText,
+  options,
+  selectedIds,
+  onSelectedChange,
+  disabled,
+}: MaterialMultiPickerProps) {
+  // Collapse grouped materials into single targets so a group shows once.
+  const targets = useMemo(() => collapseToLinkTargets(options), [options]);
+
+  const labelByValue = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const target of targets) {
+      map.set(target.value, target.label);
+    }
+    return map;
+  }, [targets]);
+
+  const available = useMemo(() => {
+    const selectedSet = new Set(selectedIds);
+    return targets.filter((target) => !selectedSet.has(target.value));
+  }, [targets, selectedIds]);
+
+  const remove = (id: string): void => {
+    onSelectedChange(selectedIds.filter((entry) => entry !== id));
+  };
+
+  const add = (id: string): void => {
+    if (id.length > 0 && !selectedIds.includes(id)) {
+      onSelectedChange([...selectedIds, id]);
+    }
+  };
+
+  return (
+    <div className={styles.categoryPicker}>
+      <p className={styles.fieldGroupLabel}>{label}</p>
+      <p className={styles.categoryHint}>{hint}</p>
+
+      {selectedIds.length > 0 && (
+        <ul className={styles.tagList}>
+          {selectedIds.map((id) => (
+            <li key={id} className={styles.tag}>
+              <span className={styles.tagName}>{labelByValue.get(id) ?? id}</span>
+              <button
+                type="button"
+                className={styles.tagRemove}
+                disabled={disabled}
+                aria-label={`${REMOVE_CATEGORY_LABEL} ${labelByValue.get(id) ?? id}`}
+                onClick={() => remove(id)}
+              >
+                ×
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {targets.length > 0 ? (
+        <select
+          className={styles.select}
+          aria-label={label}
+          value=""
+          disabled={disabled || available.length === 0}
+          onChange={(event) => add(event.target.value)}
+        >
+          <option value="">{placeholderOption}</option>
+          {available.map((target) => (
+            <option key={target.value} value={target.value}>
+              {target.label}
+            </option>
+          ))}
+        </select>
+      ) : (
+        <p className={styles.emptyText}>{emptyText}</p>
+      )}
+    </div>
+  );
+}
+
+/**
+ * Inline Link Group editor shown while editing a material. It loads the
+ * material's current Siblings on mount, renders them as chips, lets the Admin
+ * merge in other materials (multi-select + Link), and remove the material from
+ * its group. All grouping logic lives in the Backend Link_Manager; this control
+ * only calls the endpoints and reflects the returned Sibling set
+ * (linked-material-entitlement Req 2.1–2.8).
+ */
+function LinkGroupEditor({
+  materialId,
+  otherMaterials,
+  disabled,
+  onLoadSiblings,
+  onLink,
+  onUnlink,
+}: LinkGroupEditorProps) {
+  const [siblingIds, setSiblingIds] = useState<string[] | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [pendingLinkId, setPendingLinkId] = useState('');
+
+  const titleById = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const material of otherMaterials) {
+      map.set(material.id, material.title);
+    }
+    return map;
+  }, [otherMaterials]);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    const ids = await onLoadSiblings(materialId);
+    setSiblingIds(ids ?? []);
+    setLoading(false);
+  }, [materialId, onLoadSiblings]);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
+
+  // Collapse other materials into link targets (grouped ones show once), then
+  // drop any target the subject is already linked to (a member is a sibling) —
+  // that group is already shown in the sibling chips above.
+  const linkableTargets = useMemo(() => {
+    const siblingSet = new Set(siblingIds ?? []);
+    return collapseToLinkTargets(otherMaterials).filter(
+      (target) => !target.memberIds.some((id) => siblingSet.has(id)),
+    );
+  }, [otherMaterials, siblingIds]);
+
+  const handleLink = async (): Promise<void> => {
+    if (pendingLinkId.length === 0) {
+      return;
+    }
+    const changed = await onLink(materialId, [pendingLinkId]);
+    if (changed !== null) {
+      setPendingLinkId('');
+      await load();
+    }
+  };
+
+  const handleUnlink = async (): Promise<void> => {
+    const changed = await onUnlink(materialId);
+    if (changed !== null) {
+      await load();
+    }
+  };
+
+  const hasSiblings = (siblingIds?.length ?? 0) > 0;
+
+  return (
+    <div className={styles.categoryPicker}>
+      <p className={styles.fieldGroupLabel}>{LINKED_MATERIALS_LABEL}</p>
+      <p className={styles.categoryHint}>{LINKED_MATERIALS_HINT}</p>
+
+      {loading ? (
+        <p className={styles.emptyText}>{LINKED_MATERIALS_LOADING_TEXT}</p>
+      ) : hasSiblings ? (
+        <>
+          <ul className={styles.tagList}>
+            {(siblingIds ?? []).map((id) => (
+              <li key={id} className={styles.tag}>
+                <span className={styles.tagName}>
+                  {titleById.get(id) ?? id}
+                </span>
+              </li>
+            ))}
+          </ul>
+          <div className={styles.actions}>
+            <Button
+              type="button"
+              variant="danger"
+              size="sm"
+              disabled={disabled}
+              onClick={handleUnlink}
+            >
+              {UNLINK_LABEL}
+            </Button>
+          </div>
+        </>
+      ) : (
+        <p className={styles.emptyText}>{LINKED_MATERIALS_EMPTY_TEXT}</p>
+      )}
+
+      {linkableTargets.length > 0 ? (
+        <div className={styles.inlineForm}>
+          <select
+            className={`${styles.select} ${styles.grow}`}
+            aria-label={LINK_MATERIALS_LABEL}
+            value={pendingLinkId}
+            disabled={disabled}
+            onChange={(event) => setPendingLinkId(event.target.value)}
+          >
+            <option value="">{LINK_MATERIALS_PLACEHOLDER_OPTION}</option>
+            {linkableTargets.map((target) => (
+              <option key={target.value} value={target.value}>
+                {target.label}
+              </option>
+            ))}
+          </select>
+          <Button
+            type="button"
+            variant="secondary"
+            disabled={disabled || pendingLinkId.length === 0}
+            onClick={handleLink}
+          >
+            {LINK_SUBMIT_LABEL}
+          </Button>
+        </div>
+      ) : (
+        <p className={styles.emptyText}>{NO_OTHER_MATERIALS_TEXT}</p>
+      )}
+    </div>
+  );
+}
+
 function StudyMaterialTab() {
   const router = useRouter();
   const {
@@ -280,6 +567,9 @@ function StudyMaterialTab() {
     createMaterial,
     updateMaterial,
     deleteMaterial,
+    getLinkGroup,
+    linkMaterials,
+    unlinkMaterial,
   } = useAdminMaterials();
 
   // Gate rendering until after mount so the token re-synced from storage is
@@ -392,6 +682,7 @@ function StudyMaterialTab() {
   const [subjectInput, setSubjectInput] = useState('');
   const [selectedJobs, setSelectedJobs] = useState<string[]>([]);
   const [jobInput, setJobInput] = useState('');
+  const [selectedLinkedIds, setSelectedLinkedIds] = useState<string[]>([]);
   const [uploadErrors, setUploadErrors] = useState<{
     title?: string;
     file?: string;
@@ -439,6 +730,7 @@ function StudyMaterialTab() {
           categories: selectedCategories,
           subjects: selectedSubjects,
           jobs: selectedJobs,
+          linkedMaterialIds: selectedLinkedIds,
         }),
       UPLOAD_SUCCESS_MESSAGE,
     );
@@ -453,6 +745,7 @@ function StudyMaterialTab() {
       setSubjectInput('');
       setSelectedJobs([]);
       setJobInput('');
+      setSelectedLinkedIds([]);
       setFileInputKey((key) => key + 1);
     }
   };
@@ -509,6 +802,98 @@ function StudyMaterialTab() {
       cancelEdit();
     }
   };
+
+  // ---- Link Group handlers (linked-material-entitlement Req 2.1–2.8) ------
+
+  /** Load a material's current Sibling ids; returns null on failure. */
+  const loadSiblings = useCallback(
+    async (materialId: string): Promise<string[] | null> => {
+      const result = await getLinkGroup(materialId);
+      if (result.ok) {
+        return result.data.siblingIds;
+      }
+      setFeedback({
+        kind: 'error',
+        message: result.error.message || GENERIC_ACTION_ERROR,
+      });
+      return null;
+    },
+    [getLinkGroup],
+  );
+
+  /**
+   * Link the subject with the given materials. Surfaces a success (or "no
+   * change") banner and reloads the catalog so the listing reflects the new
+   * Effective Entitlement. Returns whether membership changed, or null on error.
+   */
+  const linkSubject = useCallback(
+    async (materialId: string, materialIds: string[]): Promise<boolean | null> => {
+      setFeedback(null);
+      const result = await linkMaterials(materialId, materialIds);
+      if (!result.ok) {
+        setFeedback({
+          kind: 'error',
+          message: result.error.message || GENERIC_ACTION_ERROR,
+        });
+        return null;
+      }
+      setFeedback({
+        kind: 'success',
+        message: result.data.changed ? LINK_SUCCESS_MESSAGE : LINK_NO_CHANGE_MESSAGE,
+      });
+      reloadCatalog();
+      return result.data.changed;
+    },
+    [linkMaterials, reloadCatalog],
+  );
+
+  /** Remove the subject from its Link Group. Returns whether it changed, or null on error. */
+  const unlinkSubject = useCallback(
+    async (materialId: string): Promise<boolean | null> => {
+      setFeedback(null);
+      const result = await unlinkMaterial(materialId);
+      if (!result.ok) {
+        setFeedback({
+          kind: 'error',
+          message: result.error.message || GENERIC_ACTION_ERROR,
+        });
+        return null;
+      }
+      setFeedback({
+        kind: 'success',
+        message: result.data.changed
+          ? UNLINK_SUCCESS_MESSAGE
+          : UNLINK_NO_CHANGE_MESSAGE,
+      });
+      reloadCatalog();
+      return result.data.changed;
+    },
+    [unlinkMaterial, reloadCatalog],
+  );
+
+  /** All existing materials as options (upload-time link targets, group-aware). */
+  const allMaterialOptions = useMemo<MaterialOption[]>(
+    () =>
+      (catalog?.materials ?? []).map((material) => ({
+        id: material.id,
+        title: material.title,
+        linkGroupId: material.linkGroupId ?? null,
+      })),
+    [catalog],
+  );
+
+  /** All materials except the given subject, as options for linking (group-aware). */
+  const otherMaterialsFor = useCallback(
+    (subjectId: string): MaterialOption[] =>
+      (catalog?.materials ?? [])
+        .filter((material) => material.id !== subjectId)
+        .map((material) => ({
+          id: material.id,
+          title: material.title,
+          linkGroupId: material.linkGroupId ?? null,
+        })),
+    [catalog],
+  );
 
   const handleLogout = (): void => {
     logout();
@@ -640,6 +1025,19 @@ function StudyMaterialTab() {
               disabled={isActing}
             />
 
+            {/* Optionally link the new material with existing ones on creation
+                so buying any member unlocks them all (Req 1.1–1.4). */}
+            <MaterialMultiPicker
+              label={UPLOAD_LINK_LABEL}
+              hint={UPLOAD_LINK_HINT}
+              placeholderOption={UPLOAD_LINK_PLACEHOLDER_OPTION}
+              emptyText={UPLOAD_LINK_EMPTY_TEXT}
+              options={allMaterialOptions}
+              selectedIds={selectedLinkedIds}
+              onSelectedChange={setSelectedLinkedIds}
+              disabled={isActing}
+            />
+
             <div className={styles.fileField}>
               <label className={styles.fileLabel} htmlFor={MATERIAL_FILE_FIELD_ID}>
                 {MATERIAL_FILE_LABEL}
@@ -741,6 +1139,14 @@ function StudyMaterialTab() {
                               setEditPriceError(undefined);
                             }
                           }}
+                        />
+                        <LinkGroupEditor
+                          materialId={material.id}
+                          otherMaterials={otherMaterialsFor(material.id)}
+                          disabled={isActing}
+                          onLoadSiblings={loadSiblings}
+                          onLink={linkSubject}
+                          onUnlink={unlinkSubject}
                         />
                         <div className={styles.actions}>
                           <Button

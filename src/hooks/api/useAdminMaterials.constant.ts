@@ -30,6 +30,14 @@ export const ADMIN_API_ROUTES = {
 export const ADMIN_MATERIAL_TAGS_SEGMENT = 'tags';
 
 /**
+ * Path segment appended to a material route for its Link Group management:
+ * `GET/POST/DELETE /api/admin/materials/:id/link-group`. A GET reads the
+ * material's current Siblings, a POST links/merges it with other materials, and
+ * a DELETE removes it from its Link Group (linked-material-entitlement feature).
+ */
+export const ADMIN_MATERIAL_LINK_GROUP_SEGMENT = 'link-group';
+
+/**
  * Browser `localStorage` key under which the Admin's role_admin JWT is
  * persisted so content-management calls can reuse the session without
  * re-authenticating on every action (Req 10.5).
@@ -42,6 +50,10 @@ export const ADMIN_TOKEN_STORAGE_KEY = 'sm.admin.adminToken';
 // stays Free (Req 11.14).
 // `categories` carries the selected/typed Category names as a JSON-encoded
 // string array; the Backend parses it and resolves/auto-creates each Category.
+// `linkedMaterialIds` carries the ids of existing materials to link the new
+// upload with, as a JSON-encoded string array; only appended when at least one
+// is chosen so a plain upload creates an ungrouped material
+// (linked-material-entitlement Req 1.1–1.4).
 export const ADMIN_MATERIAL_FORM_FIELDS = {
   title: 'title',
   description: 'description',
@@ -51,4 +63,5 @@ export const ADMIN_MATERIAL_FORM_FIELDS = {
   categories: 'categories',
   subjects: 'subjects',
   jobs: 'jobs',
+  linkedMaterialIds: 'linkedMaterialIds',
 } as const;

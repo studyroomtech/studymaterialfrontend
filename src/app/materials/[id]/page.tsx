@@ -35,6 +35,7 @@ import NotesPreview from "@/components/NotesPreview/NotesPreview";
 import PaymentModal from "@/components/PaymentModal/PaymentModal";
 import ReviewsSection from "@/components/ReviewsSection/ReviewsSection";
 import { usePaidMaterials } from "@/hooks/api/usePaidMaterials";
+import { useUnlockOptions } from "@/hooks/api/useUnlockOptions";
 import { usePayment } from "@/hooks/api/usePayment";
 import { PAYMENT_PHASE } from "@/hooks/api/usePayment.constant";
 import { useDownload } from "@/hooks/api/useDownload";
@@ -57,6 +58,10 @@ import {
   LOADING_LABEL,
   LOCKED_MESSAGE,
   LOCKED_TITLE,
+  LOCKED_LINKED_TITLE,
+  LOCKED_LINKED_MESSAGE,
+  UNLOCK_OPTIONS_LABEL,
+  UNLOCK_OPTIONS_LOADING_LABEL,
   NO_DESCRIPTION_TEXT,
   NOT_FOUND_ERROR_MESSAGE,
   NOT_FOUND_STATUS,
@@ -315,6 +320,8 @@ function MaterialContent({
  */
 function PaymentRequiredGate({ materialId, onEntitled }: PaymentRequiredGateProps) {
   const { data: paidData, isLoading: isPriceLoading } = usePaidMaterials();
+  const { data: unlockData, isLoading: isUnlockLoading } =
+    useUnlockOptions(materialId);
   const payment = usePayment();
   const cart = useCart();
 
@@ -336,6 +343,56 @@ function PaymentRequiredGate({ materialId, onEntitled }: PaymentRequiredGateProp
       onEntitled();
     }
   }, [isEntitled, reset, onEntitled]);
+
+  // The Paid Materials whose purchase would unlock this material through its
+  // Link Group. When the material itself is purchasable it appears here; when
+  // it is a Free Material locked by a paid sibling, only the paid sibling(s)
+  // appear and the Learner must pay for one of those instead
+  // (linked-material-entitlement).
+  const unlockOptions = unlockData?.options ?? [];
+  const isSelfPurchasable = unlockOptions.some(
+    (option) => option.id === materialId,
+  );
+
+  // Locked purely by a linked paid material (this note has no price of its
+  // own): the Learner can't pay for it directly, so link them to the paid
+  // note(s) they can buy to unlock the whole group.
+  if (!isUnlockLoading && !isSelfPurchasable && unlockOptions.length > 0) {
+    return (
+      <section className={styles.locked} aria-live="polite">
+        <h1 className={styles.title}>{LOCKED_LINKED_TITLE}</h1>
+        <p className={styles.lockedMessage}>{LOCKED_LINKED_MESSAGE}</p>
+        <p className={styles.priceLabel}>{UNLOCK_OPTIONS_LABEL}</p>
+        <div className={styles.payActions}>
+          {unlockOptions.map((option) => (
+            <Link
+              key={option.id}
+              href={`/materials/${option.id}`}
+              className={styles.backLink}
+            >
+              {option.title}
+              {" — "}
+              {formatPrice(option.priceAmount, {
+                currency: option.currency ?? undefined,
+                freeAsLabel: false,
+              })}
+            </Link>
+          ))}
+        </div>
+      </section>
+    );
+  }
+
+  // Still resolving whether this note is purchasable directly or only via a
+  // linked material: show a lightweight loading state to avoid flashing the
+  // wrong panel.
+  if (isUnlockLoading && unlockData === null) {
+    return (
+      <section className={styles.locked} aria-live="polite">
+        <LoadingIndicator label={UNLOCK_OPTIONS_LOADING_LABEL} />
+      </section>
+    );
+  }
 
   const heading = paidMaterial?.title ?? LOCKED_TITLE;
   const hasPrice = paidMaterial !== null;

@@ -113,6 +113,11 @@ export const MATERIAL_PREVIEW_ACTION = 'preview';
 // endpoint, e.g. `/api/materials/:id/payment` (Req 12.4).
 export const MATERIAL_PAYMENT_ACTION = 'payment';
 
+// Sub-path appended to a material route to reach its Link Group unlock options,
+// e.g. `/api/materials/:id/unlock-options` — the Paid Materials whose purchase
+// unlocks a locked (free-but-grouped) material (linked-material-entitlement).
+export const MATERIAL_UNLOCK_OPTIONS_ACTION = 'unlock-options';
+
 // Query-parameter names used by the search endpoint (Req 4.1, 4.2).
 export const SEARCH_QUERY_PARAMS = {
   query: 'q',

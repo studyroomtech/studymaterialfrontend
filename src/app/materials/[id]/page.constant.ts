@@ -72,6 +72,23 @@ export const LOCKED_TITLE = "This is a paid exam material";
 export const LOCKED_MESSAGE =
   "Complete a one-time payment to unlock this exam material. Your access is saved so you can view and download it again later.";
 
+/**
+ * Heading shown when the material is unlocked by purchasing a *linked* paid
+ * material rather than paying for this one directly
+ * (linked-material-entitlement).
+ */
+export const LOCKED_LINKED_TITLE = "This material is unlocked by a linked purchase";
+
+/** Explanatory copy shown when the material is unlocked via a linked paid note. */
+export const LOCKED_LINKED_MESSAGE =
+  "This material is part of a bundle. Purchase any of the linked paid materials below to unlock it — your access is then saved so you can view and download it again later.";
+
+/** Label prefacing the list of purchasable linked materials. */
+export const UNLOCK_OPTIONS_LABEL = "Buy a linked material to unlock";
+
+/** Accessible label announced while the unlock options are being resolved. */
+export const UNLOCK_OPTIONS_LOADING_LABEL = "Loading unlock options…";
+
 /** Prefix label shown before the formatted Price on the locked panel (Req 12.1). */
 export const PRICE_LABEL = "Price";
 

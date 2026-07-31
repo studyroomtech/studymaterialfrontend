@@ -91,6 +91,13 @@ export interface CreateMaterialInput {
    * pick-or-create behavior as {@link categories}).
    */
   jobs?: string[];
+  /**
+   * Ids of existing materials to link the new upload with, forming (or merging
+   * into) a single Link Group so buying any member unlocks all members. Omit or
+   * pass an empty array to create an ungrouped material
+   * (linked-material-entitlement Req 1.1–1.4).
+   */
+  linkedMaterialIds?: string[];
 }
 
 /**
@@ -112,6 +119,28 @@ export interface UpdateMaterialInput {
 export interface CreateCategoryInput {
   name: string;
   categoryTypeId: string;
+}
+
+/**
+ * The response of `GET /api/admin/materials/:id/link-group` — the ids of the
+ * material's Siblings (the other members of its Link Group), excluding the
+ * material itself; empty when the material belongs to no Link Group
+ * (linked-material-entitlement Req 2.7, 2.8).
+ */
+export interface LinkGroupResponse {
+  siblingIds: string[];
+}
+
+/**
+ * The response of the link (`POST`) and unlink (`DELETE`) Link Group mutations —
+ * the subject's Sibling ids after the operation together with whether the
+ * operation changed any membership (`changed: false` for an idempotent no-op:
+ * linking materials already grouped together, or unlinking an ungrouped
+ * material).
+ */
+export interface LinkGroupMutationResponse {
+  siblingIds: string[];
+  changed: boolean;
 }
 
 /**
@@ -181,4 +210,29 @@ export interface UseAdminMaterialsResult {
   ) => Promise<AdminMutationResult<AdminCategory>>;
   /** Delete a Category (Req 11.7). */
   deleteCategory: (categoryId: string) => Promise<AdminMutationResult<void>>;
+
+  /**
+   * Read the current Sibling ids of a Study Material's Link Group
+   * (linked-material-entitlement Req 2.7, 2.8).
+   */
+  getLinkGroup: (
+    materialId: string,
+  ) => Promise<AdminMutationResult<LinkGroupResponse>>;
+  /**
+   * Link a Study Material with one or more other materials, merging their Link
+   * Groups into one so a purchase of any member unlocks all members
+   * (linked-material-entitlement Req 2.1, 2.2).
+   */
+  linkMaterials: (
+    materialId: string,
+    materialIds: string[],
+  ) => Promise<AdminMutationResult<LinkGroupMutationResponse>>;
+  /**
+   * Remove a Study Material from its Link Group; the group dissolves when fewer
+   * than two members remain. A success no-op when the material is already
+   * ungrouped (linked-material-entitlement Req 2.4, 2.5, 2.6).
+   */
+  unlinkMaterial: (
+    materialId: string,
+  ) => Promise<AdminMutationResult<LinkGroupMutationResponse>>;
 }

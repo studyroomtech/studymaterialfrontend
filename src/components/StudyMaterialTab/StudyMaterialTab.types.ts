@@ -24,6 +24,8 @@ export interface DashboardMaterial {
   priceAmount?: number | null;
   /** The Currency of the Price (INR), or `null`/absent when Free. */
   currency?: string | null;
+  /** The Link Group id this material belongs to, or `null`/absent when ungrouped. */
+  linkGroupId?: string | null;
 }
 
 /** The catalog structure the dashboard loads from `GET /api/catalog`. */
@@ -95,3 +97,68 @@ export interface CategoryPickerProps {
 export type ParsedPrice =
   | { ok: true; amount: number | null }
   | { ok: false };
+
+/** A minimal id/title pair (plus its group) used to render and pick materials. */
+export interface MaterialOption {
+  id: string;
+  title: string;
+  /** The Link Group id this material belongs to, or `null`/absent when ungrouped. */
+  linkGroupId?: string | null;
+}
+
+/**
+ * A single choosable link target in a dropdown. Already-grouped materials
+ * collapse into one target representing the whole group; picking it links to
+ * every member at once (the Backend merges groups). `value` is a representative
+ * member id sent to the link API; `memberIds` is the full membership used to
+ * exclude a group the subject is already part of.
+ */
+export interface LinkTargetOption {
+  value: string;
+  label: string;
+  memberIds: string[];
+}
+
+/**
+ * Props for the inline multi-select material picker used on the upload form to
+ * choose existing materials to link the new upload with (Req 1.1–1.4).
+ */
+export interface MaterialMultiPickerProps {
+  /** Group label. */
+  label: string;
+  /** Supporting hint. */
+  hint: string;
+  /** Placeholder text for the empty select option. */
+  placeholderOption: string;
+  /** Text shown when there are no options to choose from. */
+  emptyText: string;
+  /** All selectable materials (grouped materials are collapsed into one entry). */
+  options: MaterialOption[];
+  /** Currently selected representative ids (one per chosen material or group). */
+  selectedIds: string[];
+  /** Replace the selected representative ids. */
+  onSelectedChange: (next: string[]) => void;
+  /** Whether the controls are disabled (an action is in flight). */
+  disabled: boolean;
+}
+
+/**
+ * Props for the inline Link Group editor rendered while editing a material. It
+ * reads the material's current Siblings, lets the Admin link it with other
+ * materials (merging groups), and remove it from its group
+ * (linked-material-entitlement Req 2.1–2.8).
+ */
+export interface LinkGroupEditorProps {
+  /** The material being edited (the Link Group subject). */
+  materialId: string;
+  /** All other materials (excludes the subject); grouped ones collapse into one target. */
+  otherMaterials: MaterialOption[];
+  /** Whether the controls are disabled (another action is in flight). */
+  disabled: boolean;
+  /** Read the subject's current Sibling ids. */
+  onLoadSiblings: (materialId: string) => Promise<string[] | null>;
+  /** Link the subject with the given material ids; resolves to whether it changed. */
+  onLink: (materialId: string, materialIds: string[]) => Promise<boolean | null>;
+  /** Remove the subject from its group; resolves to whether it changed. */
+  onUnlink: (materialId: string) => Promise<boolean | null>;
+}

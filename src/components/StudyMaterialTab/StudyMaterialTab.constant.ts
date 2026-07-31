@@ -133,6 +133,37 @@ export const CATEGORY_CREATED_MESSAGE = 'Category added.';
 export const CATEGORY_RENAMED_MESSAGE = 'Category renamed.';
 export const CATEGORY_DELETED_MESSAGE = 'Category deleted.';
 
+/**
+ * Linked materials (Link Group) copy for the material management list
+ * (linked-material-entitlement Req 2.1–2.8). Linking notes lets a purchase of
+ * any one member unlock every member.
+ */
+export const LINKED_MATERIALS_LABEL = 'Linked materials';
+export const LINKED_MATERIALS_HINT =
+  'Link this note with others so buying any one of them unlocks them all.';
+export const LINKED_MATERIALS_EMPTY_TEXT =
+  'Not linked to any other material yet.';
+export const LINK_MATERIALS_LABEL = 'Link with materials';
+export const LINK_MATERIALS_PLACEHOLDER_OPTION = 'Select a material to link…';
+export const LINK_SUBMIT_LABEL = 'Link selected';
+export const UNLINK_LABEL = 'Remove from group';
+export const LINKED_MATERIALS_LOADING_TEXT = 'Loading linked materials…';
+export const NO_OTHER_MATERIALS_TEXT =
+  'No other materials available to link with.';
+
+/** Upload-form "link with existing materials" copy (Req 1.1–1.4). */
+export const UPLOAD_LINK_LABEL = 'Link with existing materials';
+export const UPLOAD_LINK_HINT =
+  'Optional: group this new note with existing ones so a purchase of any member unlocks them all.';
+export const UPLOAD_LINK_PLACEHOLDER_OPTION = 'Select a material to link…';
+export const UPLOAD_LINK_EMPTY_TEXT = 'No existing materials to link with yet.';
+export const LINK_SUCCESS_MESSAGE = 'Materials linked.';
+export const UNLINK_SUCCESS_MESSAGE = 'Material removed from its group.';
+export const LINK_NO_CHANGE_MESSAGE =
+  'No change — those materials were already linked.';
+export const UNLINK_NO_CHANGE_MESSAGE =
+  'No change — this material was not linked.';
+
 /** Client-side validation copy mirroring Backend bounds (Req 11.2, 11.6). */
 export const TITLE_REQUIRED_ERROR = 'Enter a title.';
 export const FILE_REQUIRED_ERROR = 'Choose a file to upload.';
