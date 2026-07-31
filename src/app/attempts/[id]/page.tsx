@@ -24,6 +24,8 @@ import { useEffect } from 'react';
 
 import ErrorMessage from '@/components/ErrorMessage/ErrorMessage';
 import LoadingIndicator from '@/components/LoadingIndicator/LoadingIndicator';
+import ResultSummary from '@/components/ResultSummary/ResultSummary';
+import SectionBreakdown from '@/components/SectionBreakdown/SectionBreakdown';
 import { useAttemptHistory } from '@/hooks/api/useAttemptHistory';
 import type { ReviewQuestionDto } from '@/types/testSeries.types';
 import { formatDateTime } from '@/utils/date';
@@ -35,13 +37,13 @@ import {
   CORRECT_OPTION_BADGE,
   HISTORY_HREF,
   INVALID_ID_MESSAGE,
-  MARKS_SUFFIX,
+  PERFORMANCE_HREF,
+  PERFORMANCE_LINK_LABEL,
   QUESTION_LABEL_PREFIX,
   QUESTIONS_HEADING,
   REVIEW_ERROR_MESSAGE,
   REVIEW_ERROR_TITLE,
   REVIEW_LOADING_LABEL,
-  SCORE_LABEL,
   UNANSWERED_LABEL,
   YOUR_ANSWER_BADGE,
 } from './page.constant';
@@ -175,19 +177,20 @@ function AttemptReviewPage() {
             <h1 className={styles.title}>{review.testTitle}</h1>
             <div className={styles.headerMeta}>
               <span className={styles.metaItem}>
-                <span className={styles.metaLabel}>{SCORE_LABEL}</span>
-                <span className={styles.metaValue}>
-                  {review.scoreMarks} {MARKS_SUFFIX}
-                </span>
-              </span>
-              <span className={styles.metaItem}>
                 <span className={styles.metaLabel}>{COMPLETED_AT_LABEL}</span>
                 <span className={styles.metaValue}>
                   {formatDateTime(review.completedAt)}
                 </span>
               </span>
+              <Link href={PERFORMANCE_HREF} className={styles.performanceLink}>
+                {PERFORMANCE_LINK_LABEL}
+              </Link>
             </div>
           </header>
+
+          <ResultSummary summary={review.summary} />
+
+          <SectionBreakdown sections={review.sections} />
 
           <h2 className={styles.questionsHeading}>{QUESTIONS_HEADING}</h2>
           <ul className={styles.questionList}>

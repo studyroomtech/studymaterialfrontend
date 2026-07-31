@@ -16,10 +16,13 @@ export const REVIEW_ERROR_TITLE = 'Could not load this test review';
 export const REVIEW_ERROR_MESSAGE =
   'We could not load this attempt. It may not exist or may not belong to you.';
 
-/** Header labels. */
-export const SCORE_LABEL = 'Score';
+/** Header labels. The Score itself is rendered by `ResultSummary`, which reports
+ * it against the marks that were obtainable. */
 export const COMPLETED_AT_LABEL = 'Completed';
-export const MARKS_SUFFIX = 'marks';
+
+/** Link from a single result out to the Learner's performance across all tests. */
+export const PERFORMANCE_HREF = '/performance';
+export const PERFORMANCE_LINK_LABEL = 'See your overall performance →';
 
 /** Questions section copy. */
 export const QUESTIONS_HEADING = 'Questions';

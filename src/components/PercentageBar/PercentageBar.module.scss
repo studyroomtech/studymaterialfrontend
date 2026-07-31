@@ -1,0 +1,44 @@
+// Styling for the PercentageBar component — StudyForGovt.
+//
+// `<progress>` needs vendor-specific pseudo-elements to restyle its track and
+// fill, so the same two colours are declared three times: once on the element
+// (Firefox's track), once for WebKit's track/value pair, and once for Gecko's
+// value.
+
+@use "../../styles/theme" as theme;
+@use "../../styles/mixins" as mixins;
+
+.bar {
+  appearance: none;
+  display: block;
+  width: 100%;
+  border: none;
+  border-radius: theme.$radius-sm;
+  background-color: theme.color("surface-alt");
+  color: theme.color("gold"); // IE/legacy fill colour
+  overflow: hidden;
+
+  &::-webkit-progress-bar {
+    background-color: theme.color("surface-alt");
+    border-radius: inherit;
+  }
+
+  &::-webkit-progress-value {
+    background-color: theme.color("gold");
+    border-radius: inherit;
+    transition: width theme.$transition-base;
+  }
+
+  &::-moz-progress-bar {
+    background-color: theme.color("gold");
+    border-radius: inherit;
+  }
+}
+
+.sm {
+  height: 6px;
+}
+
+.md {
+  height: 8px;
+}

@@ -47,9 +47,26 @@
 }
 
 .headerMeta {
-  @include mixins.flex(row, flex-start, center, theme.space("lg"));
+  @include mixins.flex(row, space-between, center, theme.space("lg"));
 
   flex-wrap: wrap;
+}
+
+.performanceLink {
+  font-family: theme.$font-family-mono;
+  font-size: theme.font-size("sm");
+  font-weight: theme.font-weight("semibold");
+  color: theme.color("ink");
+  text-decoration: none;
+
+  &:hover {
+    color: theme.color("gold");
+    text-decoration: underline;
+  }
+
+  &:focus-visible {
+    @include mixins.focus-ring;
+  }
 }
 
 .metaItem {

@@ -27,6 +27,7 @@ import { formatDateTime } from '@/utils/date';
 
 import styles from './page.module.scss';
 import {
+  ACCURACY_LABEL,
   COMPLETED_AT_LABEL,
   HISTORY_EMPTY_MESSAGE,
   HISTORY_EMPTY_TITLE,
@@ -37,6 +38,12 @@ import {
   HISTORY_SUBTITLE,
   HISTORY_TITLE,
   MARKS_SUFFIX,
+  NO_ACCURACY_LABEL,
+  OUT_OF_SEPARATOR,
+  PERCENTAGE_LABEL,
+  PERCENT_SUFFIX,
+  PERFORMANCE_HREF,
+  PERFORMANCE_LINK_LABEL,
   REVIEW_ACTION_LABEL,
   REVIEW_PATH_PREFIX,
   SCORE_LABEL,
@@ -57,6 +64,12 @@ function AttemptHistoryPage() {
       <header className={styles.header}>
         <h1 className={styles.title}>{HISTORY_TITLE}</h1>
         <p className={styles.subtitle}>{HISTORY_SUBTITLE}</p>
+        {/* Only worth offering once there is something to analyze. */}
+        {showResults ? (
+          <Link href={PERFORMANCE_HREF} className={styles.performanceLink}>
+            {PERFORMANCE_LINK_LABEL}
+          </Link>
+        ) : null}
       </header>
 
       <section className={styles.results} aria-label={HISTORY_RESULTS_LABEL}>
@@ -92,7 +105,27 @@ function AttemptHistoryPage() {
                     <span className={styles.metaItem}>
                       <span className={styles.metaLabel}>{SCORE_LABEL}</span>
                       <span className={styles.metaValue}>
-                        {attempt.scoreMarks} {MARKS_SUFFIX}
+                        {attempt.scoreMarks} {OUT_OF_SEPARATOR}{' '}
+                        {attempt.summary.maxMarks} {MARKS_SUFFIX}
+                      </span>
+                    </span>
+
+                    <span className={styles.metaItem}>
+                      <span className={styles.metaLabel}>
+                        {PERCENTAGE_LABEL}
+                      </span>
+                      <span className={styles.metaValue}>
+                        {attempt.summary.percentage}
+                        {PERCENT_SUFFIX}
+                      </span>
+                    </span>
+
+                    <span className={styles.metaItem}>
+                      <span className={styles.metaLabel}>{ACCURACY_LABEL}</span>
+                      <span className={styles.metaValue}>
+                        {attempt.summary.accuracy === null
+                          ? NO_ACCURACY_LABEL
+                          : `${attempt.summary.accuracy}${PERCENT_SUFFIX}`}
                       </span>
                     </span>
 

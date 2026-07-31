@@ -19,6 +19,24 @@ export const RESUME_ACTION_LABEL = 'Resume';
 /** Label for the finalize/submit control (Req 11.4, 12.7). */
 export const SUBMIT_ACTION_LABEL = 'Submit test';
 
+/**
+ * Label for the control that ends the active Section early and moves to the
+ * next one under Sequential Sectional Timing.
+ */
+export const ADVANCE_SECTION_LABEL = 'Submit section & continue';
+
+/**
+ * Confirmation shown before ending a Section early. Advancing is irreversible —
+ * the Section locks, its unused time is forfeited, and its Questions can no
+ * longer be answered — so the Learner is asked to confirm.
+ */
+export const ADVANCE_SECTION_CONFIRM_MESSAGE =
+  'Submit this section and move to the next one? You will not be able to return to it, and any remaining time in this section will be lost.';
+
+/** Confirmation shown before finalizing the whole attempt from the last Section. */
+export const SUBMIT_TEST_CONFIRM_MESSAGE =
+  'Submit the whole test? Your responses will be scored and can no longer be changed.';
+
 /** Label for the save-Response control (Req 9.4). */
 export const SAVE_RESPONSE_LABEL = 'Save response';
 
@@ -53,8 +71,33 @@ export const PAUSED_MESSAGE =
 export const SECTION_CLOSED_MESSAGE =
   'This section is closed. Its questions can no longer be answered.';
 
+/**
+ * Banner shown for a moment after the active Section changes, so the Learner
+ * understands why the Questions in front of them suddenly changed. The next
+ * Section's title is appended at render time.
+ */
+export const SECTION_ADVANCED_MESSAGE_PREFIX = 'Section complete. Now on';
+
+/**
+ * How long the "moved to the next Section" notice stays up. It explains a
+ * one-off hand-over, so it retires rather than sitting above the new Section
+ * for its whole duration.
+ */
+export const SECTION_ADVANCED_MESSAGE_DURATION_MS = 8000;
+
+/** Notice shown while the player waits for the server to open the next Section. */
+export const SECTION_ADVANCING_MESSAGE =
+  'Time is up for this section. Loading the next one…';
+
+/** Heading above the Questions of the Section currently being attempted. */
+export const CURRENT_SECTION_LABEL_PREFIX = 'Current section';
+
+/** Suffix marking a Section the Learner has not reached yet in the rail. */
+export const SECTION_LOCKED_LABEL = 'Locked';
+
 /** Human-readable Attempt Status labels keyed by the server status value. */
 export const ATTEMPT_STATUS_LABELS: Record<AttemptStatus, string> = {
+  not_started: 'Not started',
   in_progress: 'In progress',
   paused: 'Paused',
   completed: 'Completed',
@@ -68,3 +111,13 @@ export const SECONDS_PER_MINUTE = 60;
 
 /** Minutes in an hour, for formatting remaining time beyond an hour. */
 export const MINUTES_PER_HOUR = 60;
+
+/**
+ * How often the player re-reads the server's attempt state while a scope is
+ * running. The client countdown is display only and already triggers a sync the
+ * moment it reaches zero; this poll is the safety net for a drifting client
+ * clock or a tab that was backgrounded (where `setInterval` is throttled), so a
+ * Section that expired while the Learner was away is closed promptly rather
+ * than at their next deliberate action.
+ */
+export const STATE_SYNC_INTERVAL_MS = 30000;

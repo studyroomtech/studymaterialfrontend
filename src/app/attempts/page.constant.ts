@@ -28,9 +28,23 @@ export const HISTORY_EMPTY_MESSAGE =
 
 /** Per-item copy. */
 export const SCORE_LABEL = 'Score';
+export const PERCENTAGE_LABEL = 'Percentage';
+export const ACCURACY_LABEL = 'Accuracy';
 export const COMPLETED_AT_LABEL = 'Completed';
 export const MARKS_SUFFIX = 'marks';
 export const REVIEW_ACTION_LABEL = 'Review';
+
+/** Separates a score from the marks that were obtainable, e.g. "4.5 / 20". */
+export const OUT_OF_SEPARATOR = '/';
+
+export const PERCENT_SUFFIX = '%';
+
+/** Shown for accuracy when the Learner answered nothing in the attempt. */
+export const NO_ACCURACY_LABEL = '—';
+
+/** Link out to the Learner's performance across every completed attempt. */
+export const PERFORMANCE_HREF = '/performance';
+export const PERFORMANCE_LINK_LABEL = 'See your overall performance →';
 
 /** Base path a history entry links to; the attempt id is appended. */
 export const REVIEW_PATH_PREFIX = '/attempts';

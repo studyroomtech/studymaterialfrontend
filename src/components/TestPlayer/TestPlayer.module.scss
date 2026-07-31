@@ -64,6 +64,14 @@
   flex-wrap: wrap;
 }
 
+// A Section queued behind the one currently running, under Sequential Sectional
+// Timing. Deliberately the quietest of the status colours: it is not actionable.
+.not_started {
+  color: theme.color("ink-soft");
+  border-color: theme.color("border");
+  background-color: theme.color("paper-2");
+}
+
 .in_progress {
   color: theme.color("ink-2");
   border-color: theme.color("ink-2");
@@ -104,6 +112,22 @@
   color: theme.color("gold");
 }
 
+// Shown just after the server moves the attempt on to the next Section, so the
+// Questions changing is explained rather than surprising.
+.bannerAdvanced {
+  background-color: rgba(32, 51, 90, 0.06);
+  border-color: theme.color("ink-2");
+  color: theme.color("ink-2");
+}
+
+// Shown in the beat between the countdown hitting zero and the server handing
+// back the next Section.
+.bannerAdvancing {
+  background-color: theme.color("paper-2");
+  border-color: theme.color("border-dark");
+  color: theme.color("ink-soft");
+}
+
 .feedback {
   margin: 0;
 }
@@ -137,6 +161,34 @@
   border: 1px solid theme.color("border");
   border-radius: theme.$radius-sm;
   background-color: theme.color("paper");
+}
+
+// The Section being attempted right now — the only one accepting answers.
+.sectionItemCurrent {
+  border-color: theme.color("ink");
+  border-width: 2px;
+  background-color: theme.color("surface");
+}
+
+// A Section that is out of reach: either already closed for good, or still
+// queued behind the active one.
+.sectionItemLocked {
+  opacity: 0.6;
+}
+
+.sectionTitle {
+  @include mixins.typography("sm", "semibold");
+
+  color: theme.color("ink");
+}
+
+.sectionLocked {
+  font-family: theme.$font-family-mono;
+  font-size: theme.font-size("xs");
+  font-weight: theme.font-weight("medium");
+  color: theme.color("ink-soft");
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 
 .sectionStatus {

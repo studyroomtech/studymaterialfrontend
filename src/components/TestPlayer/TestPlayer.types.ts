@@ -5,12 +5,15 @@
 //
 // The TestPlayer is a presentational component: it is driven entirely by the
 // server-authoritative `AttemptStateDto` (Attempt Status, server-computed
-// remaining time, and per-Section state) plus a player-facing list of Questions
-// to render, and it delegates every timing/scoring decision to the server via
-// the supplied action callbacks. There is deliberately no client countdown as
-// the source of truth — the component renders the remaining time the server
-// provides and re-renders when the parent (task 18.4, wiring `useAttempt`)
-// hands it a refreshed `AttemptStateDto` (Req 9.2, 9.3).
+// remaining time, per-Section state, and which Section is currently active)
+// plus a player-facing list of Questions to render, and it delegates every
+// timing/scoring decision to the server via the supplied action callbacks.
+//
+// The client countdown is display only and never the source of truth (Req 9.2,
+// 9.3): it seeds from the server's value on every refreshed `AttemptStateDto`
+// and, when it reaches zero, asks the parent to re-read the server state rather
+// than deciding for itself what happens next. Under Sequential Sectional Timing
+// that is what carries the Learner from one Section into the next.
 
 import type {
   AttemptStateDto,
@@ -95,10 +98,26 @@ export interface TestPlayerProps {
    * parent navigates to the review once the result resolves.
    */
   onSubmit: () => void;
+  /**
+   * Re-read the server's attempt state. Called on a fixed interval while a
+   * scope is running and the instant the display countdown reaches zero, so the
+   * server can close an exhausted Section and open the next one. Backed by
+   * `useAttempt.syncState`; the parent navigates to the review only if the
+   * refreshed state comes back `completed`.
+   */
+  onTimeExpired: () => void;
+  /**
+   * End the active Section early and move to the next one under Sequential
+   * Sectional Timing. Backed by `useAttempt.advanceSection`. The player asks the
+   * Learner to confirm first, since the Section locks irreversibly.
+   */
+  onAdvanceSection: () => void;
   /** `true` while a pause request is in flight — disables the pause control. */
   isPausing?: boolean;
   /** `true` while a resume request is in flight — disables the resume control. */
   isResuming?: boolean;
+  /** `true` while a Section-advance request is in flight. */
+  isAdvancingSection?: boolean;
   /** `true` while a Response is being recorded — disables the save control. */
   isSavingResponse?: boolean;
   /** `true` while the submit request is in flight — disables the submit control. */

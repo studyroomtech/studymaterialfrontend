@@ -53,7 +53,10 @@ export const API_ROUTES = {
   // `sections` -> POST /api/sections/:id/attempts         (start/resume Section attempt, Req 8.2)
   sections: '/api/sections',
   // `attempts` -> GET /api/attempts                       (history, Req 14.1)
-  //               GET /api/attempts/:id                   (review, Req 14.2)
+  //               GET /api/attempts/performance           (performance across every completed attempt)
+  //               GET /api/attempts/:id                   (review of a completed attempt, Req 14.2)
+  //               GET /api/attempts/:id/state             (reconciled state of an open attempt)
+  //               POST /api/attempts/:id/next-section     (close the active Section, advance)
   //               POST /api/attempts/:id/pause            (Req 10.1)
   //               POST /api/attempts/:id/resume           (Req 10.3)
   //               POST /api/attempts/:id/responses        (Req 9.4)
@@ -94,6 +97,21 @@ export const ATTEMPT_SUBMIT_SEGMENT = 'submit';
 // for the Test Player while the attempt is open, e.g.
 // `GET /api/attempts/:id/questions` (Req 9.4).
 export const ATTEMPT_QUESTIONS_SEGMENT = 'questions';
+
+// Sub-path appended to an attempt route to read its reconciled state without
+// finalizing it, e.g. `GET /api/attempts/:id/state`. The Test Player polls this
+// and calls it the moment its countdown reaches zero, so the server can close
+// the exhausted Section and open the next one.
+export const ATTEMPT_STATE_SEGMENT = 'state';
+
+// Sub-path appended to an attempt route to end the active Section early and
+// move to the next one, e.g. `POST /api/attempts/:id/next-section`.
+export const ATTEMPT_NEXT_SECTION_SEGMENT = 'next-section';
+
+// Sub-path appended to the attempts route for the Learner's performance across
+// every completed attempt, e.g. `GET /api/attempts/performance`. The Backend
+// declares this route before `/attempts/:id`, so it is not an attempt id.
+export const ATTEMPTS_PERFORMANCE_SEGMENT = 'performance';
 
 // Sub-path appended to a material route to reach its reviews endpoint, e.g.
 //   GET    /api/materials/:id/reviews  (list + aggregate + canReview + myReview)

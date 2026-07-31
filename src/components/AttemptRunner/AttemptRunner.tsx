@@ -9,8 +9,13 @@
 // wired to the hook's pause/resume/respond/submit actions. The server owns every
 // timing/scoring/access decision — the runner only renders the
 // server-authoritative `AttemptStateDto` and reacts to the mapped
-// `AttemptOutcome`. On a successful submit it navigates to the attempt review
-// page (`/attempts/:attemptId`, Req 14.2).
+// `AttemptOutcome`.
+//
+// Navigation to the review page (`/attempts/:attemptId`, Req 14.2) happens only
+// when the server reports the attempt `completed`. That distinction is what
+// makes Sequential Sectional Timing work: a Section running out or being
+// submitted early normally just opens the next Section and the Learner stays
+// in the player, and only the final Section closing ends the attempt.
 //
 // Question content: the attempt start/state endpoints return an
 // `AttemptStateDto` carrying per-Section status/timing only, so once the attempt
@@ -54,6 +59,8 @@ function AttemptRunner({ scope, id }: AttemptRunnerProps) {
     state,
     start,
     startSection,
+    syncState,
+    advanceSection,
     pause,
     resume,
     submitResponse,
@@ -61,6 +68,7 @@ function AttemptRunner({ scope, id }: AttemptRunnerProps) {
     isStarting,
     isPausing,
     isResuming,
+    isAdvancingSection,
     isSavingResponse,
     isSubmitting,
     outcome,
@@ -94,6 +102,42 @@ function AttemptRunner({ scope, id }: AttemptRunnerProps) {
       router.push(`${REVIEW_PATH_PREFIX}/${result.attemptId}`);
     }
   }, [submit, router]);
+
+  // The player's countdown reached zero (or its background poll came due). Ask
+  // the server what that means rather than assuming the attempt is over: under
+  // Sequential Sectional Timing an expired Section usually just hands over to
+  // the next one, and only the last Section ending finalizes the attempt. This
+  // is what previously submitted the whole test the moment any Section expired.
+  const handleTimeExpired = useCallback(async () => {
+    const refreshed = await syncState();
+    if (refreshed?.status === 'completed') {
+      router.push(`${REVIEW_PATH_PREFIX}/${refreshed.attemptId}`);
+    }
+  }, [syncState, router]);
+
+  // "Submit section & continue": close the active Section early. The server
+  // returns the next Section's state, or a completed attempt when that was the
+  // last Section — in which case the Learner goes straight to the review.
+  const handleAdvanceSection = useCallback(async () => {
+    const refreshed = await advanceSection();
+    if (refreshed?.status === 'completed') {
+      router.push(`${REVIEW_PATH_PREFIX}/${refreshed.attemptId}`);
+    }
+  }, [advanceSection, router]);
+
+  // The player holds these in effect dependency lists (the expiry watcher and
+  // the background state poll), so they must keep a stable identity — an inline
+  // arrow would tear down and restart the poll on every render, and it would
+  // never actually fire.
+  const submitHandler = useCallback(() => {
+    void handleSubmit();
+  }, [handleSubmit]);
+  const timeExpiredHandler = useCallback(() => {
+    void handleTimeExpired();
+  }, [handleTimeExpired]);
+  const advanceSectionHandler = useCallback(() => {
+    void handleAdvanceSection();
+  }, [handleAdvanceSection]);
 
   // Once the attempt has started/resumed, load its in-scope Question content for
   // the player, once per attempt id (Req 9.4).
@@ -193,11 +237,12 @@ function AttemptRunner({ scope, id }: AttemptRunnerProps) {
         onSubmitResponse={submitResponse}
         onPause={pause}
         onResume={resume}
-        onSubmit={() => {
-          void handleSubmit();
-        }}
+        onSubmit={submitHandler}
+        onTimeExpired={timeExpiredHandler}
+        onAdvanceSection={advanceSectionHandler}
         isPausing={isPausing}
         isResuming={isResuming}
+        isAdvancingSection={isAdvancingSection}
         isSavingResponse={isSavingResponse}
         isSubmitting={isSubmitting}
         failureMessage={failureMessage}

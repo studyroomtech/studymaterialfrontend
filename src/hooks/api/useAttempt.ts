@@ -4,11 +4,17 @@
 // (Req 9.1, 9.3, 9.4, 9.5, 10.1, 10.3, 10.4, 11.3, 12.4, 15.1, 15.5).
 //
 // The hook authenticates via `useAccessToken` and calls the attempt endpoints
-// through the shared `httpRequest`, exposing start/startSection/pause/resume/
-// submitResponse/submit/retake. The server owns every timing/scoring decision,
-// so the hook holds the server-provided `AttemptStateDto` as the single source
-// of truth (remaining time, Attempt Status, per-Section state) and renders it
-// as-is — there is deliberately no client-side countdown (Req 9.2, 9.3).
+// through the shared `httpRequest`, exposing start/startSection/syncState/
+// advanceSection/pause/resume/submitResponse/submit/retake. The server owns
+// every timing/scoring decision, so the hook holds the server-provided
+// `AttemptStateDto` as the single source of truth (remaining time, Attempt
+// Status, per-Section state, and which Section is currently active).
+//
+// Under Sequential Sectional Timing the two Section operations matter most:
+// `syncState` re-reads the attempt so the server can close an exhausted Section
+// and open the next one, and `advanceSection` does the same on demand when the
+// Learner ends a Section early. Neither finalizes the attempt unless the closed
+// Section was the last.
 //
 // Every failure is mapped from the Backend API `HttpError` envelope to a
 // UI-consumable `AttemptOutcome` so the Test Player can react without
@@ -33,9 +39,11 @@ import { buildApiUrl } from './apiClient';
 import {
   API_ROUTES,
   ATTEMPTS_SEGMENT,
+  ATTEMPT_NEXT_SECTION_SEGMENT,
   ATTEMPT_PAUSE_SEGMENT,
   ATTEMPT_RESPONSES_SEGMENT,
   ATTEMPT_RESUME_SEGMENT,
+  ATTEMPT_STATE_SEGMENT,
   ATTEMPT_SUBMIT_SEGMENT,
   TEST_RETAKE_SEGMENT,
 } from './apiClient.constant';
@@ -50,7 +58,9 @@ import {
   ATTEMPT_VALIDATION_STATUS,
 } from './useAttempt.constant';
 import type {
+  AdvanceSectionResponse,
   AttemptOutcome,
+  AttemptStateSyncResponse,
   PauseAttemptResponse,
   ResumeAttemptResponse,
   RetakeTestResponse,
@@ -100,6 +110,7 @@ export const useAttempt = (): UseAttemptResult => {
   const [isStarting, setIsStarting] = useState<boolean>(false);
   const [isPausing, setIsPausing] = useState<boolean>(false);
   const [isResuming, setIsResuming] = useState<boolean>(false);
+  const [isAdvancingSection, setIsAdvancingSection] = useState<boolean>(false);
   const [isSavingResponse, setIsSavingResponse] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
@@ -216,6 +227,60 @@ export const useAttempt = (): UseAttemptResult => {
     },
     [execute],
   );
+
+  /**
+   * Re-read the attempt so the server reconciles its timing, closing an
+   * exhausted Section and opening the next one under Sequential Sectional
+   * Timing. Deliberately bypasses `execute`: this runs on a background poll and
+   * on countdown expiry, so it must not toggle a loading flag, clear a failure
+   * the Learner is still reading, or push a spurious `success` outcome. A failed
+   * sync is swallowed — the next tick retries, and any real problem surfaces on
+   * the Learner's next deliberate action.
+   */
+  const syncState = useCallback(async (): Promise<AttemptStateDto | null> => {
+    const attemptId = stateRef.current?.attemptId ?? null;
+    if (attemptId === null || !hasValidToken || token === null) {
+      return null;
+    }
+    const requestResult = await httpRequest<AttemptStateSyncResponse>(
+      buildApiUrl(
+        `${API_ROUTES.attempts}/${attemptId}/${ATTEMPT_STATE_SEGMENT}`,
+      ),
+      {
+        method: 'GET',
+        headers: authHeaders(token),
+        suppressErrorToast: true,
+      },
+    );
+    if (!requestResult.ok) {
+      return null;
+    }
+    setState(requestResult.data.attempt);
+    return requestResult.data.attempt;
+  }, [hasValidToken, token]);
+
+  const advanceSection =
+    useCallback(async (): Promise<AttemptStateDto | null> => {
+      const attemptId = requireAttemptId();
+      if (attemptId === null) {
+        return null;
+      }
+      const requestResult = await execute<AdvanceSectionResponse>(
+        setIsAdvancingSection,
+        (accessToken) =>
+          httpRequest<AdvanceSectionResponse>(
+            buildApiUrl(
+              `${API_ROUTES.attempts}/${attemptId}/${ATTEMPT_NEXT_SECTION_SEGMENT}`,
+            ),
+            { method: 'POST', headers: authHeaders(accessToken) },
+          ),
+      );
+      if (requestResult?.ok) {
+        setState(requestResult.data.attempt);
+        return requestResult.data.attempt;
+      }
+      return null;
+    }, [execute, requireAttemptId]);
 
   const pause = useCallback(async (): Promise<AttemptStateDto | null> => {
     const attemptId = requireAttemptId();
@@ -340,6 +405,8 @@ export const useAttempt = (): UseAttemptResult => {
       result,
       start,
       startSection,
+      syncState,
+      advanceSection,
       pause,
       resume,
       submitResponse,
@@ -348,6 +415,7 @@ export const useAttempt = (): UseAttemptResult => {
       isStarting,
       isPausing,
       isResuming,
+      isAdvancingSection,
       isSavingResponse,
       isSubmitting,
       error,
@@ -359,6 +427,8 @@ export const useAttempt = (): UseAttemptResult => {
       result,
       start,
       startSection,
+      syncState,
+      advanceSection,
       pause,
       resume,
       submitResponse,
@@ -367,6 +437,7 @@ export const useAttempt = (): UseAttemptResult => {
       isStarting,
       isPausing,
       isResuming,
+      isAdvancingSection,
       isSavingResponse,
       isSubmitting,
       error,

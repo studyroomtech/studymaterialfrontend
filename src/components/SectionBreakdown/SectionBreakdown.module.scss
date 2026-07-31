@@ -1,0 +1,93 @@
+// Styling for the SectionBreakdown component — StudyForGovt.
+
+@use "../../styles/theme" as theme;
+@use "../../styles/mixins" as mixins;
+
+.breakdown {
+  @include mixins.flex(column, flex-start, stretch, theme.space("md"));
+}
+
+.heading {
+  font-family: theme.$font-family-display;
+  font-size: theme.font-size("lg");
+  font-weight: theme.font-weight("semibold");
+  line-height: theme.$line-height-heading;
+  margin: 0;
+  color: theme.color("ink");
+}
+
+.list {
+  @include mixins.flex(column, flex-start, stretch, theme.space("sm"));
+
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.row {
+  @include mixins.flex(column, flex-start, stretch, theme.space("sm"));
+
+  padding: theme.space("md");
+  border: 1px solid theme.color("border");
+  border-radius: theme.$radius-md;
+  background-color: theme.color("surface");
+}
+
+.rowHeader {
+  @include mixins.flex(row, space-between, baseline, theme.space("md"));
+
+  flex-wrap: wrap;
+}
+
+.rowTitle {
+  @include mixins.typography("md", "semibold");
+
+  margin: 0;
+  color: theme.color("ink");
+}
+
+.rowPercentage {
+  font-family: theme.$font-family-display;
+  font-size: theme.font-size("lg");
+  font-weight: theme.font-weight("semibold");
+  color: theme.color("ink");
+}
+
+.figures {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: theme.space("sm");
+  margin: 0;
+
+  @include mixins.respond-up("md") {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}
+
+.figure {
+  @include mixins.flex(column, flex-start, flex-start, theme.space("xs"));
+}
+
+.figureLabel {
+  font-family: theme.$font-family-mono;
+  font-size: theme.font-size("xs");
+  font-weight: theme.font-weight("medium");
+  color: theme.color("ink-soft");
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+}
+
+.figureValue {
+  @include mixins.typography("sm", "semibold");
+
+  margin: 0;
+  color: theme.color("ink");
+}
+
+.positive {
+  color: theme.color("success");
+}
+
+.negative {
+  color: theme.color("danger");
+}

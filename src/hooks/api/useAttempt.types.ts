@@ -50,6 +50,21 @@ export type StartTestAttemptResponse = AttemptStateResponse;
 export type StartSectionAttemptResponse = AttemptStateResponse;
 
 /**
+ * Response body of `GET /api/attempts/:id/state`: the attempt state after the
+ * server has reconciled its timing. Under Sequential Sectional Timing this is
+ * how the player learns that the active Section expired and the next one is now
+ * open, without the attempt being finalized.
+ */
+export type AttemptStateSyncResponse = AttemptStateResponse;
+
+/**
+ * Response body of `POST /api/attempts/:id/next-section`: the attempt state
+ * after the active Section has been closed early and the next one activated.
+ * When the closed Section was the last, the returned state is `completed`.
+ */
+export type AdvanceSectionResponse = AttemptStateResponse;
+
+/**
  * Response body of `POST /api/attempts/:id/pause`: the updated attempt state
  * with the Attempt Status set to `paused` and the server-computed remaining
  * time (Req 10.1).
@@ -151,6 +166,22 @@ export interface UseAttemptResult {
    */
   startSection: (sectionId: string) => Promise<AttemptStateDto | null>;
   /**
+   * Re-read the current attempt state so the server can reconcile its timing.
+   * The player calls this on a timer and the instant its countdown reaches
+   * zero: under Sequential Sectional Timing that closes the exhausted Section
+   * and opens the next one. Resolves with the refreshed state, or `null` on
+   * failure. Silent — it does not clear the visible failure message, so a
+   * background poll can never wipe an error the Learner is still reading.
+   */
+  syncState: () => Promise<AttemptStateDto | null>;
+  /**
+   * End the active Section early and move to the next one ("Submit Section &
+   * Continue"). Unused time is forfeited and the Section is never reopened;
+   * when it was the last Section the attempt is finalized and the resolved
+   * state is `completed`. Resolves with the updated state, or `null` on failure.
+   */
+  advanceSection: () => Promise<AttemptStateDto | null>;
+  /**
    * Pause the current `in_progress` attempt, stopping active-time accumulation
    * (Req 10.1). Resolves with the updated state, or `null` on failure.
    */
@@ -186,6 +217,8 @@ export interface UseAttemptResult {
   isPausing: boolean;
   /** `true` while a resume request is in flight (Req 7.3). */
   isResuming: boolean;
+  /** `true` while a "Submit Section & Continue" request is in flight. */
+  isAdvancingSection: boolean;
   /** `true` while a Response is being recorded (Req 7.3). */
   isSavingResponse: boolean;
   /** `true` while the finalize/submit request is in flight (Req 7.3). */

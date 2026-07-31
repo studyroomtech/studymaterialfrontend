@@ -30,6 +30,25 @@
   color: theme.color("ink-soft");
 }
 
+.performanceLink {
+  font-family: theme.$font-family-mono;
+  font-size: theme.font-size("sm");
+  font-weight: theme.font-weight("semibold");
+  align-self: flex-start;
+  margin-block-start: theme.space("xs");
+  color: theme.color("ink");
+  text-decoration: none;
+
+  &:hover {
+    color: theme.color("gold");
+    text-decoration: underline;
+  }
+
+  &:focus-visible {
+    @include mixins.focus-ring;
+  }
+}
+
 .results {
   @include mixins.flex(column, flex-start, stretch, theme.space("md"));
 }

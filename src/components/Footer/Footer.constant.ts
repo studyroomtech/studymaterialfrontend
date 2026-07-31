@@ -25,4 +25,5 @@ export const ACCOUNT_LINKS = [
   { label: "Create account", href: "/account" },
   { label: "Cart", href: "/cart" },
   { label: "My attempts", href: "/attempts" },
+  { label: "My performance", href: "/performance" },
 ] as const;
