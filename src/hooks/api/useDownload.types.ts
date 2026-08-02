@@ -62,7 +62,7 @@ export interface UseDownloadResult {
    * present the download proceeds immediately; otherwise the Download Gate is
    * opened and the download is deferred until it is submitted (Req 6.1, 6.6).
    */
-  requestDownload: (materialId: string) => void;
+  requestDownload: (materialId: string, fileId?: string) => void;
   /**
    * Submit the Download Gate name + email: persists a User Record, issues an
    * Access Token, and then resumes the deferred download (Req 6.2, 6.5, 6.8).
@@ -92,8 +92,12 @@ export interface UseDownloadResult {
    * Request an inline preview URL for the given Study Material. Reuses the same
    * Download Gate / token flow as {@link requestDownload}; on success the URL is
    * exposed via {@link previewUrl} instead of triggering a file download.
+   *
+   * When `fileId` is provided the per-file endpoint is targeted so a specific
+   * file of a multi-file material is previewed/downloaded; when omitted the
+   * material's primary (per-note) endpoint is used.
    */
-  requestPreview: (materialId: string) => void;
+  requestPreview: (materialId: string, fileId?: string) => void;
   /** The inline preview URL once loaded, or `null` before/after clearing. */
   previewUrl: string | null;
   /** The Content-Type of the loaded preview (drives the viewer choice). */

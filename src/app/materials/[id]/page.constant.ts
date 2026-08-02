@@ -22,6 +22,9 @@ export const NO_DESCRIPTION_TEXT = "No description provided.";
 /** Label for the download action button. */
 export const DOWNLOAD_LABEL = "Download";
 
+/** Heading for the material's files list section. */
+export const FILES_HEADING = "Files";
+
 /** Title shown above the load-failure error message (Req 5.5). */
 export const LOAD_ERROR_TITLE = "Exam material unavailable";
 

@@ -30,6 +30,7 @@ import { buildApiUrl } from './apiClient';
 import {
   API_ROUTES,
   MATERIAL_DOWNLOAD_ACTION,
+  MATERIAL_FILES_SEGMENT,
   MATERIAL_PREVIEW_ACTION,
 } from './apiClient.constant';
 import {
@@ -82,9 +83,12 @@ export const useDownload = (): UseDownloadResult => {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewContentType, setPreviewContentType] = useState<string>('');
 
-  // The material + access mode awaiting the Download Gate; resumed once a valid
-  // token is obtained (Req 6.1).
+  // The material + optional file + access mode awaiting the Download Gate;
+  // resumed once a valid token is obtained (Req 6.1). `pendingFileIdRef` is
+  // `null` for the material's primary (per-note) endpoint and a file id when a
+  // specific file of a multi-file material is targeted.
   const pendingMaterialIdRef = useRef<string | null>(null);
+  const pendingFileIdRef = useRef<string | null>(null);
   const pendingModeRef = useRef<MaterialAccessMode>('download');
 
   // Call the download or preview endpoint with the Bearer token. On download,
@@ -95,6 +99,7 @@ export const useDownload = (): UseDownloadResult => {
       materialId: string,
       accessToken: string,
       mode: MaterialAccessMode,
+      fileId: string | null,
     ): Promise<void> => {
       setError(null);
       if (mode === 'download') {
@@ -105,9 +110,13 @@ export const useDownload = (): UseDownloadResult => {
 
       const action =
         mode === 'download' ? MATERIAL_DOWNLOAD_ACTION : MATERIAL_PREVIEW_ACTION;
-      const url = buildApiUrl(
-        `${API_ROUTES.material}/${encodeURIComponent(materialId)}/${action}`,
-      );
+      // Target the per-file endpoint when a file id is supplied, else the
+      // material's primary (per-note) endpoint (preserved for backward compat).
+      const path =
+        fileId !== null
+          ? `${API_ROUTES.material}/${encodeURIComponent(materialId)}/${MATERIAL_FILES_SEGMENT}/${encodeURIComponent(fileId)}/${action}`
+          : `${API_ROUTES.material}/${encodeURIComponent(materialId)}/${action}`;
+      const url = buildApiUrl(path);
 
       const result = await httpRequest<
         DownloadPresignResponse | PreviewPresignResponse
@@ -127,6 +136,7 @@ export const useDownload = (): UseDownloadResult => {
 
       if (result.ok) {
         pendingMaterialIdRef.current = null;
+        pendingFileIdRef.current = null;
         if (mode === 'download') {
           const data = result.data as DownloadPresignResponse;
           followPresignedUrl(data.downloadUrl, data.fileName);
@@ -143,6 +153,7 @@ export const useDownload = (): UseDownloadResult => {
       if (result.error.status === DOWNLOAD_UNAUTHORIZED_STATUS) {
         clearToken();
         pendingMaterialIdRef.current = materialId;
+        pendingFileIdRef.current = fileId;
         pendingModeRef.current = mode;
         setIsGateOpen(true);
         return;
@@ -154,7 +165,7 @@ export const useDownload = (): UseDownloadResult => {
   );
 
   const startAction = useCallback(
-    (materialId: string, mode: MaterialAccessMode): void => {
+    (materialId: string, mode: MaterialAccessMode, fileId: string | null): void => {
       setError(null);
       setGateError(undefined);
       setRequirePassword(false);
@@ -162,13 +173,15 @@ export const useDownload = (): UseDownloadResult => {
       // A valid Access Token lets the action proceed without the gate (Req 6.6).
       if (hasValidToken && token !== null) {
         pendingMaterialIdRef.current = materialId;
+        pendingFileIdRef.current = fileId;
         pendingModeRef.current = mode;
-        void performAction(materialId, token, mode);
+        void performAction(materialId, token, mode, fileId);
         return;
       }
 
       // No valid token: surface the Download Gate and defer the action (Req 6.1).
       pendingMaterialIdRef.current = materialId;
+      pendingFileIdRef.current = fileId;
       pendingModeRef.current = mode;
       setIsGateOpen(true);
     },
@@ -176,15 +189,15 @@ export const useDownload = (): UseDownloadResult => {
   );
 
   const requestDownload = useCallback(
-    (materialId: string): void => {
-      startAction(materialId, 'download');
+    (materialId: string, fileId?: string): void => {
+      startAction(materialId, 'download', fileId ?? null);
     },
     [startAction],
   );
 
   const requestPreview = useCallback(
-    (materialId: string): void => {
-      startAction(materialId, 'preview');
+    (materialId: string, fileId?: string): void => {
+      startAction(materialId, 'preview', fileId ?? null);
     },
     [startAction],
   );
@@ -235,7 +248,12 @@ export const useDownload = (): UseDownloadResult => {
 
       const materialId = pendingMaterialIdRef.current;
       if (materialId !== null) {
-        void performAction(materialId, result.data.accessToken, pendingModeRef.current);
+        void performAction(
+          materialId,
+          result.data.accessToken,
+          pendingModeRef.current,
+          pendingFileIdRef.current,
+        );
       }
     },
     [setToken, performAction],
@@ -246,6 +264,7 @@ export const useDownload = (): UseDownloadResult => {
     setGateError(undefined);
     setRequirePassword(false);
     pendingMaterialIdRef.current = null;
+    pendingFileIdRef.current = null;
   }, []);
 
   return {

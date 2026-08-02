@@ -31,8 +31,11 @@ import LoadingIndicator from '@/components/LoadingIndicator/LoadingIndicator';
 import ErrorMessage from '@/components/ErrorMessage/ErrorMessage';
 import EmptyState from '@/components/EmptyState/EmptyState';
 import { useAdminMaterials } from '@/hooks/api/useAdminMaterials';
+import { useAccessToken } from '@/hooks/useAccessToken';
 import { buildApiUrl } from '@/hooks/api/apiClient';
 import { API_ROUTES } from '@/hooks/api/apiClient.constant';
+import type { AdminMaterialFile } from '@/hooks/api/useAdminMaterials.types';
+import type { MaterialDetail } from '@/hooks/api/apiHooks.types';
 import { httpRequest } from '@/utils/http';
 import type { HttpError, HttpResult } from '@/utils/http.types';
 import type { CatalogCategory } from '@/utils/catalogTree.types';
@@ -47,6 +50,7 @@ import type {
   LinkGroupEditorProps,
   LinkTargetOption,
   MaterialEditDraft,
+  MaterialFilesEditorProps,
   MaterialMultiPickerProps,
   MaterialOption,
   ParsedPrice,
@@ -92,6 +96,7 @@ import {
   MATERIAL_DESCRIPTION_LABEL,
   MATERIAL_DESCRIPTION_PLACEHOLDER,
   MATERIAL_FILE_FIELD_ID,
+  MATERIAL_FILE_HINT,
   MATERIAL_FILE_LABEL,
   MATERIAL_PRICE_FIELD_ID,
   MATERIAL_PRICE_HINT,
@@ -123,6 +128,16 @@ import {
   UPLOAD_SECTION_TITLE,
   UPLOAD_SUBMIT_LABEL,
   UPLOAD_SUCCESS_MESSAGE,
+  FILES_LABEL,
+  FILES_HINT,
+  FILES_LOADING_TEXT,
+  FILES_EMPTY_TEXT,
+  FILES_ERROR_TEXT,
+  ADD_FILES_INPUT_ID,
+  ADD_FILES_LABEL,
+  REMOVE_FILE_LABEL,
+  FILE_ADDED_MESSAGE,
+  FILE_REMOVED_MESSAGE,
 } from './StudyMaterialTab.constant';
 
 /**
@@ -558,6 +573,127 @@ function LinkGroupEditor({
   );
 }
 
+/**
+ * Inline files editor shown while editing a material. The public catalog
+ * (`GET /api/catalog`) omits a material's files, so this control loads the
+ * current file list on mount from `GET /api/materials/:id` (an Admin's
+ * `role_admin` token bypasses the Paid-Material entitlement gate, so the files
+ * are returned for both Free and Paid Materials). It lists each file with a
+ * Remove action and offers a multi-file input to add more; after a successful
+ * add/remove it reloads the list from the same source (Req 11.1, 11.3).
+ */
+function MaterialFilesEditor({
+  materialId,
+  authToken,
+  disabled,
+  onAddFiles,
+  onRemoveFile,
+}: MaterialFilesEditorProps) {
+  const [files, setFiles] = useState<AdminMaterialFile[] | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [loadFailed, setLoadFailed] = useState(false);
+  const [chosenFiles, setChosenFiles] = useState<File[]>([]);
+  const [fileInputKey, setFileInputKey] = useState(0);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    setLoadFailed(false);
+    const headers: Record<string, string> = { Accept: 'application/json' };
+    if (authToken !== null) {
+      headers.Authorization = `Bearer ${authToken}`;
+    }
+    const result = await httpRequest<MaterialDetail>(
+      buildApiUrl(`${API_ROUTES.material}/${encodeURIComponent(materialId)}`),
+      { headers, suppressErrorToast: true },
+    );
+    if (result.ok) {
+      setFiles(result.data.files ?? []);
+    } else {
+      setFiles(null);
+      setLoadFailed(true);
+    }
+    setLoading(false);
+  }, [materialId, authToken]);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
+
+  const handleAdd = async (): Promise<void> => {
+    if (chosenFiles.length === 0) {
+      return;
+    }
+    const succeeded = await onAddFiles(materialId, chosenFiles);
+    if (succeeded) {
+      setChosenFiles([]);
+      setFileInputKey((key) => key + 1);
+      await load();
+    }
+  };
+
+  const handleRemove = async (fileId: string): Promise<void> => {
+    const succeeded = await onRemoveFile(materialId, fileId);
+    if (succeeded) {
+      await load();
+    }
+  };
+
+  return (
+    <div className={styles.categoryPicker}>
+      <p className={styles.fieldGroupLabel}>{FILES_LABEL}</p>
+      <p className={styles.categoryHint}>{FILES_HINT}</p>
+
+      {loading ? (
+        <p className={styles.emptyText}>{FILES_LOADING_TEXT}</p>
+      ) : loadFailed ? (
+        <p className={styles.emptyText}>{FILES_ERROR_TEXT}</p>
+      ) : (files?.length ?? 0) > 0 ? (
+        <ul className={styles.tagList}>
+          {(files ?? []).map((file) => (
+            <li key={file.id} className={styles.tag}>
+              <span className={styles.tagName}>{file.fileName}</span>
+              <button
+                type="button"
+                className={styles.tagRemove}
+                disabled={disabled}
+                aria-label={`${REMOVE_FILE_LABEL} ${file.fileName}`}
+                onClick={() => handleRemove(file.id)}
+              >
+                ×
+              </button>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className={styles.emptyText}>{FILES_EMPTY_TEXT}</p>
+      )}
+
+      <div className={styles.inlineForm}>
+        <input
+          key={fileInputKey}
+          id={ADD_FILES_INPUT_ID}
+          className={`${styles.fileInput} ${styles.grow}`}
+          type="file"
+          multiple
+          disabled={disabled}
+          aria-label={ADD_FILES_LABEL}
+          onChange={(event) =>
+            setChosenFiles(Array.from(event.target.files ?? []))
+          }
+        />
+        <Button
+          type="button"
+          variant="secondary"
+          disabled={disabled || chosenFiles.length === 0}
+          onClick={handleAdd}
+        >
+          {ADD_FILES_LABEL}
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 function StudyMaterialTab() {
   const router = useRouter();
   const {
@@ -567,10 +703,16 @@ function StudyMaterialTab() {
     createMaterial,
     updateMaterial,
     deleteMaterial,
+    addMaterialFiles,
+    removeMaterialFile,
     getLinkGroup,
     linkMaterials,
     unlinkMaterial,
   } = useAdminMaterials();
+  // The Access Token is used to fetch a material's current file list in the
+  // edit view (an Admin's `role_admin` token bypasses the entitlement gate on
+  // `GET /api/materials/:id`, so files are returned for Free and Paid alike).
+  const { token } = useAccessToken();
 
   // Gate rendering until after mount so the token re-synced from storage is
   // reflected before deciding whether to redirect an unauthenticated visitor.
@@ -675,7 +817,7 @@ function StudyMaterialTab() {
   const [uploadTitle, setUploadTitle] = useState('');
   const [uploadDescription, setUploadDescription] = useState('');
   const [uploadPrice, setUploadPrice] = useState('');
-  const [uploadFile, setUploadFile] = useState<File | null>(null);
+  const [uploadFiles, setUploadFiles] = useState<File[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [categoryInput, setCategoryInput] = useState('');
   const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
@@ -696,7 +838,7 @@ function StudyMaterialTab() {
     if (uploadTitle.trim().length === 0) {
       nextErrors.title = TITLE_REQUIRED_ERROR;
     }
-    if (uploadFile === null) {
+    if (uploadFiles.length === 0) {
       nextErrors.file = FILE_REQUIRED_ERROR;
     }
     const parsedPrice = parsePriceInput(uploadPrice);
@@ -707,7 +849,7 @@ function StudyMaterialTab() {
       nextErrors.title ||
       nextErrors.file ||
       nextErrors.price ||
-      uploadFile === null ||
+      uploadFiles.length === 0 ||
       !parsedPrice.ok
     ) {
       setUploadErrors(nextErrors);
@@ -724,7 +866,7 @@ function StudyMaterialTab() {
         createMaterial({
           title: uploadTitle.trim(),
           description: description.length > 0 ? description : undefined,
-          file: uploadFile,
+          files: uploadFiles,
           priceAmount: parsedPrice.amount,
           currency: isPaid ? DEFAULT_CURRENCY : undefined,
           categories: selectedCategories,
@@ -738,7 +880,7 @@ function StudyMaterialTab() {
       setUploadTitle('');
       setUploadDescription('');
       setUploadPrice('');
-      setUploadFile(null);
+      setUploadFiles([]);
       setSelectedCategories([]);
       setCategoryInput('');
       setSelectedSubjects([]);
@@ -869,6 +1011,26 @@ function StudyMaterialTab() {
       return result.data.changed;
     },
     [unlinkMaterial, reloadCatalog],
+  );
+
+  // ---- Files handlers (Req 11.1, 11.3) -----------------------------------
+  // Both reuse the shared runAction pipeline (feedback banner + catalog reload)
+  // and return whether the action succeeded so the files editor can reload its
+  // list from `GET /api/materials/:id`.
+
+  const addFilesToMaterial = useCallback(
+    (materialId: string, files: File[]): Promise<boolean> =>
+      runAction(() => addMaterialFiles(materialId, files), FILE_ADDED_MESSAGE),
+    [runAction, addMaterialFiles],
+  );
+
+  const removeFileFromMaterial = useCallback(
+    (materialId: string, fileId: string): Promise<boolean> =>
+      runAction(
+        () => removeMaterialFile(materialId, fileId),
+        FILE_REMOVED_MESSAGE,
+      ),
+    [runAction, removeMaterialFile],
   );
 
   /** All existing materials as options (upload-time link targets, group-aware). */
@@ -1042,14 +1204,16 @@ function StudyMaterialTab() {
               <label className={styles.fileLabel} htmlFor={MATERIAL_FILE_FIELD_ID}>
                 {MATERIAL_FILE_LABEL}
               </label>
+              <p className={styles.categoryHint}>{MATERIAL_FILE_HINT}</p>
               <input
                 key={fileInputKey}
                 id={MATERIAL_FILE_FIELD_ID}
                 className={styles.fileInput}
                 type="file"
+                multiple
                 disabled={isActing}
                 onChange={(event) => {
-                  setUploadFile(event.target.files?.[0] ?? null);
+                  setUploadFiles(Array.from(event.target.files ?? []));
                   if (uploadErrors.file) {
                     setUploadErrors((prev) => ({ ...prev, file: undefined }));
                   }
@@ -1147,6 +1311,13 @@ function StudyMaterialTab() {
                           onLoadSiblings={loadSiblings}
                           onLink={linkSubject}
                           onUnlink={unlinkSubject}
+                        />
+                        <MaterialFilesEditor
+                          materialId={material.id}
+                          authToken={token}
+                          disabled={isActing}
+                          onAddFiles={addFilesToMaterial}
+                          onRemoveFile={removeFileFromMaterial}
                         />
                         <div className={styles.actions}>
                           <Button

@@ -26,6 +26,7 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useMemo, useRef } from "react";
+import type { ReactElement } from "react";
 
 import Button from "@/components/Button/Button";
 import DownloadGateModal from "@/components/DownloadGateModal/DownloadGateModal";
@@ -62,6 +63,7 @@ import {
   LOCKED_LINKED_MESSAGE,
   UNLOCK_OPTIONS_LABEL,
   UNLOCK_OPTIONS_LOADING_LABEL,
+  FILES_HEADING,
   NO_DESCRIPTION_TEXT,
   NOT_FOUND_ERROR_MESSAGE,
   NOT_FOUND_STATUS,
@@ -79,7 +81,9 @@ import {
 } from "./page.constant";
 import type {
   MaterialContentProps,
+  MaterialFileRowProps,
   PaymentRequiredGateProps,
+  SingleFileFallbackProps,
 } from "./page.types";
 
 /**
@@ -140,33 +144,6 @@ function MaterialViewPage() {
   const hasId = materialId.length > 0;
 
   const { data, isLoading, error } = useMaterial(hasId ? materialId : null);
-  const {
-    requestDownload,
-    submitGate,
-    cancelGate,
-    isGateOpen,
-    isDownloading,
-    isSubmittingGate,
-    error: downloadError,
-    gateError,
-    requirePassword,
-    requestPreview,
-    previewUrl,
-    previewContentType,
-    isPreviewing,
-    clearPreview,
-  } = useDownload();
-
-  // Auto-load the inline preview as soon as the material is available, once per
-  // material. When no valid Access Token is present this surfaces the Download
-  // Gate (learner identification) before the preview URL is fetched.
-  const previewRequestedForRef = useRef<string | null>(null);
-  useEffect(() => {
-    if (data !== null && previewRequestedForRef.current !== data.id) {
-      previewRequestedForRef.current = data.id;
-      requestPreview(data.id);
-    }
-  }, [data, requestPreview]);
 
   // No id in the route: nothing can be loaded (Req 5.5 — no partial content).
   if (!hasId) {
@@ -223,59 +200,101 @@ function MaterialViewPage() {
       {data !== null ? (
         <>
           <MaterialContent
+            materialId={data.id}
             title={data.title}
             description={data.description}
             fileName={data.fileName}
-            isDownloading={isDownloading}
-            downloadError={downloadError}
-            onDownload={() => requestDownload(data.id)}
-            previewUrl={previewUrl}
-            previewContentType={previewContentType}
-            isPreviewing={isPreviewing}
-            onRequestPreview={() => requestPreview(data.id)}
-            onClearPreview={clearPreview}
+            files={data.files}
           />
           <ReviewsSection materialId={data.id} isPaid={data.isPaid} />
         </>
       ) : null}
-
-      <DownloadGateModal
-        isOpen={isGateOpen}
-        onSubmit={submitGate}
-        onCancel={cancelGate}
-        isSubmitting={isSubmittingGate}
-        requirePassword={requirePassword}
-        submitError={gateError}
-      />
     </main>
   );
 }
 
 function MaterialContent({
+  materialId,
   title,
   description,
   fileName,
-  isDownloading,
-  downloadError,
-  onDownload,
-  previewUrl,
-  previewContentType,
-  isPreviewing,
-  onRequestPreview,
-  onClearPreview,
+  files,
 }: MaterialContentProps) {
+  const hasFiles = files !== undefined && files.length > 0;
+
   return (
     <article className={styles.content}>
       <header className={styles.header}>
         <h1 className={styles.title}>{title}</h1>
+      </header>
+
+      <section className={styles.section}>
+        <h2 className={styles.sectionHeading}>{DESCRIPTION_HEADING}</h2>
+        <p className={styles.description}>
+          {description.length > 0 ? description : NO_DESCRIPTION_TEXT}
+        </p>
+      </section>
+
+      {/* One row per file, each with its own preview + download actions
+          (Req 5.1). Older single-file materials with no `files` list fall back
+          to the material's primary (per-note) preview/download so nothing
+          breaks. */}
+      {hasFiles ? (
+        <section className={styles.section}>
+          <h2 className={styles.sectionHeading}>{FILES_HEADING}</h2>
+          <ul className={styles.fileList}>
+            {files.map((file) => (
+              <MaterialFileRow
+                key={file.id}
+                materialId={materialId}
+                file={file}
+              />
+            ))}
+          </ul>
+        </section>
+      ) : (
+        <SingleFileFallback materialId={materialId} fileName={fileName} />
+      )}
+    </article>
+  );
+}
+
+/**
+ * A single file row: its own preview + download actions backed by an
+ * independent {@link useDownload} instance so each file's Download Gate and
+ * preview state are isolated from the other files (Req 5.1, 6.1).
+ */
+function MaterialFileRow({ materialId, file }: MaterialFileRowProps): ReactElement {
+  const {
+    requestDownload,
+    submitGate,
+    cancelGate,
+    isGateOpen,
+    isDownloading,
+    isSubmittingGate,
+    error: downloadError,
+    gateError,
+    requirePassword,
+    requestPreview,
+    previewUrl,
+    previewContentType,
+    isPreviewing,
+    clearPreview,
+  } = useDownload();
+
+  return (
+    <li className={styles.fileRow}>
+      <div className={styles.fileRowHeader}>
+        <span className={styles.fileName}>{file.fileName}</span>
         <Button
           variant="primary"
-          onClick={onDownload}
+          size="sm"
+          onClick={() => requestDownload(materialId, file.id)}
           isLoading={isDownloading}
         >
           {DOWNLOAD_LABEL}
         </Button>
-      </header>
+      </div>
 
       {downloadError !== null ? (
         <ErrorMessage
@@ -285,23 +304,104 @@ function MaterialContent({
         />
       ) : null}
 
-      <section className={styles.section}>
-        <h2 className={styles.sectionHeading}>{DESCRIPTION_HEADING}</h2>
-        <p className={styles.description}>
-          {description.length > 0 ? description : NO_DESCRIPTION_TEXT}
-        </p>
-      </section>
+      <NotesPreview
+        previewUrl={previewUrl}
+        contentType={previewContentType}
+        fileName={file.fileName}
+        isLoading={isPreviewing}
+        onRequestPreview={() => requestPreview(materialId, file.id)}
+        onClose={clearPreview}
+      />
 
-      {/* Inline preview of the notes, loaded on demand (Req 5.1). */}
+      <DownloadGateModal
+        isOpen={isGateOpen}
+        onSubmit={submitGate}
+        onCancel={cancelGate}
+        isSubmitting={isSubmittingGate}
+        requirePassword={requirePassword}
+        submitError={gateError}
+      />
+    </li>
+  );
+}
+
+/**
+ * Fallback for materials that carry no `files` list (older single-file
+ * materials). Targets the material's primary (per-note) preview/download
+ * endpoints and auto-loads the inline preview once, preserving the previous
+ * single-file behavior.
+ */
+function SingleFileFallback({
+  materialId,
+  fileName,
+}: SingleFileFallbackProps): ReactElement {
+  const {
+    requestDownload,
+    submitGate,
+    cancelGate,
+    isGateOpen,
+    isDownloading,
+    isSubmittingGate,
+    error: downloadError,
+    gateError,
+    requirePassword,
+    requestPreview,
+    previewUrl,
+    previewContentType,
+    isPreviewing,
+    clearPreview,
+  } = useDownload();
+
+  // Auto-load the inline preview once. When no valid Access Token is present
+  // this surfaces the Download Gate (learner identification) first.
+  const previewRequestedRef = useRef(false);
+  useEffect(() => {
+    if (!previewRequestedRef.current) {
+      previewRequestedRef.current = true;
+      requestPreview(materialId);
+    }
+  }, [materialId, requestPreview]);
+
+  return (
+    <section className={styles.section}>
+      <div className={styles.fileRowHeader}>
+        <h2 className={styles.sectionHeading}>{FILES_HEADING}</h2>
+        <Button
+          variant="primary"
+          size="sm"
+          onClick={() => requestDownload(materialId)}
+          isLoading={isDownloading}
+        >
+          {DOWNLOAD_LABEL}
+        </Button>
+      </div>
+
+      {downloadError !== null ? (
+        <ErrorMessage
+          title={DOWNLOAD_ERROR_TITLE}
+          message={downloadError.message}
+          className={styles.error}
+        />
+      ) : null}
+
       <NotesPreview
         previewUrl={previewUrl}
         contentType={previewContentType}
         fileName={fileName}
         isLoading={isPreviewing}
-        onRequestPreview={onRequestPreview}
-        onClose={onClearPreview}
+        onRequestPreview={() => requestPreview(materialId)}
+        onClose={clearPreview}
       />
-    </article>
+
+      <DownloadGateModal
+        isOpen={isGateOpen}
+        onSubmit={submitGate}
+        onCancel={cancelGate}
+        isSubmitting={isSubmittingGate}
+        requirePassword={requirePassword}
+        submitError={gateError}
+      />
+    </section>
   );
 }
 

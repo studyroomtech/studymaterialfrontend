@@ -70,7 +70,9 @@ export const MATERIAL_DESCRIPTION_FIELD_ID = 'material-description';
 export const MATERIAL_DESCRIPTION_LABEL = 'Description';
 export const MATERIAL_DESCRIPTION_PLACEHOLDER = 'Optional summary of the material';
 export const MATERIAL_FILE_FIELD_ID = 'material-file';
-export const MATERIAL_FILE_LABEL = 'File';
+export const MATERIAL_FILE_LABEL = 'Files';
+export const MATERIAL_FILE_HINT =
+  'Select one or more PDF files. The first file becomes the primary file.';
 
 /**
  * Price field copy (Req 11.13–11.15). The Currency is fixed to INR for this
@@ -164,9 +166,26 @@ export const LINK_NO_CHANGE_MESSAGE =
 export const UNLINK_NO_CHANGE_MESSAGE =
   'No change — this material was not linked.';
 
+/**
+ * Files-management copy for the material edit view (Req 11.1, 11.3). An Admin
+ * can list a material's current files, remove one, and add more. A material may
+ * carry multiple files (PDFs), the first of which is its primary file.
+ */
+export const FILES_LABEL = 'Files';
+export const FILES_HINT =
+  'Manage the files (PDFs) attached to this material. The first file is the primary file.';
+export const FILES_LOADING_TEXT = 'Loading files…';
+export const FILES_EMPTY_TEXT = 'No files attached yet. Add one below.';
+export const FILES_ERROR_TEXT = 'The files could not be loaded.';
+export const ADD_FILES_INPUT_ID = 'material-add-files';
+export const ADD_FILES_LABEL = 'Add files';
+export const REMOVE_FILE_LABEL = 'Remove';
+export const FILE_ADDED_MESSAGE = 'Files added.';
+export const FILE_REMOVED_MESSAGE = 'File removed.';
+
 /** Client-side validation copy mirroring Backend bounds (Req 11.2, 11.6). */
 export const TITLE_REQUIRED_ERROR = 'Enter a title.';
-export const FILE_REQUIRED_ERROR = 'Choose a file to upload.';
+export const FILE_REQUIRED_ERROR = 'Choose at least one file to upload.';
 export const NAME_REQUIRED_ERROR = 'Enter a name.';
 export const PRICE_INVALID_ERROR =
   'Enter a whole number between 0 and 1,000,000, or leave blank for free.';

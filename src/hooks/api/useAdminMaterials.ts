@@ -29,6 +29,7 @@ import type { HttpError, HttpRequestOptions, HttpResult } from '@/utils/http.typ
 import { buildApiUrl } from './apiClient';
 import {
   ADMIN_API_ROUTES,
+  ADMIN_MATERIAL_FILES_SEGMENT,
   ADMIN_MATERIAL_FORM_FIELDS,
   ADMIN_MATERIAL_LINK_GROUP_SEGMENT,
   ADMIN_MATERIAL_TAGS_SEGMENT,
@@ -136,7 +137,11 @@ export const useAdminMaterials = (): UseAdminMaterialsResult => {
       if (input.description !== undefined) {
         form.set(ADMIN_MATERIAL_FORM_FIELDS.description, input.description);
       }
-      form.set(ADMIN_MATERIAL_FORM_FIELDS.file, input.file);
+      // Append each file under the same `files` field so the material can carry
+      // multiple files (PDFs); the first becomes its primary file (Req 11.1).
+      for (const file of input.files) {
+        form.append(ADMIN_MATERIAL_FORM_FIELDS.files, file);
+      }
       // Only append the Price when provided so a plain upload stays Free
       // (Req 11.14); the amount is sent as its integer paise string and the
       // Currency (INR) alongside it (Req 11.13). The Backend re-validates.
@@ -214,6 +219,45 @@ export const useAdminMaterials = (): UseAdminMaterialsResult => {
     (materialId: string): Promise<AdminMutationResult<void>> =>
       runAuthedRequest<void>(
         buildApiUrl(`${ADMIN_API_ROUTES.materials}/${seg(materialId)}`),
+        { method: 'DELETE', headers: { Accept: 'application/json' } },
+      ),
+    [runAuthedRequest],
+  );
+
+  const addMaterialFiles = useCallback(
+    (
+      materialId: string,
+      files: File[],
+    ): Promise<AdminMutationResult<AdminMaterial>> => {
+      // Multipart upload: append each file under the `files` field and let the
+      // browser set the `Content-Type` (with boundary); do not set it manually.
+      const form = new FormData();
+      for (const file of files) {
+        form.append(ADMIN_MATERIAL_FORM_FIELDS.files, file);
+      }
+      return runAuthedRequest<AdminMaterial>(
+        buildApiUrl(
+          `${ADMIN_API_ROUTES.materials}/${seg(materialId)}/${ADMIN_MATERIAL_FILES_SEGMENT}`,
+        ),
+        {
+          method: 'POST',
+          headers: { Accept: 'application/json' },
+          body: form,
+        },
+      );
+    },
+    [runAuthedRequest],
+  );
+
+  const removeMaterialFile = useCallback(
+    (
+      materialId: string,
+      fileId: string,
+    ): Promise<AdminMutationResult<void>> =>
+      runAuthedRequest<void>(
+        buildApiUrl(
+          `${ADMIN_API_ROUTES.materials}/${seg(materialId)}/${ADMIN_MATERIAL_FILES_SEGMENT}/${seg(fileId)}`,
+        ),
         { method: 'DELETE', headers: { Accept: 'application/json' } },
       ),
     [runAuthedRequest],
@@ -398,6 +442,8 @@ export const useAdminMaterials = (): UseAdminMaterialsResult => {
       createMaterial,
       updateMaterial,
       deleteMaterial,
+      addMaterialFiles,
+      removeMaterialFile,
       assignTag,
       removeTag,
       createCategoryType,
@@ -418,6 +464,8 @@ export const useAdminMaterials = (): UseAdminMaterialsResult => {
       createMaterial,
       updateMaterial,
       deleteMaterial,
+      addMaterialFiles,
+      removeMaterialFile,
       assignTag,
       removeTag,
       createCategoryType,

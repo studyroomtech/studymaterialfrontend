@@ -17,6 +17,18 @@ export interface AdminMaterialTag {
 }
 
 /**
+ * A single file (PDF) attached to a Study Material as returned by the material
+ * DTOs. A material may carry multiple files, the first of which is its primary
+ * file. The Object Storage Key is never exposed to the Frontend Project.
+ */
+export interface AdminMaterialFile {
+  id: string;
+  fileName: string;
+  contentType: string;
+  fileSizeBytes: number;
+}
+
+/**
  * A Study Material's metadata as returned by the admin material endpoints
  * (Req 11.1, 11.5). The Object Storage Key is never exposed to the Frontend
  * Project. The Price fields reflect the stored Price: `priceAmount` is the
@@ -32,6 +44,12 @@ export interface AdminMaterial {
   fileName?: string;
   contentType?: string;
   fileSizeBytes?: number;
+  /**
+   * Every file (PDF) belonging to the material, ordered primary-first. The
+   * top-level `fileName`/`contentType`/`fileSizeBytes` mirror the first
+   * (primary) file for backward compatibility; this list is authoritative.
+   */
+  files?: AdminMaterialFile[];
   /** The Price amount (paise) for a Paid Material, or `null`/`0` when Free. */
   priceAmount?: number | null;
   /** The Currency of the Price (INR), or `null` when Free. */
@@ -70,7 +88,12 @@ export interface AdminCategoryType {
 export interface CreateMaterialInput {
   title: string;
   description?: string;
-  file: File;
+  /**
+   * The file(s) to upload for the new material (at least one required). Each is
+   * appended to the multipart form under the `files` field; the first becomes
+   * the material's primary file (Req 11.1).
+   */
+  files: File[];
   /** Price amount in paise (`1..1000000`) for a Paid Material; omit for Free. */
   priceAmount?: number | null;
   /** Currency of the Price (INR); defaults server-side when omitted. */
@@ -179,6 +202,20 @@ export interface UseAdminMaterialsResult {
   ) => Promise<AdminMutationResult<AdminMaterial>>;
   /** Delete a Study Material (Req 11.3). */
   deleteMaterial: (materialId: string) => Promise<AdminMutationResult<void>>;
+
+  /**
+   * Append one or more files to an existing Study Material (multipart), each
+   * under the `files` form field. Resolves to the updated material (Req 11.1).
+   */
+  addMaterialFiles: (
+    materialId: string,
+    files: File[],
+  ) => Promise<AdminMutationResult<AdminMaterial>>;
+  /** Remove a single file from a Study Material by its id (Req 11.3). */
+  removeMaterialFile: (
+    materialId: string,
+    fileId: string,
+  ) => Promise<AdminMutationResult<void>>;
 
   /** Assign a Tag (Category) to a Study Material (Req 2.2, 2.3). */
   assignTag: (

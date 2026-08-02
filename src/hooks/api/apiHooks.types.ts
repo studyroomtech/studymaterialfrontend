@@ -82,6 +82,19 @@ export interface UseSearchMaterialsParams {
 }
 
 /**
+ * A single file (PDF) belonging to a Study Material, as returned in the
+ * material DTO's `files` list. A material may carry multiple files, the first
+ * of which is its primary file. The Object Storage Key is never exposed to the
+ * Frontend Project.
+ */
+export interface MaterialFile {
+  id: string;
+  fileName: string;
+  contentType: string;
+  fileSizeBytes: number;
+}
+
+/**
  * Complete metadata for one Study Material as returned by
  * `GET /api/materials/:id` (Req 5.1, 5.3). The Object Storage Key is never
  * exposed to the Frontend Project.
@@ -94,6 +107,14 @@ export interface MaterialDetail {
   fileName: string;
   contentType: string;
   fileSizeBytes: number;
+  /**
+   * Every file (PDF) belonging to the material, ordered primary-first. The
+   * top-level `fileName`/`contentType`/`fileSizeBytes` mirror the first
+   * (primary) file for backward compatibility; this list is authoritative.
+   * Absent/empty for older materials, in which case the per-note endpoints are
+   * used as a fallback.
+   */
+  files?: MaterialFile[];
   /** The price amount for a Paid Material, or `null` for a Free Material. */
   priceAmount: number | null;
   /** The currency for a Paid Material's price, or `null` when free. */

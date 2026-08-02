@@ -1,37 +1,50 @@
 // Type declarations for the Study Material view page (Requirements 1.15, 1.17).
 
-import type { HttpError } from "@/utils/http.types";
+import type { MaterialFile } from "@/hooks/api/apiHooks.types";
 
 /**
  * Props for the rendered material content section of the view page. The section
- * displays the loaded Study Material's title and description, plus a download
- * action wired to `useDownload` (Req 5.1). File metadata (name, type, size) and
- * category tags are intentionally not shown to keep the view focused on the
- * title, description, and download action.
+ * displays the loaded Study Material's title and description, plus a list of the
+ * material's files — each with its own preview and download actions wired to
+ * `useDownload` (Req 5.1). When the material carries no `files` (older
+ * single-file materials), the section falls back to the material's primary
+ * (per-note) preview/download so nothing breaks.
  */
 export interface MaterialContentProps {
+  /** The Study Material id (drives the per-file/primary download endpoints). */
+  materialId: string;
   /** The Study Material title. */
   title: string;
   /** The Study Material description; empty when none was provided. */
   description: string;
-  /** The material's file name, used by the inline preview viewer. */
+  /** The material's primary file name, used by the single-file fallback viewer. */
   fileName?: string;
-  /** `true` while a download request is in flight (Req 7.3). */
-  isDownloading: boolean;
-  /** The most recent download failure, or `null` when none (Req 8.1). */
-  downloadError: HttpError | null;
-  /** Begin a download for the material (opens the Download Gate if needed). */
-  onDownload: () => void;
-  /** The loaded inline preview URL, or `null` before it is requested. */
-  previewUrl: string | null;
-  /** The Content-Type of the loaded preview (drives the viewer choice). */
-  previewContentType: string;
-  /** `true` while the inline preview URL is being prepared. */
-  isPreviewing: boolean;
-  /** Begin loading the inline preview (opens the Download Gate if needed). */
-  onRequestPreview: () => void;
-  /** Discard the current inline preview. */
-  onClearPreview: () => void;
+  /** Every file (PDF) belonging to the material, ordered primary-first. */
+  files?: MaterialFile[];
+}
+
+/**
+ * Props for a single file row in the material's files list. Each row owns its
+ * own `useDownload` instance so its preview/download state (and Download Gate)
+ * is independent of the other files (Req 5.1, 6.1).
+ */
+export interface MaterialFileRowProps {
+  /** The id of the material the file belongs to. */
+  materialId: string;
+  /** The file to render preview/download actions for. */
+  file: MaterialFile;
+}
+
+/**
+ * Props for the single-file fallback shown when a material carries no `files`
+ * list. It targets the material's primary (per-note) preview/download endpoints
+ * and preserves the auto-loaded inline preview behavior.
+ */
+export interface SingleFileFallbackProps {
+  /** The id of the material to preview/download. */
+  materialId: string;
+  /** The material's primary file name, used by the inline preview viewer. */
+  fileName?: string;
 }
 
 /**

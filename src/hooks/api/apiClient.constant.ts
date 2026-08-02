@@ -101,6 +101,12 @@ export const ATTEMPT_QUESTIONS_SEGMENT = 'questions';
 //   DELETE /api/materials/:id/reviews  (delete the caller's own review)
 export const MATERIAL_REVIEWS_ACTION = 'reviews';
 
+// Sub-path appended to a material route to reach its files collection, e.g.
+// `/api/materials/:id/files/:fileId/download` and
+// `/api/materials/:id/files/:fileId/preview` — the per-file download/preview
+// endpoints for a material that carries multiple files.
+export const MATERIAL_FILES_SEGMENT = 'files';
+
 // Sub-path appended to a material route to reach its download endpoint, e.g.
 // `/api/materials/:id/download` (Req 6.8).
 export const MATERIAL_DOWNLOAD_ACTION = 'download';

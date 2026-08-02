@@ -5,6 +5,7 @@
 // types model the catalog data the tab renders, including the optional Price
 // (amount + Currency) an Admin may set on upload/edit (Req 11.13–11.16).
 
+import type { AdminMaterialFile } from '@/hooks/api/useAdminMaterials.types';
 import type { CatalogCategoryType, CatalogTag } from '@/utils/catalogTree.types';
 
 /**
@@ -26,6 +27,12 @@ export interface DashboardMaterial {
   currency?: string | null;
   /** The Link Group id this material belongs to, or `null`/absent when ungrouped. */
   linkGroupId?: string | null;
+  /**
+   * Every file (PDF) attached to the material, ordered primary-first. The
+   * public catalog (`GET /api/catalog`) omits this, so the edit view loads it
+   * on demand from `GET /api/materials/:id` when editing (Req 11.1).
+   */
+  files?: AdminMaterialFile[];
 }
 
 /** The catalog structure the dashboard loads from `GET /api/catalog`. */
@@ -161,4 +168,31 @@ export interface LinkGroupEditorProps {
   onLink: (materialId: string, materialIds: string[]) => Promise<boolean | null>;
   /** Remove the subject from its group; resolves to whether it changed. */
   onUnlink: (materialId: string) => Promise<boolean | null>;
+}
+
+/**
+ * Props for the inline files editor rendered while editing a material. It loads
+ * the material's current files on mount (from `GET /api/materials/:id`, since
+ * the catalog omits files), lists them with a Remove action, and offers a
+ * multi-file input to add more (Req 11.1, 11.3). All storage/ordering logic
+ * lives in the Backend; this control only calls the endpoints and reflects the
+ * returned file list.
+ */
+export interface MaterialFilesEditorProps {
+  /** The material whose files are being managed. */
+  materialId: string;
+  /** The learner/admin Access Token used to fetch the current file list. */
+  authToken: string | null;
+  /** Whether the controls are disabled (another action is in flight). */
+  disabled: boolean;
+  /**
+   * Add the chosen files to the material; resolves to whether it succeeded so
+   * the editor can reload its file list.
+   */
+  onAddFiles: (materialId: string, files: File[]) => Promise<boolean>;
+  /**
+   * Remove a single file from the material; resolves to whether it succeeded so
+   * the editor can reload its file list.
+   */
+  onRemoveFile: (materialId: string, fileId: string) => Promise<boolean>;
 }

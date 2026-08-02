@@ -38,6 +38,15 @@ export const ADMIN_MATERIAL_TAGS_SEGMENT = 'tags';
 export const ADMIN_MATERIAL_LINK_GROUP_SEGMENT = 'link-group';
 
 /**
+ * Path segment appended to a material route for its files collection:
+ * `POST /api/admin/materials/:id/files` adds one or more files and
+ * `DELETE /api/admin/materials/:id/files/:fileId` removes a single file. A
+ * material may carry multiple files (PDFs), the first of which is its primary
+ * file.
+ */
+export const ADMIN_MATERIAL_FILES_SEGMENT = 'files';
+
+/**
  * Browser `localStorage` key under which the Admin's role_admin JWT is
  * persisted so content-management calls can reuse the session without
  * re-authenticating on every action (Req 10.5).
@@ -58,6 +67,7 @@ export const ADMIN_MATERIAL_FORM_FIELDS = {
   title: 'title',
   description: 'description',
   file: 'file',
+  files: 'files',
   priceAmount: 'priceAmount',
   currency: 'currency',
   categories: 'categories',
