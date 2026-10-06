@@ -26,6 +26,18 @@ export const PASSWORD_MAX_LENGTH = 128;
 export const SEARCH_QUERY_MIN_LENGTH = 1;
 export const SEARCH_QUERY_MAX_LENGTH = 100;
 
+export const MAX_MATERIAL_FILE_SIZE_BYTES = 50 * 1024 * 1024;
+export const MAX_MATERIAL_FILES_PER_REQUEST = 10;
+
+const BYTES_PER_MEGABYTE = 1024 * 1024;
+
+const MAX_MATERIAL_FILE_SIZE_MEGABYTES =
+  MAX_MATERIAL_FILE_SIZE_BYTES / BYTES_PER_MEGABYTE;
+
+export const TOO_MANY_FILES_ERROR = `Select at most ${MAX_MATERIAL_FILES_PER_REQUEST} files at a time.`;
+
+export const FILE_TOO_LARGE_ERROR_PREFIX = `Each file must be ${MAX_MATERIAL_FILE_SIZE_MEGABYTES} MB or smaller. Too large:`;
+
 // Pragmatic email-format check: a non-empty local part, a single "@", and a
 // domain containing at least one dot, with no whitespace. Mirrors the intent of
 // the Backend API's email-format validation for early client-side feedback.

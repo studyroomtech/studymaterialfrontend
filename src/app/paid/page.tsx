@@ -22,6 +22,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 
 import DownloadGateModal from "@/components/DownloadGateModal/DownloadGateModal";
 import EmptyState from "@/components/EmptyState/EmptyState";
@@ -29,7 +30,6 @@ import ErrorMessage from "@/components/ErrorMessage/ErrorMessage";
 import LoadingIndicator from "@/components/LoadingIndicator/LoadingIndicator";
 import PaidMaterialCard from "@/components/PaidMaterialCard/PaidMaterialCard";
 import PaymentModal from "@/components/PaymentModal/PaymentModal";
-import { useDownload } from "@/hooks/api/useDownload";
 import { usePaidMaterials } from "@/hooks/api/usePaidMaterials";
 import { usePayment } from "@/hooks/api/usePayment";
 import { PAYMENT_PHASE } from "@/hooks/api/usePayment.constant";
@@ -48,12 +48,13 @@ import {
   PAID_RESULTS_LABEL,
   PAYMENT_FAILED_TITLE,
   PAYMENT_SUCCESS_MESSAGE,
+  MATERIAL_DETAIL_ROUTE,
 } from "./page.constant";
 
 function PaidMaterialsPage() {
+  const router = useRouter();
   const { data, isLoading, error } = usePaidMaterials();
   const payment = usePayment();
-  const download = useDownload();
   const cart = useCart();
 
   // Payment Entitlements granted during this session. The listing endpoint does
@@ -103,9 +104,9 @@ function PaidMaterialsPage() {
 
   const handleView = useCallback(
     (materialId: string) => {
-      download.requestDownload(materialId);
+      router.push(`${MATERIAL_DETAIL_ROUTE}/${materialId}`);
     },
-    [download],
+    [router],
   );
 
   // Only replace the whole panel with the loading/error affordance before the
@@ -120,7 +121,6 @@ function PaidMaterialsPage() {
   const showPaymentFailure =
     payment.phase === PAYMENT_PHASE.failed &&
     payment.failureMessage !== undefined;
-  const showDownloadError = download.error !== null;
 
   return (
     <main className={styles.main}>
@@ -140,13 +140,6 @@ function PaidMaterialsPage() {
           title={PAYMENT_FAILED_TITLE}
           message={payment.failureMessage ?? PAID_ERROR_MESSAGE}
           onRetry={payment.reset}
-        />
-      ) : null}
-
-      {showDownloadError ? (
-        <ErrorMessage
-          title={PAID_ERROR_TITLE}
-          message={download.error?.message ?? PAID_ERROR_MESSAGE}
         />
       ) : null}
 
@@ -170,8 +163,7 @@ function PaidMaterialsPage() {
                 material.isEntitled === true || entitledIds.has(material.id);
               const isActive = payment.activeMaterialId === material.id;
               const isBusy =
-                (isActive && (payment.isInitiating || payment.isVerifying)) ||
-                (entitled && download.isDownloading);
+                isActive && (payment.isInitiating || payment.isVerifying);
 
               return (
                 <li key={material.id} className={styles.cardItem}>
@@ -211,17 +203,6 @@ function PaidMaterialsPage() {
         isSubmitting={payment.isSubmittingGate}
         requirePassword={payment.requirePassword}
         submitError={payment.gateError}
-      />
-
-      {/* Download Gate for viewing/downloading an entitled Paid Material when no
-          valid Access Token is present (Req 6.1, 6.7). */}
-      <DownloadGateModal
-        isOpen={download.isGateOpen}
-        onSubmit={download.submitGate}
-        onCancel={download.cancelGate}
-        isSubmitting={download.isSubmittingGate}
-        requirePassword={download.requirePassword}
-        submitError={download.gateError}
       />
 
       {/* Razorpay Checkout launcher for the buy flow (Req 12.5). */}

@@ -9,11 +9,15 @@ import {
   EMAIL_MAX_LENGTH,
   EMAIL_MIN_LENGTH,
   EMAIL_PATTERN,
+  FILE_TOO_LARGE_ERROR_PREFIX,
+  MAX_MATERIAL_FILES_PER_REQUEST,
+  MAX_MATERIAL_FILE_SIZE_BYTES,
   NAME_MAX_LENGTH,
   NAME_MIN_LENGTH,
   PASSWORD_MAX_LENGTH,
   PASSWORD_MIN_LENGTH,
   SEARCH_QUERY_MAX_LENGTH,
+  TOO_MANY_FILES_ERROR,
 } from './validation.constant';
 import type { FieldValidationResult } from './validation.types';
 
@@ -94,5 +98,26 @@ export function validateSearchQuery(query: string): FieldValidationResult {
       reason: `Search query must be at most ${SEARCH_QUERY_MAX_LENGTH} characters.`,
     };
   }
+  return { valid: true };
+}
+
+export function validateMaterialFileSelection(
+  files: File[],
+): FieldValidationResult {
+  if (files.length > MAX_MATERIAL_FILES_PER_REQUEST) {
+    return { valid: false, reason: TOO_MANY_FILES_ERROR };
+  }
+
+  const oversizedNames = files
+    .filter((file) => file.size > MAX_MATERIAL_FILE_SIZE_BYTES)
+    .map((file) => file.name);
+
+  if (oversizedNames.length > 0) {
+    return {
+      valid: false,
+      reason: `${FILE_TOO_LARGE_ERROR_PREFIX} ${oversizedNames.join(', ')}`,
+    };
+  }
+
   return { valid: true };
 }

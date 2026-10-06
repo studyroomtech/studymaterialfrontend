@@ -36,3 +36,5 @@ export const PAYMENT_FAILED_TITLE = "Payment not completed";
  */
 export const PAYMENT_SUCCESS_MESSAGE =
   "Payment successful. You can now view and download this material.";
+
+export const MATERIAL_DETAIL_ROUTE = '/materials';

@@ -40,6 +40,7 @@ import { httpRequest } from '@/utils/http';
 import type { HttpError, HttpResult } from '@/utils/http.types';
 import type { CatalogCategory } from '@/utils/catalogTree.types';
 import { DEFAULT_CURRENCY, MAX_PAID_AMOUNT } from '@/utils/price.constant';
+import { validateMaterialFileSelection } from '@/utils/validation';
 
 import styles from './StudyMaterialTab.module.scss';
 import type {
@@ -594,6 +595,9 @@ function MaterialFilesEditor({
   const [loadFailed, setLoadFailed] = useState(false);
   const [chosenFiles, setChosenFiles] = useState<File[]>([]);
   const [fileInputKey, setFileInputKey] = useState(0);
+  const [selectionError, setSelectionError] = useState<string | undefined>(
+    undefined,
+  );
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -623,6 +627,12 @@ function MaterialFilesEditor({
     if (chosenFiles.length === 0) {
       return;
     }
+    const fileSelection = validateMaterialFileSelection(chosenFiles);
+    if (!fileSelection.valid) {
+      setSelectionError(fileSelection.reason);
+      return;
+    }
+    setSelectionError(undefined);
     const succeeded = await onAddFiles(materialId, chosenFiles);
     if (succeeded) {
       setChosenFiles([]);
@@ -677,9 +687,10 @@ function MaterialFilesEditor({
           multiple
           disabled={disabled}
           aria-label={ADD_FILES_LABEL}
-          onChange={(event) =>
-            setChosenFiles(Array.from(event.target.files ?? []))
-          }
+          onChange={(event) => {
+            setChosenFiles(Array.from(event.target.files ?? []));
+            setSelectionError(undefined);
+          }}
         />
         <Button
           type="button"
@@ -690,6 +701,10 @@ function MaterialFilesEditor({
           {ADD_FILES_LABEL}
         </Button>
       </div>
+
+      {selectionError !== undefined && (
+        <p className={styles.fieldError}>{selectionError}</p>
+      )}
     </div>
   );
 }
@@ -840,6 +855,11 @@ function StudyMaterialTab() {
     }
     if (uploadFiles.length === 0) {
       nextErrors.file = FILE_REQUIRED_ERROR;
+    } else {
+      const fileSelection = validateMaterialFileSelection(uploadFiles);
+      if (!fileSelection.valid) {
+        nextErrors.file = fileSelection.reason;
+      }
     }
     const parsedPrice = parsePriceInput(uploadPrice);
     if (!parsedPrice.ok) {
