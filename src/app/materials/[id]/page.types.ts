@@ -21,6 +21,8 @@ export interface MaterialContentProps {
   fileName?: string;
   /** Every file (PDF) belonging to the material, ordered primary-first. */
   files?: MaterialFile[];
+  /** Unique learners who downloaded the material; badge hidden when 0. */
+  downloadCount?: number;
 }
 
 /**

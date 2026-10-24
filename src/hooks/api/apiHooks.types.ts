@@ -61,6 +61,8 @@ export interface SearchMaterial {
   averageRating?: number | null;
   /** The number of ratings the material has received (0 when none). */
   reviewCount?: number;
+  /** Unique learners who downloaded the material (0 when none). */
+  downloadCount?: number;
 }
 
 /**
@@ -125,6 +127,8 @@ export interface MaterialDetail {
   averageRating?: number | null;
   /** The number of ratings the material has received (0 when none). */
   reviewCount?: number;
+  /** Unique learners who downloaded the material (0 when none). */
+  downloadCount?: number;
 }
 
 /**

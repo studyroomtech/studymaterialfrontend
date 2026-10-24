@@ -24,6 +24,7 @@ import { useEffect, useMemo, useState } from "react";
 import EmptyState from "@/components/EmptyState/EmptyState";
 import { NO_MATCHING_MATERIALS_MESSAGE } from "@/components/EmptyState/EmptyState.constant";
 import ErrorMessage from "@/components/ErrorMessage/ErrorMessage";
+import DownloadCountBadge from "@/components/DownloadCountBadge/DownloadCountBadge";
 import Input from "@/components/Input/Input";
 import LoadingIndicator from "@/components/LoadingIndicator/LoadingIndicator";
 import RatingBadge from "@/components/RatingBadge/RatingBadge";
@@ -207,6 +208,9 @@ function SearchPage() {
                       <RatingBadge
                         averageRating={material.averageRating}
                         reviewCount={material.reviewCount}
+                      />
+                      <DownloadCountBadge
+                        downloadCount={material.downloadCount}
                       />
                       {material.description ? (
                         <span className={styles.resultDescription}>

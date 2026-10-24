@@ -79,6 +79,7 @@ import DownloadGateModal from "../components/DownloadGateModal/DownloadGateModal
 import EmptyState from "../components/EmptyState/EmptyState";
 import Footer from "../components/Footer/Footer";
 import ErrorMessage from "../components/ErrorMessage/ErrorMessage";
+import DownloadCountBadge from "../components/DownloadCountBadge/DownloadCountBadge";
 import LoadingIndicator from "../components/LoadingIndicator/LoadingIndicator";
 import PaymentModal from "../components/PaymentModal/PaymentModal";
 import RatingBadge from "../components/RatingBadge/RatingBadge";
@@ -146,6 +147,7 @@ function RankCard({
             averageRating={material.averageRating}
             reviewCount={material.reviewCount}
           />
+          <DownloadCountBadge downloadCount={material.downloadCount} />
         </div>
         <h3 className={styles.rankCardTitle}>{title}</h3>
         <div className={styles.rankCardFoot}>

@@ -29,6 +29,7 @@ import { useEffect, useMemo, useRef } from "react";
 import type { ReactElement } from "react";
 
 import Button from "@/components/Button/Button";
+import DownloadCountBadge from "@/components/DownloadCountBadge/DownloadCountBadge";
 import DownloadGateModal from "@/components/DownloadGateModal/DownloadGateModal";
 import ErrorMessage from "@/components/ErrorMessage/ErrorMessage";
 import LoadingIndicator from "@/components/LoadingIndicator/LoadingIndicator";
@@ -205,6 +206,7 @@ function MaterialViewPage() {
             description={data.description}
             fileName={data.fileName}
             files={data.files}
+            downloadCount={data.downloadCount}
           />
           <ReviewsSection materialId={data.id} isPaid={data.isPaid} />
         </>
@@ -219,6 +221,7 @@ function MaterialContent({
   description,
   fileName,
   files,
+  downloadCount,
 }: MaterialContentProps) {
   const hasFiles = files !== undefined && files.length > 0;
 
@@ -226,6 +229,7 @@ function MaterialContent({
     <article className={styles.content}>
       <header className={styles.header}>
         <h1 className={styles.title}>{title}</h1>
+        <DownloadCountBadge downloadCount={downloadCount} size="md" />
       </header>
 
       <section className={styles.section}>
