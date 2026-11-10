@@ -19,6 +19,7 @@ import type {
   UseSearchMaterialsParams,
 } from './apiHooks.types';
 import { useApiResource } from './useApiResource';
+import { useAccessToken } from '../useAccessToken';
 
 export const useSearchMaterials = ({
   query,
@@ -34,5 +35,7 @@ export const useSearchMaterials = ({
     });
   }, [query, categoryId]);
 
-  return useApiResource<SearchMaterialsResult>(url);
+  // Sent so the Backend can include admin-only fields (download counts).
+  const { token } = useAccessToken();
+  return useApiResource<SearchMaterialsResult>(url, { authToken: token });
 };

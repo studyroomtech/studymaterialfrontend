@@ -11,7 +11,12 @@ import { buildApiUrl } from './apiClient';
 import { API_ROUTES } from './apiClient.constant';
 import type { AsyncState, CatalogData } from './apiHooks.types';
 import { useApiResource } from './useApiResource';
+import { useAccessToken } from '../useAccessToken';
 
 export const useCatalog = (): AsyncState<CatalogData> => {
-  return useApiResource<CatalogData>(buildApiUrl(API_ROUTES.catalog));
+  // Sent so the Backend can include admin-only fields (download counts).
+  const { token } = useAccessToken();
+  return useApiResource<CatalogData>(buildApiUrl(API_ROUTES.catalog), {
+    authToken: token,
+  });
 };

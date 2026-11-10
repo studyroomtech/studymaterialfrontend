@@ -3,6 +3,8 @@
 // Mirrors RatingBadge: renders nothing until the material has at least one
 // download, so new notes don't advertise a zero count.
 
+"use client";
+import { useAccessToken } from "@/hooks/useAccessToken";
 import styles from "./DownloadCountBadge.module.scss";
 import {
   DOWNLOAD_COUNT_FORMATTER,
@@ -17,7 +19,8 @@ function DownloadCountBadge({
   size = "sm",
   className,
 }: DownloadCountBadgeProps) {
-  if (downloadCount === undefined || downloadCount <= 0) {
+  const { hasValidToken } = useAccessToken();
+  if (!hasValidToken || downloadCount === undefined || downloadCount <= 0) {
     return null;
   }
 
