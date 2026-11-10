@@ -9,6 +9,7 @@
 // behavior (Req 11.14).
 
 import type { HttpError, HttpResult } from '@/utils/http.types';
+import type { MaterialThumbnail } from './apiHooks.types';
 
 /** A single Tag (Category reference) assigned to a Study Material (Req 2.3). */
 export interface AdminMaterialTag {
@@ -50,6 +51,8 @@ export interface AdminMaterial {
    * (primary) file for backward compatibility; this list is authoritative.
    */
   files?: AdminMaterialFile[];
+  /** Thumbnail images in upload order (empty when none). */
+  thumbnails?: MaterialThumbnail[];
   /** The Price amount (paise) for a Paid Material, or `null`/`0` when Free. */
   priceAmount?: number | null;
   /** The Currency of the Price (INR), or `null` when Free. */
@@ -94,6 +97,8 @@ export interface CreateMaterialInput {
    * the material's primary file (Req 11.1).
    */
   files: File[];
+  /** Optional thumbnail images (first = card cover), under `thumbnails`. */
+  thumbnails?: File[];
   /** Price amount in paise (`1..1000000`) for a Paid Material; omit for Free. */
   priceAmount?: number | null;
   /** Currency of the Price (INR); defaults server-side when omitted. */
@@ -217,6 +222,16 @@ export interface UseAdminMaterialsResult {
     fileId: string,
   ) => Promise<AdminMutationResult<void>>;
 
+  /** Append thumbnail images (JPEG/PNG/WebP) to an existing Study Material. */
+  addMaterialThumbnails: (
+    materialId: string,
+    thumbnails: File[],
+  ) => Promise<AdminMutationResult<AdminMaterial>>;
+  /** Remove one thumbnail image from a Study Material by its id. */
+  removeMaterialThumbnail: (
+    materialId: string,
+    thumbnailId: string,
+  ) => Promise<AdminMutationResult<void>>;
   /** Assign a Tag (Category) to a Study Material (Req 2.2, 2.3). */
   assignTag: (
     materialId: string,

@@ -6,7 +6,7 @@
 // mirror the Backend API's `GET /api/materials/paid` response documented in the
 // design.
 
-import type { MaterialTag } from './apiHooks.types';
+import type { MaterialTag, MaterialThumbnail } from './apiHooks.types';
 
 /**
  * A single Paid Material as returned by `GET /api/materials/paid` (Req 12.1).
@@ -35,6 +35,8 @@ export interface PaidMaterial {
    * View/Download instead of Buy (Req 12.3).
    */
   isEntitled?: boolean;
+  /** Thumbnail images in upload order (empty when none). */
+  thumbnails?: MaterialThumbnail[];
   /**
    * Optional Tags grouped by Category Type, when the Backend API includes them
    * for filtering/display within the Paid Materials Tab.

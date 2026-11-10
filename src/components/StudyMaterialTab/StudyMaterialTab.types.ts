@@ -5,6 +5,7 @@
 // types model the catalog data the tab renders, including the optional Price
 // (amount + Currency) an Admin may set on upload/edit (Req 11.13–11.16).
 
+import type { MaterialThumbnail } from '@/hooks/api/apiHooks.types';
 import type { AdminMaterialFile } from '@/hooks/api/useAdminMaterials.types';
 import type { CatalogCategoryType, CatalogTag } from '@/utils/catalogTree.types';
 
@@ -33,6 +34,8 @@ export interface DashboardMaterial {
    * on demand from `GET /api/materials/:id` when editing (Req 11.1).
    */
   files?: AdminMaterialFile[];
+  /** Thumbnail images in upload order (included in the catalog). */
+  thumbnails?: MaterialThumbnail[];
 }
 
 /** The catalog structure the dashboard loads from `GET /api/catalog`. */
@@ -195,4 +198,20 @@ export interface MaterialFilesEditorProps {
    * the editor can reload its file list.
    */
   onRemoveFile: (materialId: string, fileId: string) => Promise<boolean>;
+}
+
+/**
+ * Props for the thumbnails editor shown while editing a material. The current
+ * thumbnails come from the catalog, which is reloaded after every change.
+ */
+export interface MaterialThumbnailsEditorProps {
+  materialId: string;
+  /** The material's current thumbnails in upload order. */
+  thumbnails: MaterialThumbnail[];
+  /** Whether the controls are disabled (another action is in flight). */
+  disabled: boolean;
+  /** Add the chosen images; resolves to whether it succeeded. */
+  onAdd: (materialId: string, files: File[]) => Promise<boolean>;
+  /** Remove one thumbnail; resolves to whether it succeeded. */
+  onRemove: (materialId: string, thumbnailId: string) => Promise<boolean>;
 }

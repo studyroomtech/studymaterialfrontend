@@ -63,6 +63,8 @@ export interface SearchMaterial {
   reviewCount?: number;
   /** Unique learners who downloaded the material (0 when none). */
   downloadCount?: number;
+  /** Thumbnail images in upload order (empty when none). */
+  thumbnails?: MaterialThumbnail[];
 }
 
 /**
@@ -81,6 +83,21 @@ export interface UseSearchMaterialsParams {
   query: string;
   /** Optional Category filter; restricts results to that Category (Req 4.2). */
   categoryId?: string;
+}
+
+/**
+ * A thumbnail image of a Study Material. `url` is a path relative to the API
+ * origin (`/api/thumbnails/:id`); resolve it with `buildApiUrl`. Public even
+ * when the material's content is payment-gated.
+ */
+export interface MaterialThumbnail {
+  id: string;
+  url: string;
+}
+
+/** The response body of `GET /api/materials/:id/thumbnails`. */
+export interface MaterialThumbnailsResult {
+  thumbnails: MaterialThumbnail[];
 }
 
 /**
@@ -117,6 +134,8 @@ export interface MaterialDetail {
    * used as a fallback.
    */
   files?: MaterialFile[];
+  /** Thumbnail images in upload order (empty when none). */
+  thumbnails?: MaterialThumbnail[];
   /** The price amount for a Paid Material, or `null` for a Free Material. */
   priceAmount: number | null;
   /** The currency for a Paid Material's price, or `null` when free. */

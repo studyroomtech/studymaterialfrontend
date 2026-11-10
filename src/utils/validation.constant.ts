@@ -38,6 +38,16 @@ export const TOO_MANY_FILES_ERROR = `Select at most ${MAX_MATERIAL_FILES_PER_REQ
 
 export const FILE_TOO_LARGE_ERROR_PREFIX = `Each file must be ${MAX_MATERIAL_FILE_SIZE_MEGABYTES} MB or smaller. Too large:`;
 
+// --- Thumbnails (mirror the Backend defaults) ---
+export const MAX_THUMBNAIL_SIZE_BYTES = 5 * 1024 * 1024;
+export const MAX_THUMBNAILS_PER_MATERIAL = 6;
+/** Accepted thumbnail MIME types; also the file input's `accept` value. */
+export const THUMBNAIL_CONTENT_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+export const THUMBNAIL_ACCEPT = THUMBNAIL_CONTENT_TYPES.join(',');
+export const TOO_MANY_THUMBNAILS_ERROR = `A material can have at most ${MAX_THUMBNAILS_PER_MATERIAL} thumbnails.`;
+export const THUMBNAIL_TOO_LARGE_ERROR_PREFIX = `Each thumbnail must be ${MAX_THUMBNAIL_SIZE_BYTES / BYTES_PER_MEGABYTE} MB or smaller. Too large:`;
+export const THUMBNAIL_TYPE_ERROR_PREFIX = 'Thumbnails must be JPG, PNG, or WebP images. Not allowed:';
+
 // Pragmatic email-format check: a non-empty local part, a single "@", and a
 // domain containing at least one dot, with no whitespace. Mirrors the intent of
 // the Backend API's email-format validation for early client-side feedback.

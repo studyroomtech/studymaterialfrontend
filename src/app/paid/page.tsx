@@ -171,6 +171,7 @@ function PaidMaterialsPage() {
                     materialId={material.id}
                     title={material.title}
                     description={material.description}
+                    thumbnails={material.thumbnails}
                     priceAmount={material.priceAmount}
                     currency={material.currency ?? undefined}
                     isEntitled={entitled}

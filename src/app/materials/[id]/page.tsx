@@ -33,11 +33,13 @@ import DownloadCountBadge from "@/components/DownloadCountBadge/DownloadCountBad
 import DownloadGateModal from "@/components/DownloadGateModal/DownloadGateModal";
 import ErrorMessage from "@/components/ErrorMessage/ErrorMessage";
 import LoadingIndicator from "@/components/LoadingIndicator/LoadingIndicator";
+import MaterialThumbnailView from "@/components/MaterialThumbnail/MaterialThumbnail";
 import NotesPreview from "@/components/NotesPreview/NotesPreview";
 import PaymentModal from "@/components/PaymentModal/PaymentModal";
 import ReviewsSection from "@/components/ReviewsSection/ReviewsSection";
 import { usePaidMaterials } from "@/hooks/api/usePaidMaterials";
 import { useUnlockOptions } from "@/hooks/api/useUnlockOptions";
+import { useMaterialThumbnails } from "@/hooks/api/useMaterialThumbnails";
 import { usePayment } from "@/hooks/api/usePayment";
 import { PAYMENT_PHASE } from "@/hooks/api/usePayment.constant";
 import { useDownload } from "@/hooks/api/useDownload";
@@ -57,6 +59,7 @@ import {
   INVALID_ID_MESSAGE,
   LOAD_ERROR_MESSAGE,
   LOAD_ERROR_TITLE,
+  LOCKED_PREVIEW_ALT,
   LOADING_LABEL,
   LOCKED_MESSAGE,
   LOCKED_TITLE,
@@ -426,6 +429,8 @@ function PaymentRequiredGate({ materialId, onEntitled }: PaymentRequiredGateProp
   const { data: paidData, isLoading: isPriceLoading } = usePaidMaterials();
   const { data: unlockData, isLoading: isUnlockLoading } =
     useUnlockOptions(materialId);
+  const { data: thumbnailData, error: thumbnailError } =
+    useMaterialThumbnails(materialId);
   const payment = usePayment();
   const cart = useCart();
 
@@ -454,6 +459,22 @@ function PaymentRequiredGate({ materialId, onEntitled }: PaymentRequiredGateProp
   // appear and the Learner must pay for one of those instead
   // (linked-material-entitlement).
   const unlockOptions = unlockData?.options ?? [];
+
+  // Locked notes show their thumbnails (a large carousel when there are
+  // several, the default cover when there are none). Rendered once the list
+  // has loaded (or failed) so the default cover never flashes before images.
+  const preview =
+    thumbnailData !== null || thumbnailError !== null ? (
+      <div className={styles.lockedPreview}>
+        <MaterialThumbnailView
+          materialId={materialId}
+          thumbnails={thumbnailData?.thumbnails}
+          uid={`locked-${materialId}`}
+          alt={LOCKED_PREVIEW_ALT}
+          className={styles.lockedPreviewArt}
+        />
+      </div>
+    ) : null;
   const isSelfPurchasable = unlockOptions.some(
     (option) => option.id === materialId,
   );
@@ -465,6 +486,7 @@ function PaymentRequiredGate({ materialId, onEntitled }: PaymentRequiredGateProp
     return (
       <section className={styles.locked} aria-live="polite">
         <h1 className={styles.title}>{LOCKED_LINKED_TITLE}</h1>
+        {preview}
         <p className={styles.lockedMessage}>{LOCKED_LINKED_MESSAGE}</p>
         <p className={styles.priceLabel}>{UNLOCK_OPTIONS_LABEL}</p>
         <div className={styles.payActions}>
@@ -516,6 +538,7 @@ function PaymentRequiredGate({ materialId, onEntitled }: PaymentRequiredGateProp
   return (
     <section className={styles.locked} aria-live="polite">
       <h1 className={styles.title}>{heading}</h1>
+      {preview}
       <p className={styles.lockedMessage}>{LOCKED_MESSAGE}</p>
 
       <div className={styles.priceRow}>

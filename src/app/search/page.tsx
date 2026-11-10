@@ -29,10 +29,10 @@ import Input from "@/components/Input/Input";
 import LoadingIndicator from "@/components/LoadingIndicator/LoadingIndicator";
 import RatingBadge from "@/components/RatingBadge/RatingBadge";
 import {
-  MaterialCoverArt,
   coverVariantLabel,
   resolveCoverVariant,
 } from "@/components/MaterialCoverArt/MaterialCoverArt";
+import MaterialThumbnailView from "@/components/MaterialThumbnail/MaterialThumbnail";
 import { useCatalog } from "@/hooks/api/useCatalog";
 import { useSearchMaterials } from "@/hooks/api/useSearchMaterials";
 import { useDebounce } from "@/hooks/useDebounce";
@@ -189,8 +189,9 @@ function SearchPage() {
                     href={`/materials/${material.id}`}
                   >
                     <div className={styles.resultCover}>
-                      <MaterialCoverArt
-                        variant={coverVariant}
+                      <MaterialThumbnailView
+                        materialId={material.id}
+                        thumbnails={material.thumbnails}
                         uid={`search-${material.id}`}
                         className={styles.resultCoverArt}
                       />

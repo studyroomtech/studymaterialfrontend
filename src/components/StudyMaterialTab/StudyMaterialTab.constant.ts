@@ -183,6 +183,22 @@ export const REMOVE_FILE_LABEL = 'Remove';
 export const FILE_ADDED_MESSAGE = 'Files added.';
 export const FILE_REMOVED_MESSAGE = 'File removed.';
 
+/**
+ * Thumbnail copy (upload form + edit view). Thumbnails are optional preview
+ * images shown on cards and on the locked preview page, in upload order.
+ */
+export const THUMBNAILS_LABEL = 'Thumbnails';
+export const THUMBNAILS_HINT =
+  'Optional JPG, PNG or WebP images (up to 6, 5 MB each). The first one is the card cover; several images play as a slideshow.';
+export const THUMBNAILS_FIELD_ID = 'material-thumbnails';
+export const THUMBNAILS_EMPTY_TEXT = 'No thumbnails yet. The default cover is shown.';
+export const ADD_THUMBNAILS_INPUT_ID = 'material-add-thumbnails';
+export const ADD_THUMBNAILS_LABEL = 'Add thumbnails';
+export const REMOVE_THUMBNAIL_LABEL = 'Remove thumbnail';
+export const THUMBNAIL_PREVIEW_ALT = 'Thumbnail';
+export const THUMBNAILS_ADDED_MESSAGE = 'Thumbnails added.';
+export const THUMBNAIL_REMOVED_MESSAGE = 'Thumbnail removed.';
+
 /** Client-side validation copy mirroring Backend bounds (Req 11.2, 11.6). */
 export const TITLE_REQUIRED_ERROR = 'Enter a title.';
 export const FILE_REQUIRED_ERROR = 'Choose at least one file to upload.';

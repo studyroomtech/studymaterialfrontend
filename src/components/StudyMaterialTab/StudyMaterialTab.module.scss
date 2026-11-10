@@ -163,6 +163,67 @@
   flex-wrap: wrap;
 }
 
+.itemCover {
+  flex: 0 0 auto;
+  width: 6rem;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: theme.$radius-sm;
+  background: theme.color("ink");
+}
+
+.itemCoverArt {
+  width: 100%;
+  height: 100%;
+}
+
+.thumbnailGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(7rem, 1fr));
+  gap: theme.space("xs");
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.thumbnailItem {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border: 1px solid theme.color("border");
+  border-radius: theme.$radius-sm;
+}
+
+.thumbnailImage {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.thumbnailRemove {
+  position: absolute;
+  top: 0.25rem;
+  right: 0.25rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 0;
+  border-radius: 50%;
+  background: theme.color("surface");
+  color: theme.color("ink");
+  cursor: pointer;
+  line-height: 1;
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+
+  &:focus-visible {
+    @include mixins.focus-ring;
+  }
+}
+
 .itemName {
   font-family: theme.$font-family-display;
   font-size: theme.font-size("md");

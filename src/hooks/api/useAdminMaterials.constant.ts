@@ -45,6 +45,12 @@ export const ADMIN_MATERIAL_LINK_GROUP_SEGMENT = 'link-group';
  * file.
  */
 export const ADMIN_MATERIAL_FILES_SEGMENT = 'files';
+/**
+ * Path segment for a material's thumbnail images:
+ * `POST /api/admin/materials/:id/thumbnails` adds images and
+ * `DELETE /api/admin/materials/:id/thumbnails/:thumbnailId` removes one.
+ */
+export const ADMIN_MATERIAL_THUMBNAILS_SEGMENT = 'thumbnails';
 
 /**
  * Browser `localStorage` key under which the Admin's role_admin JWT is
@@ -68,6 +74,7 @@ export const ADMIN_MATERIAL_FORM_FIELDS = {
   description: 'description',
   file: 'file',
   files: 'files',
+  thumbnails: 'thumbnails',
   priceAmount: 'priceAmount',
   currency: 'currency',
   categories: 'categories',

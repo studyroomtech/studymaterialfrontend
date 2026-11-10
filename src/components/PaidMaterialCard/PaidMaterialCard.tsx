@@ -15,6 +15,7 @@
 // reused for the action.
 
 import Button from "../Button/Button";
+import MaterialThumbnailView from "../MaterialThumbnail/MaterialThumbnail";
 import { formatPrice } from "../../utils/price";
 import styles from "./PaidMaterialCard.module.scss";
 import {
@@ -39,6 +40,7 @@ function PaidMaterialCard({
   materialId,
   title,
   description,
+  thumbnails,
   priceAmount,
   currency,
   isEntitled,
@@ -69,6 +71,14 @@ function PaidMaterialCard({
 
   return (
     <article className={classNames(styles.card, className)}>
+      <div className={styles.cover}>
+        <MaterialThumbnailView
+          materialId={materialId}
+          thumbnails={thumbnails}
+          uid={`paid-${materialId}`}
+          className={styles.coverArt}
+        />
+      </div>
       <div className={styles.content}>
         <h3 className={styles.title}>{title}</h3>
         {description && <p className={styles.description}>{description}</p>}

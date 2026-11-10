@@ -124,6 +124,10 @@ export const MATERIAL_PAYMENT_ACTION = 'payment';
 // unlocks a locked (free-but-grouped) material (linked-material-entitlement).
 export const MATERIAL_UNLOCK_OPTIONS_ACTION = 'unlock-options';
 
+// Sub-path for a material's public thumbnail list,
+// e.g. `/api/materials/:id/thumbnails` (not entitlement-gated).
+export const MATERIAL_THUMBNAILS_ACTION = 'thumbnails';
+
 // Query-parameter names used by the search endpoint (Req 4.1, 4.2).
 export const SEARCH_QUERY_PARAMS = {
   query: 'q',

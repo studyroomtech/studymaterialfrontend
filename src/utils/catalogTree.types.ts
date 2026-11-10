@@ -5,6 +5,8 @@
 // per Requirements 3.2–3.8. All declarations live here so the utility module
 // itself stays free of type/interface declarations (Requirements 1.15, 1.17).
 
+import type { MaterialThumbnail } from '@/hooks/api/apiHooks.types';
+
 /** A single Tag assignment on a Study Material (a Category reference). */
 export interface CatalogTag {
   categoryId: string;
@@ -26,6 +28,8 @@ export interface CatalogMaterial {
   reviewCount?: number;
   /** Unique learners who downloaded the material (0 when none). */
   downloadCount?: number;
+  /** Thumbnail images in upload order (empty when none). */
+  thumbnails?: MaterialThumbnail[];
 }
 
 /** A Category (classification value) belonging to a single Category Type. */

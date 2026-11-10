@@ -17,7 +17,13 @@ import {
   PASSWORD_MAX_LENGTH,
   PASSWORD_MIN_LENGTH,
   SEARCH_QUERY_MAX_LENGTH,
+  MAX_THUMBNAIL_SIZE_BYTES,
+  MAX_THUMBNAILS_PER_MATERIAL,
+  THUMBNAIL_CONTENT_TYPES,
+  THUMBNAIL_TOO_LARGE_ERROR_PREFIX,
+  THUMBNAIL_TYPE_ERROR_PREFIX,
   TOO_MANY_FILES_ERROR,
+  TOO_MANY_THUMBNAILS_ERROR,
 } from './validation.constant';
 import type { FieldValidationResult } from './validation.types';
 
@@ -119,5 +125,37 @@ export function validateMaterialFileSelection(
     };
   }
 
+  return { valid: true };
+}
+
+/**
+ * Client-side check of chosen thumbnail images against the Backend defaults:
+ * JPG/PNG/WebP only, each within the size limit, and at most the per-material
+ * count including the `existingCount` the material already has. The Backend
+ * re-validates (by file content).
+ */
+export function validateThumbnailSelection(
+  files: File[],
+  existingCount = 0,
+): FieldValidationResult {
+  if (existingCount + files.length > MAX_THUMBNAILS_PER_MATERIAL) {
+    return { valid: false, reason: TOO_MANY_THUMBNAILS_ERROR };
+  }
+  const wrongType = files.filter(
+    (file) => !THUMBNAIL_CONTENT_TYPES.includes(file.type),
+  );
+  if (wrongType.length > 0) {
+    return {
+      valid: false,
+      reason: `${THUMBNAIL_TYPE_ERROR_PREFIX} ${wrongType.map((file) => file.name).join(', ')}`,
+    };
+  }
+  const oversized = files.filter((file) => file.size > MAX_THUMBNAIL_SIZE_BYTES);
+  if (oversized.length > 0) {
+    return {
+      valid: false,
+      reason: `${THUMBNAIL_TOO_LARGE_ERROR_PREFIX} ${oversized.map((file) => file.name).join(', ')}`,
+    };
+  }
   return { valid: true };
 }

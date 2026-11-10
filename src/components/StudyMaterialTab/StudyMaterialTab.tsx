@@ -30,6 +30,7 @@ import Input from '@/components/Input/Input';
 import LoadingIndicator from '@/components/LoadingIndicator/LoadingIndicator';
 import ErrorMessage from '@/components/ErrorMessage/ErrorMessage';
 import EmptyState from '@/components/EmptyState/EmptyState';
+import MaterialThumbnailView from '@/components/MaterialThumbnail/MaterialThumbnail';
 import { useAdminMaterials } from '@/hooks/api/useAdminMaterials';
 import { useAccessToken } from '@/hooks/useAccessToken';
 import { buildApiUrl } from '@/hooks/api/apiClient';
@@ -40,7 +41,11 @@ import { httpRequest } from '@/utils/http';
 import type { HttpError, HttpResult } from '@/utils/http.types';
 import type { CatalogCategory } from '@/utils/catalogTree.types';
 import { DEFAULT_CURRENCY, MAX_PAID_AMOUNT } from '@/utils/price.constant';
-import { validateMaterialFileSelection } from '@/utils/validation';
+import {
+  validateMaterialFileSelection,
+  validateThumbnailSelection,
+} from '@/utils/validation';
+import { THUMBNAIL_ACCEPT } from '@/utils/validation.constant';
 
 import styles from './StudyMaterialTab.module.scss';
 import type {
@@ -53,6 +58,7 @@ import type {
   MaterialEditDraft,
   MaterialFilesEditorProps,
   MaterialMultiPickerProps,
+  MaterialThumbnailsEditorProps,
   MaterialOption,
   ParsedPrice,
 } from './StudyMaterialTab.types';
@@ -129,6 +135,16 @@ import {
   UPLOAD_SECTION_TITLE,
   UPLOAD_SUBMIT_LABEL,
   UPLOAD_SUCCESS_MESSAGE,
+  ADD_THUMBNAILS_INPUT_ID,
+  ADD_THUMBNAILS_LABEL,
+  REMOVE_THUMBNAIL_LABEL,
+  THUMBNAIL_PREVIEW_ALT,
+  THUMBNAIL_REMOVED_MESSAGE,
+  THUMBNAILS_ADDED_MESSAGE,
+  THUMBNAILS_EMPTY_TEXT,
+  THUMBNAILS_FIELD_ID,
+  THUMBNAILS_HINT,
+  THUMBNAILS_LABEL,
   FILES_LABEL,
   FILES_HINT,
   FILES_LOADING_TEXT,
@@ -709,6 +725,102 @@ function MaterialFilesEditor({
   );
 }
 
+/**
+ * Inline thumbnails editor shown while editing a material: previews of the
+ * current images (in upload order, first = card cover) with a Remove action,
+ * plus an image input to add more. The list comes from the catalog, which the
+ * dashboard reloads after every successful change.
+ */
+function MaterialThumbnailsEditor({
+  materialId,
+  thumbnails,
+  disabled,
+  onAdd,
+  onRemove,
+}: MaterialThumbnailsEditorProps) {
+  const [chosen, setChosen] = useState<File[]>([]);
+  const [inputKey, setInputKey] = useState(0);
+  const [selectionError, setSelectionError] = useState<string | undefined>(
+    undefined,
+  );
+
+  const handleAdd = async (): Promise<void> => {
+    const selection = validateThumbnailSelection(chosen, thumbnails.length);
+    if (!selection.valid) {
+      setSelectionError(selection.reason);
+      return;
+    }
+    setSelectionError(undefined);
+    if (await onAdd(materialId, chosen)) {
+      setChosen([]);
+      setInputKey((key) => key + 1);
+    }
+  };
+
+  return (
+    <div className={styles.categoryPicker}>
+      <p className={styles.fieldGroupLabel}>{THUMBNAILS_LABEL}</p>
+      <p className={styles.categoryHint}>{THUMBNAILS_HINT}</p>
+
+      {thumbnails.length > 0 ? (
+        <ul className={styles.thumbnailGrid}>
+          {thumbnails.map((thumbnail, position) => (
+            <li key={thumbnail.id} className={styles.thumbnailItem}>
+              <img
+                className={styles.thumbnailImage}
+                src={buildApiUrl(thumbnail.url)}
+                alt={`${THUMBNAIL_PREVIEW_ALT} ${position + 1}`}
+              />
+              <button
+                type="button"
+                className={styles.thumbnailRemove}
+                disabled={disabled}
+                aria-label={`${REMOVE_THUMBNAIL_LABEL} ${position + 1}`}
+                onClick={() => {
+                  void onRemove(materialId, thumbnail.id);
+                }}
+              >
+                ×
+              </button>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className={styles.emptyText}>{THUMBNAILS_EMPTY_TEXT}</p>
+      )}
+
+      <div className={styles.inlineForm}>
+        <input
+          key={inputKey}
+          id={`${ADD_THUMBNAILS_INPUT_ID}-${materialId}`}
+          className={`${styles.fileInput} ${styles.grow}`}
+          type="file"
+          accept={THUMBNAIL_ACCEPT}
+          multiple
+          disabled={disabled}
+          aria-label={ADD_THUMBNAILS_LABEL}
+          onChange={(event) => {
+            setChosen(Array.from(event.target.files ?? []));
+            setSelectionError(undefined);
+          }}
+        />
+        <Button
+          type="button"
+          variant="secondary"
+          disabled={disabled || chosen.length === 0}
+          onClick={handleAdd}
+        >
+          {ADD_THUMBNAILS_LABEL}
+        </Button>
+      </div>
+
+      {selectionError !== undefined && (
+        <p className={styles.fieldError}>{selectionError}</p>
+      )}
+    </div>
+  );
+}
+
 function StudyMaterialTab() {
   const router = useRouter();
   const {
@@ -720,6 +832,8 @@ function StudyMaterialTab() {
     deleteMaterial,
     addMaterialFiles,
     removeMaterialFile,
+    addMaterialThumbnails,
+    removeMaterialThumbnail,
     getLinkGroup,
     linkMaterials,
     unlinkMaterial,
@@ -833,6 +947,7 @@ function StudyMaterialTab() {
   const [uploadDescription, setUploadDescription] = useState('');
   const [uploadPrice, setUploadPrice] = useState('');
   const [uploadFiles, setUploadFiles] = useState<File[]>([]);
+  const [uploadThumbnails, setUploadThumbnails] = useState<File[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [categoryInput, setCategoryInput] = useState('');
   const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
@@ -843,13 +958,19 @@ function StudyMaterialTab() {
   const [uploadErrors, setUploadErrors] = useState<{
     title?: string;
     file?: string;
+    thumbnails?: string;
     price?: string;
   }>({});
   const [fileInputKey, setFileInputKey] = useState(0);
 
   const handleUpload = async (event: FormEvent<HTMLFormElement>): Promise<void> => {
     event.preventDefault();
-    const nextErrors: { title?: string; file?: string; price?: string } = {};
+    const nextErrors: {
+      title?: string;
+      file?: string;
+      thumbnails?: string;
+      price?: string;
+    } = {};
     if (uploadTitle.trim().length === 0) {
       nextErrors.title = TITLE_REQUIRED_ERROR;
     }
@@ -861,6 +982,10 @@ function StudyMaterialTab() {
         nextErrors.file = fileSelection.reason;
       }
     }
+    const thumbnailSelection = validateThumbnailSelection(uploadThumbnails);
+    if (!thumbnailSelection.valid) {
+      nextErrors.thumbnails = thumbnailSelection.reason;
+    }
     const parsedPrice = parsePriceInput(uploadPrice);
     if (!parsedPrice.ok) {
       nextErrors.price = PRICE_INVALID_ERROR;
@@ -868,6 +993,7 @@ function StudyMaterialTab() {
     if (
       nextErrors.title ||
       nextErrors.file ||
+      nextErrors.thumbnails ||
       nextErrors.price ||
       uploadFiles.length === 0 ||
       !parsedPrice.ok
@@ -887,6 +1013,7 @@ function StudyMaterialTab() {
           title: uploadTitle.trim(),
           description: description.length > 0 ? description : undefined,
           files: uploadFiles,
+          thumbnails: uploadThumbnails,
           priceAmount: parsedPrice.amount,
           currency: isPaid ? DEFAULT_CURRENCY : undefined,
           categories: selectedCategories,
@@ -901,6 +1028,7 @@ function StudyMaterialTab() {
       setUploadDescription('');
       setUploadPrice('');
       setUploadFiles([]);
+      setUploadThumbnails([]);
       setSelectedCategories([]);
       setCategoryInput('');
       setSelectedSubjects([]);
@@ -1051,6 +1179,24 @@ function StudyMaterialTab() {
         FILE_REMOVED_MESSAGE,
       ),
     [runAction, removeMaterialFile],
+  );
+
+  const addThumbnailsToMaterial = useCallback(
+    (materialId: string, files: File[]): Promise<boolean> =>
+      runAction(
+        () => addMaterialThumbnails(materialId, files),
+        THUMBNAILS_ADDED_MESSAGE,
+      ),
+    [runAction, addMaterialThumbnails],
+  );
+
+  const removeThumbnailFromMaterial = useCallback(
+    (materialId: string, thumbnailId: string): Promise<boolean> =>
+      runAction(
+        () => removeMaterialThumbnail(materialId, thumbnailId),
+        THUMBNAIL_REMOVED_MESSAGE,
+      ),
+    [runAction, removeMaterialThumbnail],
   );
 
   /** All existing materials as options (upload-time link targets, group-aware). */
@@ -1243,6 +1389,31 @@ function StudyMaterialTab() {
                 <p className={styles.fieldError}>{uploadErrors.file}</p>
               )}
             </div>
+
+            <div className={styles.fileField}>
+              <label className={styles.fileLabel} htmlFor={THUMBNAILS_FIELD_ID}>
+                {THUMBNAILS_LABEL}
+              </label>
+              <p className={styles.categoryHint}>{THUMBNAILS_HINT}</p>
+              <input
+                key={fileInputKey}
+                id={THUMBNAILS_FIELD_ID}
+                className={styles.fileInput}
+                type="file"
+                accept={THUMBNAIL_ACCEPT}
+                multiple
+                disabled={isActing}
+                onChange={(event) => {
+                  setUploadThumbnails(Array.from(event.target.files ?? []));
+                  if (uploadErrors.thumbnails) {
+                    setUploadErrors((prev) => ({ ...prev, thumbnails: undefined }));
+                  }
+                }}
+              />
+              {uploadErrors.thumbnails && (
+                <p className={styles.fieldError}>{uploadErrors.thumbnails}</p>
+              )}
+            </div>
             <div className={styles.actions}>
               <Button type="submit" variant="primary" isLoading={isActing}>
                 {UPLOAD_SUBMIT_LABEL}
@@ -1339,6 +1510,13 @@ function StudyMaterialTab() {
                           onAddFiles={addFilesToMaterial}
                           onRemoveFile={removeFileFromMaterial}
                         />
+                        <MaterialThumbnailsEditor
+                          materialId={material.id}
+                          thumbnails={material.thumbnails ?? []}
+                          disabled={isActing}
+                          onAdd={addThumbnailsToMaterial}
+                          onRemove={removeThumbnailFromMaterial}
+                        />
                         <div className={styles.actions}>
                           <Button
                             variant="primary"
@@ -1359,6 +1537,14 @@ function StudyMaterialTab() {
                     ) : (
                       <>
                         <div className={styles.itemHeader}>
+                          <span className={styles.itemCover}>
+                            <MaterialThumbnailView
+                              materialId={material.id}
+                              thumbnails={material.thumbnails}
+                              uid={`admin-${material.id}`}
+                              className={styles.itemCoverArt}
+                            />
+                          </span>
                           <h3 className={styles.itemName}>{material.title}</h3>
                           <div className={styles.actions}>
                             <Button

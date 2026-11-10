@@ -113,3 +113,6 @@ export const PAYMENT_FAILED_TITLE = "Payment not completed";
 /** Fallback message shown when a payment fails without a more specific reason (Req 12.7). */
 export const PAYMENT_FAILED_MESSAGE =
   "The payment could not be completed. Please try again.";
+
+/** Alt-text base for the thumbnails shown on a locked note ("… 1", "… 2"). */
+export const LOCKED_PREVIEW_ALT = "Notes preview";

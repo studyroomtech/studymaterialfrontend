@@ -7,6 +7,8 @@
 // live here so the component module stays free of type declarations
 // (Req 1.15, 1.17).
 
+import type { MaterialThumbnail } from "@/hooks/api/apiHooks.types";
+
 /**
  * Props for the PaidMaterialCard.
  *
@@ -23,6 +25,8 @@ export interface PaidMaterialCardProps {
   title: string;
   /** Optional short description shown beneath the title. */
   description?: string;
+  /** Thumbnail images (upload order); absent/empty shows the default cover. */
+  thumbnails?: MaterialThumbnail[];
   /**
    * The Paid Material's Price amount in the whole units of `currency`
    * (Req 12.1). A `null`/`undefined`/0 amount is treated as Free by the price

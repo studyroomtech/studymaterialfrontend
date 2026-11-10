@@ -23,6 +23,19 @@
   transform: translateY(-2px);
 }
 
+.cover {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: theme.$radius-md;
+  background: theme.color("ink");
+}
+
+.coverArt {
+  width: 100%;
+  height: 100%;
+}
+
 .content {
   @include mixins.flex(column, flex-start, stretch, theme.space("xs"));
 }

@@ -53,6 +53,20 @@
   background-color: theme.color("surface");
 }
 
+.lockedPreview {
+  width: 100%;
+  max-width: 48rem;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: theme.$radius-md;
+  background: theme.color("ink");
+}
+
+.lockedPreviewArt {
+  width: 100%;
+  height: 100%;
+}
+
 .lockedMessage {
   @include mixins.typography("md", "regular");
 

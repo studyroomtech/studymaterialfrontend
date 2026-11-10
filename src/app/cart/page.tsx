@@ -11,13 +11,15 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import Button from "@/components/Button/Button";
 import DownloadGateModal from "@/components/DownloadGateModal/DownloadGateModal";
 import EmptyState from "@/components/EmptyState/EmptyState";
 import ErrorMessage from "@/components/ErrorMessage/ErrorMessage";
+import MaterialThumbnailView from "@/components/MaterialThumbnail/MaterialThumbnail";
 import PaymentModal from "@/components/PaymentModal/PaymentModal";
+import { usePaidMaterials } from "@/hooks/api/usePaidMaterials";
 import { usePayment } from "@/hooks/api/usePayment";
 import { PAYMENT_PHASE } from "@/hooks/api/usePayment.constant";
 import { useCart } from "@/hooks/useCart";
@@ -45,6 +47,18 @@ import {
 function CartPage() {
   const cart = useCart();
   const payment = usePayment();
+  // Cart items are stored without images; look up current thumbnails by id.
+  const { data: paidMaterials } = usePaidMaterials();
+  const thumbnailsById = useMemo(
+    () =>
+      new Map(
+        (paidMaterials?.materials ?? []).map((material) => [
+          material.id,
+          material.thumbnails,
+        ]),
+      ),
+    [paidMaterials],
+  );
   const [showSuccess, setShowSuccess] = useState<boolean>(false);
 
   const { isEntitled, reset } = payment;
@@ -112,6 +126,14 @@ function CartPage() {
           <ul className={styles.list} aria-label={CART_ITEMS_LABEL}>
             {cart.items.map((item) => (
               <li key={item.id} className={styles.item}>
+                <span className={styles.itemCover}>
+                  <MaterialThumbnailView
+                    materialId={item.id}
+                    thumbnails={thumbnailsById.get(item.id)}
+                    uid={`cart-${item.id}`}
+                    className={styles.itemCoverArt}
+                  />
+                </span>
                 <span className={styles.itemInfo}>
                   <Link href={`/materials/${item.id}`} className={styles.itemTitle}>
                     {item.title}

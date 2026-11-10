@@ -60,6 +60,20 @@
   background-color: theme.color("surface");
 }
 
+.itemCover {
+  flex: 0 0 auto;
+  width: 6rem;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: theme.$radius-md;
+  background: theme.color("ink");
+}
+
+.itemCoverArt {
+  width: 100%;
+  height: 100%;
+}
+
 .itemInfo {
   @include mixins.flex(column, flex-start, flex-start, theme.space("xs"));
 

@@ -95,10 +95,10 @@ import type {
   CatalogMaterial,
 } from "../utils/catalogTree.types";
 import {
-  MaterialCoverArt,
   coverVariantLabel,
   resolveCoverVariant,
 } from "../components/MaterialCoverArt/MaterialCoverArt";
+import MaterialThumbnailView from "../components/MaterialThumbnail/MaterialThumbnail";
 
 function firstTagName(material: CatalogMaterial): string {
   for (const tags of Object.values(material.tagsByCategoryType)) {
@@ -128,9 +128,9 @@ function RankCard({
   return (
     <Link href={`/materials/${material.id}`} className={styles.rankCard}>
       <div className={styles.rankCover}>
-        <MaterialCoverArt
-          variant={coverVariant}
-          uid={material.id}
+        <MaterialThumbnailView
+          materialId={material.id}
+          thumbnails={material.thumbnails}
           className={styles.rankCoverArt}
         />
         <span className={styles.rankNum} aria-hidden="true">

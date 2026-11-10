@@ -33,6 +33,7 @@ import {
   ADMIN_MATERIAL_FORM_FIELDS,
   ADMIN_MATERIAL_LINK_GROUP_SEGMENT,
   ADMIN_MATERIAL_TAGS_SEGMENT,
+  ADMIN_MATERIAL_THUMBNAILS_SEGMENT,
 } from './useAdminMaterials.constant';
 import type {
   AdminCategory,
@@ -141,6 +142,10 @@ export const useAdminMaterials = (): UseAdminMaterialsResult => {
       // multiple files (PDFs); the first becomes its primary file (Req 11.1).
       for (const file of input.files) {
         form.append(ADMIN_MATERIAL_FORM_FIELDS.files, file);
+      }
+      // Optional thumbnail images, in the order chosen (first = card cover).
+      for (const thumbnail of input.thumbnails ?? []) {
+        form.append(ADMIN_MATERIAL_FORM_FIELDS.thumbnails, thumbnail);
       }
       // Only append the Price when provided so a plain upload stays Free
       // (Req 11.14); the amount is sent as its integer paise string and the
@@ -257,6 +262,43 @@ export const useAdminMaterials = (): UseAdminMaterialsResult => {
       runAuthedRequest<void>(
         buildApiUrl(
           `${ADMIN_API_ROUTES.materials}/${seg(materialId)}/${ADMIN_MATERIAL_FILES_SEGMENT}/${seg(fileId)}`,
+        ),
+        { method: 'DELETE', headers: { Accept: 'application/json' } },
+      ),
+    [runAuthedRequest],
+  );
+
+  const addMaterialThumbnails = useCallback(
+    (
+      materialId: string,
+      thumbnails: File[],
+    ): Promise<AdminMutationResult<AdminMaterial>> => {
+      const form = new FormData();
+      for (const thumbnail of thumbnails) {
+        form.append(ADMIN_MATERIAL_FORM_FIELDS.thumbnails, thumbnail);
+      }
+      return runAuthedRequest<AdminMaterial>(
+        buildApiUrl(
+          `${ADMIN_API_ROUTES.materials}/${seg(materialId)}/${ADMIN_MATERIAL_THUMBNAILS_SEGMENT}`,
+        ),
+        {
+          method: 'POST',
+          headers: { Accept: 'application/json' },
+          body: form,
+        },
+      );
+    },
+    [runAuthedRequest],
+  );
+
+  const removeMaterialThumbnail = useCallback(
+    (
+      materialId: string,
+      thumbnailId: string,
+    ): Promise<AdminMutationResult<void>> =>
+      runAuthedRequest<void>(
+        buildApiUrl(
+          `${ADMIN_API_ROUTES.materials}/${seg(materialId)}/${ADMIN_MATERIAL_THUMBNAILS_SEGMENT}/${seg(thumbnailId)}`,
         ),
         { method: 'DELETE', headers: { Accept: 'application/json' } },
       ),
@@ -444,6 +486,8 @@ export const useAdminMaterials = (): UseAdminMaterialsResult => {
       deleteMaterial,
       addMaterialFiles,
       removeMaterialFile,
+      addMaterialThumbnails,
+      removeMaterialThumbnail,
       assignTag,
       removeTag,
       createCategoryType,
@@ -466,6 +510,8 @@ export const useAdminMaterials = (): UseAdminMaterialsResult => {
       deleteMaterial,
       addMaterialFiles,
       removeMaterialFile,
+      addMaterialThumbnails,
+      removeMaterialThumbnail,
       assignTag,
       removeTag,
       createCategoryType,
